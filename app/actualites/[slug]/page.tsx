@@ -1,34 +1,35 @@
-import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { newsItems } from '@/lib/data';
+import Image from 'next/image';
+import { getNewsItems } from '@/lib/backend';
 
-export function generateStaticParams() {
-  return newsItems.map((item) => ({ slug: item.slug }));
-}
-
-export default function NewsDetailPage({ params }: { params: { slug: string } }) {
-  const item = newsItems.find((entry) => entry.slug === params.slug);
-
-  if (!item) {
-    notFound();
-  }
+export default async function NewsPage() {
+  const news = await getNewsItems();
 
   return (
     <div className="page-shell">
+      <section className="page-hero small-hero">
+        <div className="container page-hero-inner">
+          <span className="eyebrow">Actualités</span>
+          <h1>Événements, séminaires et conférences</h1>
+        </div>
+      </section>
+
       <section className="section">
-        <div className="container news-detail">
-          <div className="detail-image image-large">
-            <Image src={item.image} alt={item.title} width={1200} height={800} />
-          </div>
-          <div className="detail-copy">
-            <span className="mini-tag">{item.category}</span>
-            <h1>{item.title}</h1>
-            <p className="date-label">{item.date}</p>
-            <p>{item.content}</p>
-            <Link href="/actualites" className="btn btn-secondary mt-2">
-              Retour aux actualités
-            </Link>
+        <div className="container">
+          <div className="card-grid three-grid">
+            {news.map((item) => (
+              <Link key={item.slug} href={`/actualites/${item.slug}`} className="news-card">
+                <div className="news-image">
+                  <Image src={item.image} alt={item.title} width={800} height={520} />
+                </div>
+                <div className="news-body">
+                  <span className="mini-tag">{item.category}</span>
+                  <h4>{item.title}</h4>
+                  <p>{item.excerpt}</p>
+                  <span className="date-label">{item.date}</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

@@ -1,74 +1,45 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { researchAreas } from '@/lib/data';
+import { getResearchAreas } from '@/lib/backend';
 
-export function generateStaticParams() {
-  return researchAreas.map((area) => ({ slug: area.slug }));
-}
-
-export default function ResearchDetailPage({ params }: { params: { slug: string } }) {
-  const area = researchAreas.find((item) => item.slug === params.slug);
-
-  if (!area) {
-    notFound();
-  }
+export default async function ResearchPage() {
+  const research = await getResearchAreas();
 
   return (
     <div className="page-shell">
       <section className="page-hero small-hero">
         <div className="container page-hero-inner">
-          <span className="eyebrow">Axe de recherche</span>
-          <h1>{area.title}</h1>
+          <span className="eyebrow">Recherche</span>
+          <h1>Politique, axes de recherche et projets</h1>
         </div>
       </section>
 
       <section className="section">
-        <div className="container detail-layout small-gap">
-          <div>
-            <p>{area.description}</p>
-            <div className="info-list-block">
-              <h3>Objectifs</h3>
-              <ul>
-                {area.goals.map((goal) => (
-                  <li key={goal}>{goal}</li>
-                ))}
-              </ul>
-            </div>
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">Politique</span>
+            <h3>Une recherche orientée vers l’impact sociétal</h3>
           </div>
-          <div className="info-card">
-            <h3>Projets</h3>
-            <ul>
-              {area.projects.map((project) => (
-                <li key={project}>{project}</li>
-              ))}
-            </ul>
-          </div>
+          <p className="lead-text">
+            La recherche scientifique de l’Université de Kalemie s’appuie sur une dynamique de
+            collaboration, de qualité, d’innovation et de valorisation des connaissances. Les axes de
+            recherche sont structurés pour répondre aux besoins de la société, à la recherche de
+            solutions durables et à la formation de nouvelles générations de chercheurs.
+          </p>
         </div>
       </section>
 
       <section className="section alt-section">
         <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Publications associées</span>
-            <h3>Productions scientifiques</h3>
-          </div>
-          <ul className="publication-list">
-            {area.publications.map((publication) => (
-              <li key={publication}>{publication}</li>
+          <div className="card-grid two-grid">
+            {research.map((area) => (
+              <Link key={area.slug} href={`/recherche/${area.slug}`} className="research-detail-card">
+                <span className="mini-tag">{area.category}</span>
+                <h3>{area.title}</h3>
+                <p>{area.summary}</p>
+                <span className="text-link">Voir le détail →</span>
+              </Link>
             ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="section cta-band small">
-        <div className="container cta-content">
-          <div>
-            <span className="eyebrow">Retour</span>
-            <h3>Retrouvez tous les axes de recherche.</h3>
           </div>
-          <Link href="/recherche" className="btn btn-primary">
-            Voir la recherche
-          </Link>
         </div>
       </section>
     </div>

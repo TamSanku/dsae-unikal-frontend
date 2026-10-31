@@ -1,111 +1,33 @@
-'use client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { getNewsBySlug } from '@/lib/backend';
 
-import { FormEvent, useState } from 'react';
+export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
+  const item = await getNewsBySlug(params.slug);
 
-type FormState = {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-};
-
-const initialForm: FormState = {
-  name: '',
-  email: '',
-  subject: '',
-  message: '',
-};
-
-export default function ContactForm() {
-  const [form, setForm] = useState<FormState>(initialForm);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
-  const [submitted, setSubmitted] = useState(false);
-
-  const validate = () => {
-    const nextErrors: Partial<Record<keyof FormState, string>> = {};
-
-    if (!form.name.trim()) nextErrors.name = 'Veuillez saisir votre nom complet.';
-    if (!form.email.trim()) nextErrors.email = 'Veuillez renseigner votre adresse e-mail.';
-    if (!form.subject.trim()) nextErrors.subject = 'Veuillez préciser l’objet du message.';
-    if (!form.message.trim()) nextErrors.message = 'Veuillez écrire votre message.';
-
-    return nextErrors;
-  };
-
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    const nextErrors = validate();
-    setErrors(nextErrors);
-
-    if (Object.keys(nextErrors).length > 0) {
-      setSubmitted(false);
-      return;
-    }
-
-    setSubmitted(true);
-    setForm(initialForm);
-  };
+  if (!item) {
+    notFound();
+  }
 
   return (
-    <div className="contact-form-shell">
-      <h3>Formulaire de contact</h3>
-      <form className="contact-form" onSubmit={handleSubmit} noValidate>
-        <div className="field-grid">
-          <div className="field">
-            <label htmlFor="name">Nom complet</label>
-            <input
-              id="name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Nom complet"
-            />
-            {errors.name && <small>{errors.name}</small>}
+    <div className="page-shell">
+      <section className="section">
+        <div className="container news-detail">
+          <div className="detail-image image-large">
+            <Image src={item.image} alt={item.title} width={1200} height={800} />
           </div>
-
-          <div className="field">
-            <label htmlFor="email">Adresse électronique</label>
-            <input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="nom@example.com"
-            />
-            {errors.email && <small>{errors.email}</small>}
+          <div className="detail-copy">
+            <span className="mini-tag">{item.category}</span>
+            <h1>{item.title}</h1>
+            <p className="date-label">{item.date}</p>
+            <p>{item.content}</p>
+            <Link href="/actualites" className="btn btn-secondary mt-2">
+              Retour aux actualités
+            </Link>
           </div>
         </div>
-
-        <div className="field">
-          <label htmlFor="subject">Objet du message</label>
-          <input
-            id="subject"
-            value={form.subject}
-            onChange={(e) => setForm({ ...form, subject: e.target.value })}
-            placeholder="Objet du message"
-          />
-          {errors.subject && <small>{errors.subject}</small>}
-        </div>
-
-        <div className="field">
-          <label htmlFor="message">Message</label>
-          <textarea
-            id="message"
-            rows={5}
-            value={form.message}
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
-            placeholder="Votre message"
-          />
-          {errors.message && <small>{errors.message}</small>}
-        </div>
-
-        <button type="submit" className="btn btn-primary">
-          Envoyer
-        </button>
-
-        {submitted && (
-          <p className="success-message">Votre message a bien été enregistré. Un retour vous sera donné dès que possible.</p>
-        )}
-      </form>
+      </section>
     </div>
   );
 }
