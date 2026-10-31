@@ -117,13 +117,9 @@ function Block({ block }: { block: ContentBlock }) {
         </figure>
       );
     case 'file':
-      return (
-        <p>
-          <a href={mediaUrl(block.mediaUrl)} target="_blank" rel="noopener noreferrer">
-            {block.fileName || 'Document'}
-          </a>
-        </p>
-      );
+      /* Le nom du fichier joint n'est jamais montré : la fiche porte déjà
+       * « Lire » et « Télécharger ». Un bloc fichier ne produit donc rien. */
+      return null;
     case 'embed':
       return (
         <figure>

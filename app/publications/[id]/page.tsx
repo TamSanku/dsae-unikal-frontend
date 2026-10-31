@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { downloadUrl, getPublicationById, getPublicationReviews } from '@/lib/backend';
+import { documentKind } from '@/lib/document-kind';
 import PublicationCover from '@/components/PublicationCover';
 import PublicationReviews from '@/components/PublicationReviews';
 import StarRating from '@/components/StarRating';
@@ -62,7 +63,7 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
 
             <DocumentActions
               url={publication.documentUrl}
-              name={publication.documentName}
+              kind={documentKind(publication.documentName, publication.documentUrl)}
               download={downloadUrl(publication.documentUrl)}
             />
 

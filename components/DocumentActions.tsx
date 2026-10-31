@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { DownloadIcon, ReadIcon } from '@/components/icons';
+import type { DocumentKind } from '@/lib/document-kind';
 
 /*
  * Les deux gestes d'un document : lire sur place, télécharger.
@@ -12,32 +13,19 @@ import { DownloadIcon, ReadIcon } from '@/components/icons';
  * publique — c'est le cas de nos médias. Rien n'est inventé : sans document,
  * le message le dit.
  *
- * Le nom du fichier sert seulement à deviner le format : il n'est jamais
- * montré au lecteur.
+ * Le nom du fichier n'est jamais montré. Le serveur a déjà deviné le format
+ * (`kind`) : le lecteur ne reçoit donc aucune trace du nom d'origine.
  */
-
-function documentKind(name: string, url: string): 'pdf' | 'image' | 'video' | 'audio' | 'office' | 'other' {
-  const clean = (name || url).split('?')[0].toLowerCase();
-  const extension = clean.includes('.') ? clean.slice(clean.lastIndexOf('.') + 1) : '';
-  if (extension === 'pdf') return 'pdf';
-  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'bmp', 'svg'].includes(extension)) return 'image';
-  if (['mp4', 'webm', 'ogv', 'mov', 'm4v'].includes(extension)) return 'video';
-  if (['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac'].includes(extension)) return 'audio';
-  if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf', 'csv'].includes(extension)) return 'office';
-  return 'other';
-}
-
 export default function DocumentActions({
   url,
-  name,
+  kind,
   download,
 }: {
   url: string;
-  name: string;
+  kind: DocumentKind;
   download: string;
 }) {
   const [open, setOpen] = useState(false);
-  const kind = documentKind(name, url);
 
   if (!url) {
     return <p className="publication-nodoc">Aucun document joint à cette publication pour le moment.</p>;
