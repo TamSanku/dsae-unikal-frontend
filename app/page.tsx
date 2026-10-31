@@ -71,12 +71,6 @@ export default async function HomePage() {
               étudiants, les enseignants et les chercheurs dans la transformation des connaissances
               en solutions concrètes pour la société.
             </p>
-            <div className="pill-list">
-              <span>Mission</span>
-              <span>Vision</span>
-              <span>Innovation</span>
-              <span>Développement</span>
-            </div>
             <Link href="/a-propos" className="btn btn-primary mt-2">
               En savoir plus
             </Link>

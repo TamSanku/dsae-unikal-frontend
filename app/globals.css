@@ -2298,20 +2298,20 @@ main {
 .home-panel .research-card,
 .home-panel .publication-card-body,
 .home-panel .news-body {
-  text-align: center;
+  text-align: left;
 }
 
 .home-panel .publication-card-body {
-  align-items: center;
+  align-items: flex-start;
 }
 
 .home-panel .meta-row {
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .home-panel .date-label,
 .home-panel .publication-date {
-  text-align: center;
+  text-align: left;
 }
 
 .home-panel-cta .cta-content {
