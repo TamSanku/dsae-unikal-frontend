@@ -4,6 +4,7 @@ import { getTeamMembers, getPublications, getResearchAreas, getNewsItems } from 
 import { withFallback } from '@/lib/fallback';
 import EmptyState from '@/components/EmptyState';
 import HeroIllustrationCarousel from '@/components/HeroIllustrationCarousel';
+import PublicationCover from '@/components/PublicationCover';
 
 export default async function HomePage() {
   const [team, publications, research, news] = await Promise.all([
@@ -202,15 +203,27 @@ export default async function HomePage() {
           ) : (
           <div className="card-grid three-grid">
             {recentPublications.map((publication) => (
-              <Link key={publication.id} href={`/publications/${publication.id}`} className="publication-card">
-                {publication.category && <span className="mini-tag">{publication.category}</span>}
-                <h4>{publication.title}</h4>
-                {publication.authors && <p>{publication.authors}</p>}
-                <div className="meta-row">
-                  {publication.year > 0 && <span>{publication.year}</span>}
-                  {publication.discipline && <span>{publication.discipline}</span>}
+              <article key={publication.id} className="publication-card publication-card-cover">
+                <Link href={`/publications/${publication.id}`} className="publication-cover-link" aria-label={`Ouvrir « ${publication.title} »`}>
+                  <PublicationCover
+                    title={publication.title}
+                    authors={publication.authors}
+                    category={publication.category}
+                    image={publication.coverUrl}
+                  />
+                </Link>
+                <div className="publication-card-body">
+                  {publication.category && <span className="mini-tag">{publication.category}</span>}
+                  <h4>
+                    <Link href={`/publications/${publication.id}`}>{publication.title}</Link>
+                  </h4>
+                  {publication.authors && <p>{publication.authors}</p>}
+                  <div className="meta-row">
+                    {publication.year > 0 && <span>{publication.year}</span>}
+                    {publication.discipline && <span>{publication.discipline}</span>}
+                  </div>
                 </div>
-              </Link>
+              </article>
             ))}
           </div>
           )}

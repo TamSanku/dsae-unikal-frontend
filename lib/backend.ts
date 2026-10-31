@@ -9,6 +9,37 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'https://dsae-backend.onrender.com/api';
 
+/*
+ * Les médias vivent sous `/api/public/media/<id>` : le backend les désigne par
+ * cette adresse relative. Comme `API_BASE_URL` porte déjà `/api`, on rattache
+ * l'adresse à l'origine du backend, jamais telle quelle — sinon on demande
+ * `/api/api/public/media/...` et le média renvoie 404.
+ */
+export const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
+
+export function mediaUrl(url: string | null | undefined): string {
+  const value = (url ?? '').trim();
+  if (!value) return '';
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${BACKEND_ORIGIN}${value.startsWith('/') ? '' : '/'}${value}`;
+}
+
+/** La même adresse, mais servie en pièce jointe : c'est ce qui déclenche le
+ * téléchargement au lieu de l'ouverture dans l'onglet. */
+export function downloadUrl(url: string | null | undefined): string {
+  const value = mediaUrl(url);
+  if (!value) return '';
+  return `${value}${value.includes('?') ? '&' : '?'}download=1`;
+}
+
+/** Les signataires d'un document : « A, B et C » devient trois noms. */
+export function splitAuthors(authors: string): string[] {
+  return (authors ?? '')
+    .split(/\s*(?:,|;|\bet\b|\/|&)\s*/i)
+    .map((name) => name.trim())
+    .filter(Boolean);
+}
+
 export type ApiResult<T> = {
   data: T | null;
   error: string | null;
@@ -47,7 +78,10 @@ export type ResearchArea = {
 export type Publication = {
   id: string;
   title: string;
+  subtitle: string;
   authors: string;
+  /** Les signataires, séparés : la fiche en montre un, le détail les montre tous. */
+  authorsList: string[];
   year: number;
   category: string;
   discipline: string;
@@ -55,6 +89,11 @@ export type Publication = {
   summary: string;
   keywords: string[];
   references: string;
+  /** Le document joint (PDF, mémoire…), tel qu'il a été importé dans un bloc. */
+  documentUrl: string;
+  documentName: string;
+  /** L'image de couverture, montrée au format A4. */
+  coverUrl: string;
   pdfUrl: string;
 };
 
@@ -130,10 +169,13 @@ function normalizeResearchArea(raw: any, index: number): ResearchArea {
 
 function normalizePublication(raw: any, index: number): Publication {
   const keywords = raw.keywords ?? raw.tags;
+  const authors = raw.authors ?? raw.author ?? '';
   return {
     id: raw.id ?? `publication-${index}`,
     title: raw.title ?? '',
-    authors: raw.authors ?? raw.author ?? '',
+    subtitle: raw.subtitle ?? '',
+    authors,
+    authorsList: splitAuthors(authors),
     year: Number(raw.year) || 0,
     category: raw.category ?? '',
     discipline: raw.discipline ?? '',
@@ -141,7 +183,10 @@ function normalizePublication(raw: any, index: number): Publication {
     summary: raw.summary ?? raw.description ?? raw.abstract ?? '',
     keywords: Array.isArray(keywords) ? keywords : [],
     references: raw.references ?? '',
-    pdfUrl: raw.pdfUrl ?? raw.url ?? '',
+    documentUrl: mediaUrl(raw.pdfUrl ?? raw.documentUrl ?? ''),
+    documentName: raw.documentName ?? '',
+    coverUrl: mediaUrl(raw.coverUrl ?? ''),
+    pdfUrl: mediaUrl(raw.pdfUrl ?? raw.url ?? ''),
   };
 }
 
@@ -287,11 +332,21 @@ function contentParagraphs(entry: ContentEntry): string[] {
   return parts.filter(Boolean);
 }
 
-/** La première image d'un contenu, pour les vignettes. */
+/** La première image d'un contenu, pour les vignettes. Rendue absolue : une
+ * adresse relative du backend (`/api/public/media/...`) ne résout pas depuis le
+ * domaine du portail. */
 function contentImage(entry: ContentEntry): string {
-  if (entry.coverUrl) return entry.coverUrl;
+  if (entry.coverUrl) return mediaUrl(entry.coverUrl);
   const image = (entry.blocks ?? []).find((block) => block.type === 'image') as { mediaUrl?: string } | undefined;
-  return image?.mediaUrl ?? '';
+  return mediaUrl(image?.mediaUrl ?? '');
+}
+
+/** Le premier document joint d'un contenu, tel qu'importé dans un bloc. */
+function contentDocument(entry: ContentEntry): { url: string; name: string } {
+  const file = (entry.blocks ?? []).find((block) => block.type === 'file') as
+    | { mediaUrl?: string; fileName?: string }
+    | undefined;
+  return { url: mediaUrl(file?.mediaUrl ?? ''), name: file?.fileName ?? '' };
 }
 
 function contentDate(entry: ContentEntry): string {
@@ -346,10 +401,13 @@ function normalizePublishedResearch(entry: ContentEntry): ResearchArea {
 
 function normalizePublishedPublication(entry: ContentEntry): Publication {
   const year = entry.publishedAt ? new Date(entry.publishedAt).getFullYear() : 0;
+  const document = contentDocument(entry);
   return {
     id: entry.slug ?? entry.id,
     title: entry.title,
+    subtitle: entry.subtitle,
     authors: entry.author,
+    authorsList: splitAuthors(entry.author),
     year: Number.isFinite(year) ? year : 0,
     category: entry.category,
     discipline: '',
@@ -357,6 +415,9 @@ function normalizePublishedPublication(entry: ContentEntry): Publication {
     summary: entry.summary || contentParagraphs(entry).join('\n\n'),
     keywords: [],
     references: '',
-    pdfUrl: '',
+    documentUrl: document.url,
+    documentName: document.name,
+    coverUrl: contentImage(entry),
+    pdfUrl: document.url,
   };
 }

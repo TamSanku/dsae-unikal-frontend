@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPublicationById } from '@/lib/backend';
+import { downloadUrl, getPublicationById } from '@/lib/backend';
+import { DownloadIcon, ReadIcon } from '@/components/icons';
+import PublicationCover from '@/components/PublicationCover';
 
 export default async function PublicationDetailPage({ params }: { params: { id: string } }) {
   const publication = await getPublicationById(params.id);
@@ -9,14 +11,35 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
     notFound();
   }
 
+  const document = publication.documentUrl;
+
   return (
     <div className="page-shell">
       <section className="section">
         <div className="container publication-detail">
+          <div className="publication-detail-cover">
+            <PublicationCover
+              title={publication.title}
+              authors={publication.authors}
+              category={publication.category}
+              image={publication.coverUrl}
+              size="page"
+            />
+          </div>
+
           <div className="detail-copy">
             {publication.category && <span className="mini-tag">{publication.category}</span>}
             <h1>{publication.title}</h1>
-            {publication.authors && <p className="role-page">{publication.authors}</p>}
+            {publication.subtitle && <p className="publication-subtitle">{publication.subtitle}</p>}
+
+            {publication.authorsList.length > 0 && (
+              <div className="publication-byline">
+                <span className="publication-byline-label">
+                  {publication.authorsList.length > 1 ? 'Auteurs' : 'Auteur'}
+                </span>
+                <p>{publication.authorsList.join(', ')}</p>
+              </div>
+            )}
 
             <div className="meta-row wide-row">
               {publication.year > 0 && <span>{publication.year}</span>}
@@ -24,16 +47,22 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
               {publication.department && <span>{publication.department}</span>}
             </div>
 
-            {publication.pdfUrl && (
-              <div className="publication-actions">
-                <a href={publication.pdfUrl} className="btn btn-primary" target="_blank" rel="noreferrer">
-                  Consulter
-                </a>
-                <a href={publication.pdfUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
-                  Télécharger
-                </a>
-              </div>
-            )}
+            <div className="publication-actions">
+              {document ? (
+                <>
+                  <a href={document} className="btn btn-primary" target="_blank" rel="noreferrer">
+                    <ReadIcon /> Lire
+                  </a>
+                  <a href={downloadUrl(document)} className="btn btn-secondary">
+                    <DownloadIcon /> Télécharger
+                  </a>
+                </>
+              ) : (
+                <p className="publication-nodoc">
+                  Aucun document joint à cette publication pour le moment.
+                </p>
+              )}
+            </div>
 
             {publication.summary && (
               <div className="info-list-block">

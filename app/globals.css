@@ -1256,3 +1256,227 @@ main {
     margin-top: 0.85rem;
   }
 }
+
+/* ------------------------------------------------------------------
+ * La couverture d'un document, au format A4.
+ *
+ * Un document se présente comme une page : 210 × 297 mm, soit un rapport
+ * 1 / 1,414. C'est le format du Backoffice : la couverture occupe la page
+ * entière, le titre et les signataires se lisent dessous.
+ * ------------------------------------------------------------------ */
+.publication-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.414;
+  overflow: hidden;
+  border-radius: 18px 18px 0 0;
+  background: linear-gradient(160deg, #eef3ff 0%, #dfe8fb 100%);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.publication-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Sans image, la page porte le document lui-même : type, titre, signataires. */
+.publication-cover-sheet {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 100%;
+  padding: clamp(1.2rem, 4%, 2rem);
+  background:
+    linear-gradient(180deg, rgba(13, 76, 200, 0.06) 0%, rgba(13, 76, 200, 0) 40%),
+    #fff;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+.publication-cover-tag {
+  align-self: flex-start;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  background: #edf3ff;
+  color: #0d4cc8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.publication-cover-title {
+  color: #101827;
+  font-weight: 800;
+  line-height: 1.25;
+  font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.publication-cover-author {
+  color: #46566d;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Dans la fiche, la page est plus grande et sa propre carte. */
+.publication-detail-cover .publication-cover {
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.publication-cover-page .publication-cover-title {
+  font-size: clamp(1.3rem, 3vw, 2rem);
+}
+
+/* La grille de cartes : couverture en haut, texte dessous. */
+.publication-card-cover {
+  padding: 0;
+  overflow: hidden;
+}
+
+.publication-cover-link {
+  display: block;
+  cursor: pointer;
+}
+
+.publication-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.2rem 1.2rem 1.5rem;
+}
+
+.publication-card-body h3,
+.publication-card-body h4 {
+  margin: 0;
+}
+
+.publication-card-body h3 a,
+.publication-card-body h4 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.publication-card-body h3 a:hover,
+.publication-card-body h4 a:hover {
+  color: #0d4cc8;
+}
+
+/* Les signataires : un seul nom, les autres derrière un clic. */
+.publication-authors {
+  margin: 0;
+  color: #0d4cc8;
+  font-weight: 700;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.publication-authors-rest {
+  color: #46566d;
+  font-weight: 500;
+}
+
+.author-toggle {
+  border: 1px solid rgba(13, 76, 200, 0.25);
+  border-radius: 999px;
+  padding: 0.16rem 0.6rem;
+  background: #edf3ff;
+  color: #0d4cc8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.author-toggle:hover {
+  background: #dbe7ff;
+}
+
+/* Les deux gestes d'un document : lire, télécharger. */
+.publication-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 1.1rem;
+}
+
+.publication-actions .btn {
+  gap: 0.5rem;
+}
+
+.publication-actions .btn svg {
+  flex: none;
+}
+
+.publication-nodoc {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+/* La fiche : la page A4 à gauche, le texte à droite. */
+.publication-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.publication-detail-cover {
+  position: sticky;
+  top: 24px;
+}
+
+.publication-subtitle {
+  margin: 0;
+  color: #32415d;
+  font-size: 1.12rem;
+  font-weight: 600;
+}
+
+.publication-byline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid #0d4cc8;
+  border-radius: 0 12px 12px 0;
+  background: #f5f8ff;
+}
+
+.publication-byline-label {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.publication-byline p {
+  margin: 0;
+  color: #101827;
+  font-weight: 600;
+}
+
+@media (max-width: 980px) {
+  .publication-detail {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .publication-detail-cover {
+    position: static;
+    max-width: 460px;
+  }
+}
