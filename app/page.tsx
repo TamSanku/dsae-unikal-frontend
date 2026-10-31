@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getTeamMembers, getPublications, getResearchAreas, getNewsItems } from '@/lib/backend';
 import { withFallback } from '@/lib/fallback';
 import EmptyState from '@/components/EmptyState';
+import HeroIllustrationCarousel from '@/components/HeroIllustrationCarousel';
 
 export default async function HomePage() {
   const [team, publications, research, news] = await Promise.all([
@@ -53,15 +54,7 @@ export default async function HomePage() {
           </div>
 
           <div className="hero-visual">
-            <div className="hero-card card-glow">
-              <Image
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80"
-                alt="Campus universitaire"
-                width={960}
-                height={1200}
-                priority
-              />
-            </div>
+            <HeroIllustrationCarousel />
           </div>
         </div>
       </section>
