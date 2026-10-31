@@ -819,8 +819,9 @@ main {
     position: fixed;
     inset: 0 auto 0 0;
     width: min(86vw, 360px);
-    height: 100vh;
-    height: 100dvh;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
     display: none;
     flex-direction: column;
     align-items: stretch;
@@ -842,6 +843,11 @@ main {
 
   .site-header {
     z-index: 80;
+  }
+
+  .site-header.menu-open {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .main-nav .nav-link {

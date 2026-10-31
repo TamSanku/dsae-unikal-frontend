@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const navItems = [
   { href: '/', label: 'Accueil' },
@@ -17,12 +17,16 @@ const navItems = [
 export default function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!open) return;
 
     const previousOverflow = document.body.style.overflow;
+    const previousRootOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    navRef.current?.scrollTo({ top: 0 });
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false);
     };
@@ -30,12 +34,13 @@ export default function SiteHeader() {
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.documentElement.style.overflow = previousRootOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [open]);
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${open ? 'menu-open' : ''}`}>
       <div className="container header-inner">
         <Link href="/" className="brand" aria-label="Accueil">
           <span className="brand-mark">DSAE</span>
@@ -46,6 +51,7 @@ export default function SiteHeader() {
         </Link>
 
         <nav
+          ref={navRef}
           id="primary-navigation"
           className={`main-nav ${open ? 'nav-open' : ''}`}
           aria-label="Navigation principale"
