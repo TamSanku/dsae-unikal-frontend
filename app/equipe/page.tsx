@@ -1,5 +1,4 @@
 import { getTeamMembers, getTaxonomy } from '@/lib/backend';
-import EmptyState from '@/components/EmptyState';
 import PeopleCatalog from '@/components/PeopleCatalog';
 
 /*
@@ -8,7 +7,7 @@ import PeopleCatalog from '@/components/PeopleCatalog';
  * Les onglets sont les catégories du serveur (gouvernance, professeurs,
  * assistants, chargés de cours…). Une personne sans catégorie se lit sous
  * « Tout ». La recherche couvre le nom, la fonction, le département et le
- * parcours.
+ * parcours. La barre et les onglets restent visibles même sans contenu.
  */
 export default async function TeamPage() {
   const [team, taxonomy] = await Promise.all([getTeamMembers(), getTaxonomy()]);
@@ -24,18 +23,17 @@ export default async function TeamPage() {
 
       <section className="section">
         <div className="container">
-          {team.length === 0 ? (
-            <EmptyState label="L’équipe sera publiée depuis l’espace d’administration." />
-          ) : (
-            <PeopleCatalog
-              people={team}
-              tabs={taxonomy.teamCategories.map((category) => ({ key: category, label: category }))}
-              tabOf={(member) => member.category}
-              hrefOf={(member) => `/equipe/${member.id}`}
-              searchPlaceholder="Rechercher une personne…"
-              emptyLabel="Aucun profil ne correspond à cette recherche."
-            />
-          )}
+          <PeopleCatalog
+            people={team}
+            variant="team"
+            taxonomy={taxonomy}
+            searchPlaceholder="Rechercher une personne…"
+            emptyLabel={
+              team.length === 0
+                ? 'L’équipe sera publiée depuis l’espace d’administration.'
+                : 'Aucun profil ne correspond à cette recherche.'
+            }
+          />
         </div>
       </section>
     </div>

@@ -2,35 +2,59 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import type { TeamMember } from '@/lib/backend';
+import type { TeamMember, Taxonomy } from '@/lib/backend';
 import { withFallback } from '@/lib/fallback';
-import CatalogExplorer, { type CatalogFilter, type CatalogTab } from '@/components/CatalogExplorer';
+import CatalogExplorer, { type CatalogFilter } from '@/components/CatalogExplorer';
 
 /*
  * La liste des personnes : équipe et alumni.
  *
  * Une seule mécanique pour les deux : recherche, onglets, cartes. La page
  * Équipe onglette par catégorie (gouvernance, professeurs, assistants…),
- * la page Alumni par domaine, avec un filtre par niveau. La carte et le lien
- * de fiche sont fournis par l'appelant.
+ * la page Alumni par domaine, avec un filtre par niveau.
+ *
+ * Tout se dérive ici, à partir du registre du serveur (`taxonomy`) : les
+ * onglets, le chemin de la fiche et les filtres. Ce composant est client — il
+ * ne peut donc pas recevoir de fonction d'une page serveur ; il ne reçoit que
+ * des données.
  */
 export default function PeopleCatalog({
   people,
-  tabs,
-  tabOf,
-  filters = [],
-  hrefOf,
+  variant,
+  taxonomy,
   searchPlaceholder,
   emptyLabel,
 }: {
   people: TeamMember[];
-  tabs: CatalogTab[];
-  tabOf: (member: TeamMember) => string;
-  filters?: CatalogFilter[];
-  hrefOf: (member: TeamMember) => string;
+  variant: 'team' | 'alumni';
+  taxonomy: Taxonomy;
   searchPlaceholder: string;
   emptyLabel: string;
 }) {
+  const isAlumni = variant === 'alumni';
+
+  const tabs = (isAlumni ? taxonomy.domains : taxonomy.teamCategories).map((entry) => ({
+    key: entry,
+    label: entry,
+  }));
+
+  const tabOf = (member: TeamMember) => (isAlumni ? member.domain : member.category);
+
+  const hrefOf = (member: TeamMember) => (isAlumni ? `/alumni/${member.id}` : `/equipe/${member.id}`);
+
+  /* Un filtre par domaine : on y choisit le niveau d'études. Seuls les alumni
+   * portent un niveau ; l'équipe n'a donc pas de filtre. */
+  const filters: CatalogFilter[] = isAlumni
+    ? taxonomy.domains.map((domain) => ({
+        key: `domain:${domain}`,
+        label: domain,
+        allLabel: 'Tous les niveaux',
+        options: taxonomy.levels,
+        value: (member: TeamMember) => member.level,
+        test: (member: TeamMember, selected: string) => member.domain === domain && member.level === selected,
+      }))
+    : [];
+
   return (
     <CatalogExplorer
       items={people}

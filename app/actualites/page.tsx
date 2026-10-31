@@ -1,7 +1,13 @@
 import { getNewsItems, getTaxonomy } from '@/lib/backend';
-import EmptyState from '@/components/EmptyState';
 import NewsCatalog from '@/components/NewsCatalog';
 
+/*
+ * Le fil des actualités.
+ *
+ * La barre de recherche et les onglets restent visibles même quand rien n'est
+ * encore publié : la page montre la rubrique telle qu'elle est, et son message
+ * vide le dit franchement. Rien n'est inventé.
+ */
 export default async function NewsPage() {
   const [news, taxonomy] = await Promise.all([getNewsItems(), getTaxonomy()]);
 
@@ -16,11 +22,15 @@ export default async function NewsPage() {
 
       <section className="section">
         <div className="container">
-          {news.length === 0 ? (
-            <EmptyState label="Les actualités seront publiées depuis l’espace d’administration." />
-          ) : (
-            <NewsCatalog news={news} taxonomy={taxonomy} />
-          )}
+          <NewsCatalog
+            news={news}
+            taxonomy={taxonomy}
+            emptyLabel={
+              news.length === 0
+                ? 'Les actualités seront publiées depuis l’espace d’administration.'
+                : 'Aucune actualité ne correspond à cette recherche.'
+            }
+          />
         </div>
       </section>
     </div>

@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { getAlumni, getTaxonomy } from '@/lib/backend';
-import EmptyState from '@/components/EmptyState';
 import PeopleCatalog from '@/components/PeopleCatalog';
-import type { CatalogFilter } from '@/components/CatalogExplorer';
 
 /*
  * Les Alumni : les diplômés du domaine.
@@ -13,15 +11,6 @@ import type { CatalogFilter } from '@/components/CatalogExplorer';
  */
 export default async function AlumniPage() {
   const [alumni, taxonomy] = await Promise.all([getAlumni(), getTaxonomy()]);
-
-  const filters: CatalogFilter[] = taxonomy.domains.map((domain) => ({
-    key: `domain:${domain}`,
-    label: domain,
-    allLabel: 'Tous les niveaux',
-    options: taxonomy.levels,
-    value: (member) => member.level,
-    test: (member, selected) => member.domain === domain && member.level === selected,
-  }));
 
   return (
     <div className="page-shell">
@@ -34,19 +23,17 @@ export default async function AlumniPage() {
 
       <section className="section">
         <div className="container">
-          {alumni.length === 0 ? (
-            <EmptyState label="Les Alumni seront publiés depuis l’espace d’administration." />
-          ) : (
-            <PeopleCatalog
-              people={alumni}
-              tabs={taxonomy.domains.map((domain) => ({ key: domain, label: domain }))}
-              tabOf={(member) => member.domain}
-              filters={filters}
-              hrefOf={(member) => `/alumni/${member.id}`}
-              searchPlaceholder="Rechercher un alumni…"
-              emptyLabel="Aucun alumni ne correspond à cette recherche."
-            />
-          )}
+          <PeopleCatalog
+            people={alumni}
+            variant="alumni"
+            taxonomy={taxonomy}
+            searchPlaceholder="Rechercher un alumni…"
+            emptyLabel={
+              alumni.length === 0
+                ? 'Les Alumni seront publiés depuis l’espace d’administration.'
+                : 'Aucun alumni ne correspond à cette recherche.'
+            }
+          />
         </div>
       </section>
 

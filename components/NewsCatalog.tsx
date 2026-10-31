@@ -15,9 +15,11 @@ import CatalogExplorer from '@/components/CatalogExplorer';
 export default function NewsCatalog({
   news,
   taxonomy,
+  emptyLabel = 'Aucune actualité ne correspond à cette recherche.',
 }: {
   news: NewsItem[];
   taxonomy: Taxonomy;
+  emptyLabel?: string;
 }) {
   return (
     <CatalogExplorer
@@ -27,7 +29,7 @@ export default function NewsCatalog({
       tabs={taxonomy.newsCategories.map((category) => ({ key: category, label: category }))}
       tabOf={(item: NewsItem) => item.category}
       resultNoun="actualité"
-      emptyLabel="Aucune actualité ne correspond à cette recherche."
+      emptyLabel={emptyLabel}
       renderItem={(item: NewsItem) => (
         <Link key={item.slug} href={`/actualites/${item.slug}`} className="news-card">
           <div className="news-image">

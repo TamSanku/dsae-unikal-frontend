@@ -1,5 +1,4 @@
 import { getPublications, getTaxonomy } from '@/lib/backend';
-import EmptyState from '@/components/EmptyState';
 import PublicationsCatalog from '@/components/PublicationsCatalog';
 
 /*
@@ -7,6 +6,7 @@ import PublicationsCatalog from '@/components/PublicationsCatalog';
  *
  * La recherche, les onglets par domaine et les filtres vivent dans le
  * catalogue ; la page ne fait que charger la matière réelle et la lui confier.
+ * La barre et les onglets restent visibles même sans document publié.
  */
 export default async function PublicationsPage() {
   const [publications, taxonomy] = await Promise.all([getPublications(), getTaxonomy()]);
@@ -22,11 +22,7 @@ export default async function PublicationsPage() {
 
       <section className="section">
         <div className="container">
-          {publications.length === 0 ? (
-            <EmptyState label="Les publications seront publiées depuis l’espace d’administration." />
-          ) : (
-            <PublicationsCatalog publications={publications} taxonomy={taxonomy} />
-          )}
+          <PublicationsCatalog publications={publications} taxonomy={taxonomy} />
         </div>
       </section>
     </div>
