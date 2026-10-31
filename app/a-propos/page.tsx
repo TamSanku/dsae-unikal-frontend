@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const domains = [
+const areas = [
   {
     title: 'Production végétale',
     text: 'Amélioration des cultures vivrières et de rente, fertilité des sols, semences, protection des plantes et techniques culturales adaptées au contexte local.',
@@ -26,7 +26,7 @@ export default function AboutPage() {
       <section className="page-hero small-hero">
         <div className="container page-hero-inner">
           <span className="eyebrow">À propos</span>
-          <h1>Département des Sciences Agronomiques et de l’Environnement</h1>
+          <h1>Domaine des Sciences Agronomiques et de l’Environnement</h1>
         </div>
       </section>
 
@@ -34,8 +34,8 @@ export default function AboutPage() {
         <div className="container detail-layout">
           <div>
             <p>
-              Le Département des Sciences Agronomiques et de l’Environnement (DSAE) de l’Université
-              de Kalemie est un pôle d’enseignement et de recherche consacré à l’agriculture, à
+              Le Domaine des Sciences Agronomiques et de l’Environnement (DSAE) de l’Université
+              de Kalemie regroupe les formations et les recherches consacrées à l’agriculture, à
               l’élevage et à la gestion durable de l’environnement. Il forme des agronomes et des
               spécialistes capables de répondre aux besoins des exploitations, des communautés et des
               institutions de la région.
@@ -43,14 +43,14 @@ export default function AboutPage() {
             <p>
               Ses travaux portent sur la production végétale et animale, la fertilité des sols, la
               préservation des ressources naturelles et l’adaptation de l’agriculture au changement
-              climatique. Le département associe formation, recherche appliquée et appui aux acteurs
+              climatique. Le domaine associe formation, recherche appliquée et appui aux acteurs
               du monde rural.
             </p>
           </div>
           <div className="detail-image">
             <Image
               src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80"
-              alt="Étudiants et chercheurs du département"
+              alt="Étudiants et chercheurs du domaine"
               width={900}
               height={700}
             />
@@ -63,10 +63,10 @@ export default function AboutPage() {
           <div className="info-card">
             <h3>Historique</h3>
             <p>
-              Le département s’est structuré pour répondre aux besoins d’une région à vocation
-              agricole, marquée par la pêche, l’élevage et la présence du lac Tanganyika. Il a
-              progressivement organisé ses enseignements et ses unités de recherche autour de la
-              production agricole et de la gestion de l’environnement.
+              Le domaine s’est structuré pour répondre aux besoins d’une région à vocation
+              agricole, marquée par la pêche, l’élevage et la présence du lac Tanganyika. Ses enseignements et ses
+              unités de recherche se sont progressivement organisés autour de la production
+              agricole et de la gestion de l’environnement.
             </p>
           </div>
           <div className="info-card">
@@ -91,15 +91,15 @@ export default function AboutPage() {
       <section className="section">
         <div className="container">
           <div className="section-heading">
-            <span className="eyebrow">Domaines</span>
-            <h3>Domaines d’enseignement et de recherche</h3>
+            <span className="eyebrow">Enseignement</span>
+            <h3>Filières et axes de recherche</h3>
           </div>
 
           <div className="card-grid two-grid">
-            {domains.map((domain) => (
-              <div key={domain.title} className="info-card">
-                <h4>{domain.title}</h4>
-                <p>{domain.text}</p>
+            {areas.map((area) => (
+              <div key={area.title} className="info-card">
+                <h4>{area.title}</h4>
+                <p>{area.text}</p>
               </div>
             ))}
           </div>
@@ -138,7 +138,7 @@ export default function AboutPage() {
         <div className="container cta-content">
           <div>
             <span className="eyebrow">Explorer</span>
-            <h3>Consultez la recherche et les publications du département.</h3>
+            <h3>Consultez la recherche et les publications du domaine.</h3>
           </div>
           <Link href="/publications" className="btn btn-primary">
             Voir les publications

@@ -6,7 +6,7 @@ import SiteFooter from '@/components/SiteFooter';
 export const metadata: Metadata = {
   title: 'DSAE UNIKAL | Sciences agronomiques et environnement',
   description:
-    'Portail du Département des Sciences Agronomiques et de l’Environnement (DSAE) de l’Université de Kalemie (UNIKAL) : formation, recherche, publications et actualités.',
+    'Portail du Domaine des Sciences Agronomiques et de l’Environnement (DSAE) de l’Université de Kalemie (UNIKAL) : formation, recherche, publications et actualités.',
   keywords: [
     'UNIKAL',
     'Kalemie',

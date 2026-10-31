@@ -13,7 +13,7 @@ export default function SiteFooter() {
             </span>
           </div>
           <p>
-            Portail du Département des Sciences Agronomiques et de l’Environnement de l’Université
+            Portail du Domaine des Sciences Agronomiques et de l’Environnement de l’Université
             de Kalemie, au service de la formation, de la recherche et des communautés.
           </p>
         </div>
