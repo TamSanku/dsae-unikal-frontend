@@ -4,7 +4,9 @@ import { getTeamMembers, getPublications, getResearchAreas, getNewsItems } from 
 import { withFallback } from '@/lib/fallback';
 import EmptyState from '@/components/EmptyState';
 import HeroIllustrationCarousel from '@/components/HeroIllustrationCarousel';
+import AuthorList from '@/components/AuthorList';
 import PublicationCover from '@/components/PublicationCover';
+import StarRating from '@/components/StarRating';
 
 export default async function HomePage() {
   const [team, publications, research, news] = await Promise.all([
@@ -208,20 +210,21 @@ export default async function HomePage() {
                   <PublicationCover
                     title={publication.title}
                     authors={publication.authors}
-                    category={publication.category}
                     image={publication.coverUrl}
                   />
                 </Link>
                 <div className="publication-card-body">
-                  {publication.category && <span className="mini-tag">{publication.category}</span>}
                   <h4>
                     <Link href={`/publications/${publication.id}`}>{publication.title}</Link>
                   </h4>
-                  {publication.authors && <p>{publication.authors}</p>}
-                  <div className="meta-row">
-                    {publication.year > 0 && <span>{publication.year}</span>}
-                    {publication.discipline && <span>{publication.discipline}</span>}
-                  </div>
+                  <AuthorList authors={publication.authorsList} />
+                  {publication.publishedLabel && (
+                    <p className="publication-date">{publication.publishedLabel}</p>
+                  )}
+                  <StarRating
+                    value={publication.reviewSummary.average}
+                    count={publication.reviewSummary.count}
+                  />
                 </div>
               </article>
             ))}

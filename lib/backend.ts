@@ -75,14 +75,34 @@ export type ResearchArea = {
   publications: string[];
 };
 
+export type ReviewSummary = {
+  count: number;
+  average: number;
+};
+
+/** Un avis tel que le public le laisse et le lit. */
+export type PublicationReview = {
+  id: string;
+  rating: number;
+  author: string;
+  comment: string;
+  createdAt: string;
+};
+
 export type Publication = {
   id: string;
+  /** L'identifiant technique du contenu, celui des routes d'avis. */
+  entryId: string;
   title: string;
   subtitle: string;
-  authors: string;
   /** Les signataires, séparés : la fiche en montre un, le détail les montre tous. */
+  authors: string;
   authorsList: string[];
   year: number;
+  /** La date de publication réelle, telle que le backend l'a posée. */
+  publishedAt: string;
+  /** La même date, écrite en toutes lettres. Vide si le backend n'en donne pas. */
+  publishedLabel: string;
   category: string;
   discipline: string;
   department: string;
@@ -95,7 +115,23 @@ export type Publication = {
   /** L'image de couverture, montrée au format A4. */
   coverUrl: string;
   pdfUrl: string;
+  /** La note des avis : c'est ce que la carte affiche sous forme d'étoiles. */
+  reviewSummary: ReviewSummary;
 };
+
+const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+/** Une date lisible, ou rien : on n'écrit pas une date qui n'existe pas. */
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return '';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : DATE_FORMAT.format(date);
+}
 
 export type NewsItem = {
   slug: string;
@@ -170,13 +206,17 @@ function normalizeResearchArea(raw: any, index: number): ResearchArea {
 function normalizePublication(raw: any, index: number): Publication {
   const keywords = raw.keywords ?? raw.tags;
   const authors = raw.authors ?? raw.author ?? '';
+  const publishedAt = raw.publishedAt ?? raw.published_at ?? raw.date ?? '';
   return {
     id: raw.id ?? `publication-${index}`,
+    entryId: raw.id ?? '',
     title: raw.title ?? '',
     subtitle: raw.subtitle ?? '',
     authors,
     authorsList: splitAuthors(authors),
     year: Number(raw.year) || 0,
+    publishedAt,
+    publishedLabel: formatDate(publishedAt),
     category: raw.category ?? '',
     discipline: raw.discipline ?? '',
     department: raw.department ?? '',
@@ -187,6 +227,7 @@ function normalizePublication(raw: any, index: number): Publication {
     documentName: raw.documentName ?? '',
     coverUrl: mediaUrl(raw.coverUrl ?? ''),
     pdfUrl: mediaUrl(raw.pdfUrl ?? raw.url ?? ''),
+    reviewSummary: raw.reviewSummary ?? { count: 0, average: 0 },
   };
 }
 
@@ -238,6 +279,41 @@ export async function getResearchAreaBySlug(slug: string): Promise<ResearchArea 
 export async function getPublicationById(id: string): Promise<Publication | null> {
   const items = await getPublications();
   return items.find((item) => item.id === id) || null;
+}
+
+/*
+ * Les avis d'une publication.
+ *
+ * La lecture est publique ; l'écriture aussi — un lecteur donne son avis sans
+ * créer de compte. Le nom et le commentaire partent tels quels : c'est le
+ * backend qui borne les longueurs et la note. Rien n'est inventé ici : sans
+ * réponse de l'API, la liste est vide et le dit.
+ */
+export async function getPublicationReviews(
+  entryId: string,
+  /* Un numéro de passage force une relecture fraîche : après un envoi, le
+   * navigateur ne doit pas resservir la liste d'avant. */
+  revision?: number
+): Promise<{ reviews: PublicationReview[]; summary: ReviewSummary }> {
+  const empty = { reviews: [] as PublicationReview[], summary: { count: 0, average: 0 } };
+  if (!entryId) return empty;
+  const query = typeof revision === 'number' ? `?r=${revision}` : '';
+  const result = await fetchFromApi<{ reviews: PublicationReview[]; summary: ReviewSummary }>(
+    `/public/content/dsae-publications/${entryId}/reviews${query}`
+  );
+  return result.data ?? empty;
+}
+
+export async function postPublicationReview(
+  entryId: string,
+  input: { rating: number; author: string; comment: string }
+): Promise<{ success: boolean; message: string }> {
+  const result = await fetchFromApi<{ review: PublicationReview }>(
+    `/public/content/dsae-publications/${entryId}/reviews`,
+    { method: 'POST', body: JSON.stringify(input) }
+  );
+  if (result.data) return { success: true, message: 'Merci, votre avis a été enregistré.' };
+  return { success: false, message: result.error || 'Impossible d’enregistrer votre avis.' };
 }
 
 export async function getNewsBySlug(slug: string): Promise<NewsItem | null> {
@@ -305,6 +381,7 @@ type ContentEntry = {
   location: string;
   sortOrder: number;
   publishedAt: string | null;
+  reviewSummary?: ReviewSummary;
 };
 
 /** Le texte d'un document enrichi, à plat. */
@@ -404,11 +481,14 @@ function normalizePublishedPublication(entry: ContentEntry): Publication {
   const document = contentDocument(entry);
   return {
     id: entry.slug ?? entry.id,
+    entryId: entry.id,
     title: entry.title,
     subtitle: entry.subtitle,
     authors: entry.author,
     authorsList: splitAuthors(entry.author),
     year: Number.isFinite(year) ? year : 0,
+    publishedAt: entry.publishedAt ?? '',
+    publishedLabel: formatDate(entry.publishedAt),
     category: entry.category,
     discipline: '',
     department: entry.location,
@@ -419,5 +499,6 @@ function normalizePublishedPublication(entry: ContentEntry): Publication {
     documentName: document.name,
     coverUrl: contentImage(entry),
     pdfUrl: document.url,
+    reviewSummary: entry.reviewSummary ?? { count: 0, average: 0 },
   };
 }

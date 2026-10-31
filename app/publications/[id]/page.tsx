@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { downloadUrl, getPublicationById } from '@/lib/backend';
+import { downloadUrl, getPublicationById, getPublicationReviews } from '@/lib/backend';
 import { DownloadIcon, ReadIcon } from '@/components/icons';
 import PublicationCover from '@/components/PublicationCover';
+import PublicationReviews from '@/components/PublicationReviews';
+import StarRating from '@/components/StarRating';
 
 export default async function PublicationDetailPage({ params }: { params: { id: string } }) {
   const publication = await getPublicationById(params.id);
@@ -10,6 +12,10 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
   if (!publication) {
     notFound();
   }
+
+  /* Les avis sont lus à part : la fiche les montre, et la note de la carte
+   * vient de la même source. Sans avis, la section le dit — rien n'est inventé. */
+  const { reviews, summary } = await getPublicationReviews(publication.entryId);
 
   const document = publication.documentUrl;
 
@@ -21,14 +27,12 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
             <PublicationCover
               title={publication.title}
               authors={publication.authors}
-              category={publication.category}
               image={publication.coverUrl}
               size="page"
             />
           </div>
 
           <div className="detail-copy">
-            {publication.category && <span className="mini-tag">{publication.category}</span>}
             <h1>{publication.title}</h1>
             {publication.subtitle && <p className="publication-subtitle">{publication.subtitle}</p>}
 
@@ -41,11 +45,13 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
               </div>
             )}
 
-            <div className="meta-row wide-row">
-              {publication.year > 0 && <span>{publication.year}</span>}
-              {publication.discipline && <span>{publication.discipline}</span>}
+            <div className="publication-meta">
+              {publication.publishedLabel && <span>{publication.publishedLabel}</span>}
+              {publication.category && <span>{publication.category}</span>}
               {publication.department && <span>{publication.department}</span>}
             </div>
+
+            <StarRating value={summary.average} count={summary.count} size={20} />
 
             <div className="publication-actions">
               {document ? (
@@ -71,23 +77,7 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
               </div>
             )}
 
-            {publication.keywords.length > 0 && (
-              <div className="info-list-block">
-                <h3>Mots-clés</h3>
-                <div className="pill-list">
-                  {publication.keywords.map((keyword) => (
-                    <span key={keyword}>{keyword}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {publication.references && (
-              <div className="info-list-block">
-                <h3>Références bibliographiques</h3>
-                <p>{publication.references}</p>
-              </div>
-            )}
+            <PublicationReviews entryId={publication.entryId} initialReviews={reviews} initialSummary={summary} />
           </div>
         </div>
       </section>
