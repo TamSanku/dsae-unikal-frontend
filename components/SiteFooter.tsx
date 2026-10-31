@@ -50,11 +50,11 @@ export default function SiteFooter() {
       </div>
 
       <div className="container footer-bottom">
-        <span>© 2025 DSAE UNIKAL.</span>
+        <span>© 2026 DSAE UNIKAL.</span>
         <div className="legal-links">
-          <Link href="/">Mentions légales</Link>
-          <Link href="/">Politique de confidentialité</Link>
-          <Link href="/">Conditions d’utilisation</Link>
+          <Link href="/mentions-legales">Mentions légales</Link>
+          <Link href="/politique-de-confidentialite">Politique de confidentialité</Link>
+          <Link href="/conditions-d-utilisation">Conditions d’utilisation</Link>
         </div>
       </div>
     </footer>
