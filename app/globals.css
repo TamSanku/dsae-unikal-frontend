@@ -1104,6 +1104,18 @@ main {
   background: linear-gradient(145deg, #e9edfb, #f7f8fc 58%, #e5f4f1);
 }
 
+.hero-slide-universite {
+  background: linear-gradient(145deg, #e5edfb, #f4f7ff 58%, #e7f0fa);
+}
+
+.hero-slide-savoirs {
+  background: linear-gradient(145deg, #f1eafb, #faf7ff 58%, #e9f1fc);
+}
+
+.hero-slide-developpement {
+  background: linear-gradient(145deg, #e7f2e9, #f4f8f1 58%, #e7f0fa);
+}
+
 .hero-illustration-wrap {
   display: grid;
   place-items: center;

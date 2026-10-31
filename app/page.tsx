@@ -106,12 +106,7 @@ export default async function HomePage() {
 
           <div className="feature-split reverse university-split">
             <div className="feature-image">
-              <Image
-                src="https://images.unsplash.com/photo-1562771382-4d47f2ef6de6?auto=format&fit=crop&w=1000&q=80"
-                alt="Université de Kalemie"
-                width={900}
-                height={700}
-              />
+              <HeroIllustrationCarousel variant="universite" />
             </div>
             <div className="feature-copy">
               <p>

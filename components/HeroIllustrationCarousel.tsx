@@ -2,9 +2,9 @@
 
 import { useRef, useState } from 'react';
 
-type IllustrationKind = 'agronomie' | 'environnement' | 'recherche';
+type IllustrationKind = 'agronomie' | 'environnement' | 'recherche' | 'universite' | 'savoirs' | 'developpement';
 
-const slides: { kind: IllustrationKind; category: string; title: string; description: string }[] = [
+const dsaeSlides: { kind: IllustrationKind; category: string; title: string; description: string }[] = [
   {
     kind: 'agronomie',
     category: 'Formation et pratiques agricoles',
@@ -22,6 +22,27 @@ const slides: { kind: IllustrationKind; category: string; title: string; descrip
     category: 'Savoirs et innovation',
     title: 'Recherche scientifique',
     description: 'Faire circuler les savoirs et proposer des réponses aux besoins des communautés.',
+  },
+];
+
+const universitySlides: { kind: IllustrationKind; category: string; title: string; description: string }[] = [
+  {
+    kind: 'universite',
+    category: 'Formation universitaire',
+    title: 'Apprendre et transmettre',
+    description: 'Former des étudiants et accompagner les parcours académiques au service de la société.',
+  },
+  {
+    kind: 'savoirs',
+    category: 'Savoirs et recherche',
+    title: 'Faire grandir les connaissances',
+    description: 'Rapprocher les disciplines, les unités de recherche et les acteurs académiques.',
+  },
+  {
+    kind: 'developpement',
+    category: 'Communautés et territoire',
+    title: 'Contribuer au développement',
+    description: 'Mettre la formation et la recherche en lien avec les besoins locaux et nationaux.',
   },
 ];
 
@@ -56,6 +77,50 @@ function Illustration({ kind }: { kind: IllustrationKind }) {
     );
   }
 
+  if (kind === 'universite') {
+    return (
+      <svg viewBox="0 0 300 220" role="img" aria-label="Illustration d’un établissement universitaire">
+        <circle cx="233" cy="42" r="23" fill="#f6c85f" />
+        <path d="M40 177h220v22H40z" fill="#c8d7ee" />
+        <path d="M56 94 150 45l94 49H56Z" fill="#7592c5" stroke="#45699f" strokeWidth="5" strokeLinejoin="round" />
+        <path d="M72 98h156v77H72z" fill="#fff" stroke="#45699f" strokeWidth="5" />
+        <path d="M93 104v65m38-65v65m38-65v65m38-65v65" stroke="#6683b3" strokeWidth="9" />
+        <path d="M62 177h176" stroke="#45699f" strokeWidth="7" strokeLinecap="round" />
+        <path d="M129 145v-24c0-12 9-21 21-21s21 9 21 21v24" fill="#a8c5e8" stroke="#45699f" strokeWidth="4" />
+        <path d="M142 146v-22a8 8 0 0 1 16 0v22" fill="#eef5ff" />
+      </svg>
+    );
+  }
+
+  if (kind === 'savoirs') {
+    return (
+      <svg viewBox="0 0 300 220" role="img" aria-label="Illustration d’un livre ouvert et du savoir">
+        <circle cx="221" cy="48" r="23" fill="#f6c85f" />
+        <path d="M42 64c42-12 76-5 108 18v105c-32-22-67-29-108-18V64Zm216 0c-42-12-76-5-108 18v105c32-22 67-29 108-18V64Z" fill="#fff" stroke="#5877ad" strokeWidth="5" strokeLinejoin="round" />
+        <path d="M64 91c27-6 51-2 70 10m-70 17c27-6 51-2 70 10m-70 17c24-5 47-2 68 9m72-46c8-5 17-8 28-10m-28 27c8-5 17-8 28-10m-28 27c8-5 17-8 28-10" fill="none" stroke="#9db0d0" strokeWidth="5" strokeLinecap="round" />
+        <path d="M150 81v106" stroke="#5877ad" strokeWidth="5" />
+        <path d="M150 45V27m-27 24-12-12m66 12 12-12" stroke="#e4ae42" strokeWidth="5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === 'developpement') {
+    return (
+      <svg viewBox="0 0 300 220" role="img" aria-label="Illustration de personnes et de développement communautaire">
+        <path d="M34 179h232" stroke="#7c9ebc" strokeWidth="7" strokeLinecap="round" />
+        <path d="M47 179v-54h54v54m98 0v-66h53v66" fill="#d6e5f2" stroke="#6384aa" strokeWidth="4" />
+        <path d="M58 139h13m16 0h5m112-9h13m15 0h6m-161 25h13m16 0h5m112-5h13m15 0h6" stroke="#86a4c6" strokeWidth="5" strokeLinecap="round" />
+        <circle cx="142" cy="98" r="17" fill="#f0bb7a" />
+        <path d="M112 157v-18c0-16 13-29 30-29s30 13 30 29v18" fill="#6ea5a0" />
+        <circle cx="105" cy="112" r="13" fill="#e5b17e" />
+        <path d="M83 158v-13c0-12 10-22 22-22 6 0 11 2 15 6" fill="#83ad72" />
+        <circle cx="197" cy="112" r="13" fill="#e5b17e" />
+        <path d="M217 158v-13c0-12-10-22-22-22-6 0-11 2-15 6" fill="#8398c2" />
+        <path d="M131 78c4-17 29-21 39-5" fill="none" stroke="#66814f" strokeWidth="6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
   return (
     <svg viewBox="0 0 300 220" role="img" aria-label="Illustration de recherche scientifique">
       <circle cx="226" cy="47" r="26" fill="#f6c85f" />
@@ -70,9 +135,10 @@ function Illustration({ kind }: { kind: IllustrationKind }) {
   );
 }
 
-export default function HeroIllustrationCarousel() {
+export default function HeroIllustrationCarousel({ variant = 'dsae' }: { variant?: 'dsae' | 'universite' }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const slides = variant === 'universite' ? universitySlides : dsaeSlides;
 
   const goTo = (index: number) => {
     const viewport = viewportRef.current;
@@ -83,7 +149,10 @@ export default function HeroIllustrationCarousel() {
   };
 
   return (
-    <section className="hero-carousel" aria-label="Illustrations du DSAE">
+    <section
+      className={`hero-carousel ${variant === 'universite' ? 'university-carousel' : ''}`}
+      aria-label={variant === 'universite' ? 'Illustrations de l’Université de Kalemie' : 'Illustrations du DSAE'}
+    >
       <div
         className="hero-carousel-viewport"
         ref={viewportRef}
