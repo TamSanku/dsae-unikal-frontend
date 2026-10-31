@@ -13,8 +13,8 @@ export default function SiteFooter() {
             </span>
           </div>
           <p>
-            Portail académique et scientifique de l’Université de Kalemie, au service de la recherche,
-            de la formation et de la diffusion des savoirs.
+            Portail du Département des Sciences Agronomiques et de l’Environnement de l’Université
+            de Kalemie, au service de la formation, de la recherche et des communautés.
           </p>
         </div>
 

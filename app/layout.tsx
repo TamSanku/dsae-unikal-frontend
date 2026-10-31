@@ -4,10 +4,17 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 
 export const metadata: Metadata = {
-  title: 'DSAE UNIKAL | Faculté scientifique de l’Université de Kalemie',
+  title: 'DSAE UNIKAL | Sciences agronomiques et environnement',
   description:
-    'Portail scientifique de la faculté et de l’Université de Kalemie (UNIKAL), dédié aux publications, à la recherche et à l’équipe académique.',
-  keywords: ['UNIKAL', 'Kalemie', 'Recherche scientifique', 'Faculté', 'Publications'],
+    'Portail du Département des Sciences Agronomiques et de l’Environnement (DSAE) de l’Université de Kalemie (UNIKAL) : formation, recherche, publications et actualités.',
+  keywords: [
+    'UNIKAL',
+    'Kalemie',
+    'Sciences agronomiques',
+    'Environnement',
+    'Recherche',
+    'Publications',
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

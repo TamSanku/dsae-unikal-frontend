@@ -20,13 +20,13 @@ export default async function HomePage() {
       <section className="hero-shell">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow">Faculté scientifique</span>
+            <span className="eyebrow">Sciences agronomiques et environnement</span>
             <h1>Université de Kalemie (UNIKAL)</h1>
-            <h2>Portail scientifique de la faculté</h2>
+            <h2>Département des Sciences Agronomiques et de l’Environnement</h2>
             <p>
-              Un espace académique dédié à la recherche, à la production scientifique, à la formation
-              et à la diffusion des connaissances au service du développement intellectuel et
-              sociétal.
+              Un espace dédié à l’agriculture, à l’élevage et à la gestion durable de
+              l’environnement : formation, recherche appliquée, publications et appui aux
+              communautés.
             </p>
             <div className="hero-actions">
               <Link href="/a-propos" className="btn btn-primary">
