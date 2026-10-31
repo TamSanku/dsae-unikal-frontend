@@ -1,11 +1,17 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { getTeamMembers } from '@/lib/backend';
-import { withFallback } from '@/lib/fallback';
+import { getTeamMembers, getTaxonomy } from '@/lib/backend';
 import EmptyState from '@/components/EmptyState';
+import PeopleCatalog from '@/components/PeopleCatalog';
 
+/*
+ * L'équipe : recherche et onglets par catégorie.
+ *
+ * Les onglets sont les catégories du serveur (gouvernance, professeurs,
+ * assistants, chargés de cours…). Une personne sans catégorie se lit sous
+ * « Tout ». La recherche couvre le nom, la fonction, le département et le
+ * parcours.
+ */
 export default async function TeamPage() {
-  const team = await getTeamMembers();
+  const [team, taxonomy] = await Promise.all([getTeamMembers(), getTaxonomy()]);
 
   return (
     <div className="page-shell">
@@ -21,21 +27,14 @@ export default async function TeamPage() {
           {team.length === 0 ? (
             <EmptyState label="L’équipe sera publiée depuis l’espace d’administration." />
           ) : (
-            <div className="card-grid three-grid">
-              {team.map((member) => (
-                <Link key={member.id} href={`/equipe/${member.id}`} className="profile-card large-card">
-                  <div className="profile-image-wrap">
-                    <Image src={withFallback(member.image)} alt={member.name} width={600} height={700} />
-                  </div>
-                  <div className="profile-body">
-                    {member.category && <span className="mini-tag">{member.category}</span>}
-                    <h4>{member.name}</h4>
-                    {member.role && <p className="role">{member.role}</p>}
-                    {member.department && <p>{member.department}</p>}
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <PeopleCatalog
+              people={team}
+              tabs={taxonomy.teamCategories.map((category) => ({ key: category, label: category }))}
+              tabOf={(member) => member.category}
+              hrefOf={(member) => `/equipe/${member.id}`}
+              searchPlaceholder="Rechercher une personne…"
+              emptyLabel="Aucun profil ne correspond à cette recherche."
+            />
           )}
         </div>
       </section>

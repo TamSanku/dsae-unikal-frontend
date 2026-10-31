@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { downloadUrl, getPublicationById, getPublicationReviews } from '@/lib/backend';
-import { DownloadIcon, ReadIcon } from '@/components/icons';
 import PublicationCover from '@/components/PublicationCover';
 import PublicationReviews from '@/components/PublicationReviews';
 import StarRating from '@/components/StarRating';
 import ContentBlocks from '@/components/ContentBlocks';
+import DocumentActions from '@/components/DocumentActions';
 
 export default async function PublicationDetailPage({ params }: { params: { id: string } }) {
   const publication = await getPublicationById(params.id);
@@ -18,13 +18,14 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
    * vient de la même source. Sans avis, la section le dit — rien n'est inventé. */
   const { reviews, summary } = await getPublicationReviews(publication.entryId);
 
-  const document = publication.documentUrl;
-
   return (
     <div className="page-shell">
       <section className="section">
         <div className="container publication-detail">
           <div className="publication-detail-cover">
+            <Link href="/publications" className="btn btn-secondary back-to-catalog">
+              ← Retour au catalogue
+            </Link>
             <PublicationCover
               title={publication.title}
               image={publication.coverUrl}
@@ -41,34 +42,29 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
                 <span className="publication-byline-label">
                   {publication.authorsList.length > 1 ? 'Auteurs' : 'Auteur'}
                 </span>
-                <p>{publication.authorsList.join(', ')}</p>
+                <ol className="publication-author-list">
+                  {publication.authorsList.map((author, index) => (
+                    <li key={`${author}-${index}`}>{author}</li>
+                  ))}
+                </ol>
               </div>
             )}
 
             <div className="publication-meta">
               {publication.publishedLabel && <span>{publication.publishedLabel}</span>}
               {publication.category && <span>{publication.category}</span>}
+              {publication.domain && <span>{publication.domain}</span>}
+              {publication.level && <span>{publication.level}</span>}
               {publication.department && <span>{publication.department}</span>}
             </div>
 
             <StarRating value={summary.average} count={summary.count} size={20} />
 
-            <div className="publication-actions">
-              {document ? (
-                <>
-                  <a href={document} className="btn btn-primary" target="_blank" rel="noreferrer">
-                    <ReadIcon /> Lire
-                  </a>
-                  <a href={downloadUrl(document)} className="btn btn-secondary">
-                    <DownloadIcon /> Télécharger
-                  </a>
-                </>
-              ) : (
-                <p className="publication-nodoc">
-                  Aucun document joint à cette publication pour le moment.
-                </p>
-              )}
-            </div>
+            <DocumentActions
+              url={publication.documentUrl}
+              name={publication.documentName}
+              download={downloadUrl(publication.documentUrl)}
+            />
 
             {publication.summary && (
               <div className="info-list-block">

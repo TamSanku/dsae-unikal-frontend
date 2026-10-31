@@ -60,6 +60,9 @@ export type TeamMember = {
   specialty: string;
   bio: string;
   category: string;
+  /** Le domaine et le niveau, pour les alumni (facultatif ailleurs). */
+  domain: string;
+  level: string;
   image: string;
   publications: string[];
 };
@@ -106,6 +109,9 @@ export type Publication = {
   category: string;
   discipline: string;
   department: string;
+  /** Le domaine scientifique et le niveau d'études, quand ils sont renseignés. */
+  domain: string;
+  level: string;
   summary: string;
   keywords: string[];
   references: string;
@@ -189,6 +195,8 @@ function normalizeTeamMember(raw: any, index: number): TeamMember {
     specialty: raw.specialty ?? '',
     bio: raw.bio ?? '',
     category: raw.category ?? '',
+    domain: raw.domain ?? '',
+    level: raw.level ?? '',
     image: raw.image ?? raw.photo ?? '',
     publications: Array.isArray(raw.publications) ? raw.publications : [],
   };
@@ -225,6 +233,8 @@ function normalizePublication(raw: any, index: number): Publication {
     category: raw.category ?? '',
     discipline: raw.discipline ?? '',
     department: raw.department ?? '',
+    domain: raw.domain ?? '',
+    level: raw.level ?? '',
     summary: raw.summary ?? raw.description ?? raw.abstract ?? '',
     keywords: Array.isArray(keywords) ? keywords : [],
     references: raw.references ?? '',
@@ -269,6 +279,55 @@ export async function getPublications(): Promise<Publication[]> {
   if (published && published.length > 0) return published.map(normalizePublishedPublication);
   const result = await fetchFromApi<any[]>('/site/publications');
   return (result.data ?? []).map(normalizePublication);
+}
+
+/*
+ * Les Alumni : les diplômés du domaine.
+ *
+ * Même forme que l'équipe (un nom, un parcours, un portrait), plus un domaine
+ * et un niveau. La source est la rubrique `dsae-alumni` du backoffice ; sans
+ * contenu publié, la liste est vide et la page le dit.
+ */
+export async function getAlumni(): Promise<TeamMember[]> {
+  const published = await fetchPublished('dsae-alumni');
+  return (published ?? []).map(normalizePublishedMember);
+}
+
+/*
+ * Les partenaires : les institutions liées au domaine. La page « S'engager »
+ * les liste ; sans contenu publié, elle le dit franchement.
+ */
+export async function getPartners(): Promise<TeamMember[]> {
+  const published = await fetchPublished('dsae-partners');
+  return (published ?? []).map(normalizePublishedMember);
+}
+
+/*
+ * Les listes de référence (types, domaines, niveaux).
+ *
+ * Elles viennent du serveur : les onglets du portail ne peuvent pas dériver
+ * d'une liste recopiée dans le code. Si l'API ne répond pas, on rend des listes
+ * vides — pas de faux onglets.
+ */
+export type Taxonomy = {
+  newsCategories: string[];
+  publicationCategories: string[];
+  teamCategories: string[];
+  domains: string[];
+  levels: string[];
+};
+
+export async function getTaxonomy(): Promise<Taxonomy> {
+  const result = await fetchFromApi<Taxonomy>('/public/content/taxonomy');
+  return (
+    result.data ?? {
+      newsCategories: [],
+      publicationCategories: [],
+      teamCategories: [],
+      domains: [],
+      levels: [],
+    }
+  );
 }
 
 export async function getNewsItems(): Promise<NewsItem[]> {
@@ -323,6 +382,39 @@ export async function postPublicationReview(
   return { success: false, message: result.error || 'Impossible d’enregistrer votre avis.' };
 }
 
+/*
+ * « Gérer mon avis ».
+ *
+ * Le lecteur n'a pas de compte : le navigateur retient l'identifiant de l'avis
+ * qu'il a écrit, et le renvoie pour le corriger ou le retirer. Le serveur
+ * vérifie que cet avis appartient bien à ce document. Rien n'est inventé : si
+ * la modification échoue, on le dit au lecteur.
+ */
+export async function updatePublicationReview(
+  entryId: string,
+  reviewId: string,
+  input: { rating: number; author: string; comment: string }
+): Promise<{ success: boolean; message: string }> {
+  const result = await fetchFromApi<{ review: PublicationReview }>(
+    `/public/content/dsae-publications/${entryId}/reviews/${reviewId}`,
+    { method: 'PATCH', body: JSON.stringify(input) }
+  );
+  if (result.data) return { success: true, message: 'Votre avis a été mis à jour.' };
+  return { success: false, message: result.error || 'Impossible de mettre à jour votre avis.' };
+}
+
+export async function deletePublicationReview(
+  entryId: string,
+  reviewId: string
+): Promise<{ success: boolean; message: string }> {
+  const result = await fetchFromApi<{ deleted: boolean }>(
+    `/public/content/dsae-publications/${entryId}/reviews/${reviewId}`,
+    { method: 'DELETE' }
+  );
+  if (result.data) return { success: true, message: 'Votre avis a été retiré.' };
+  return { success: false, message: result.error || 'Impossible de retirer votre avis.' };
+}
+
 export async function getNewsBySlug(slug: string): Promise<NewsItem | null> {
   const items = await getNewsItems();
   return items.find((item) => item.slug === slug) || null;
@@ -330,6 +422,11 @@ export async function getNewsBySlug(slug: string): Promise<NewsItem | null> {
 
 export async function getMemberById(id: string): Promise<TeamMember | null> {
   const items = await getTeamMembers();
+  return items.find((item) => item.id === id) || null;
+}
+
+export async function getAlumniById(id: string): Promise<TeamMember | null> {
+  const items = await getAlumni();
   return items.find((item) => item.id === id) || null;
 }
 
@@ -387,6 +484,8 @@ type ContentEntry = {
   authors?: string[];
   author: string;
   location: string;
+  domain?: string;
+  level?: string;
   sortOrder: number;
   publishedAt: string | null;
   reviewSummary?: ReviewSummary;
@@ -467,6 +566,8 @@ function normalizePublishedMember(entry: ContentEntry): TeamMember {
     specialty: entry.category,
     bio: entry.summary || contentParagraphs(entry).join('\n\n'),
     category: entry.category,
+    domain: entry.domain ?? '',
+    level: entry.level ?? '',
     image: contentImage(entry),
     publications: [],
   };
@@ -503,6 +604,8 @@ function normalizePublishedPublication(entry: ContentEntry): Publication {
     category: entry.category,
     discipline: '',
     department: entry.location,
+    domain: entry.domain ?? '',
+    level: entry.level ?? '',
     summary: entry.summary || contentParagraphs(entry).join('\n\n'),
     keywords: [],
     references: '',

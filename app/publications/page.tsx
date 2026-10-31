@@ -1,20 +1,15 @@
-import Link from 'next/link';
-import { getPublications } from '@/lib/backend';
-import AuthorList from '@/components/AuthorList';
+import { getPublications, getTaxonomy } from '@/lib/backend';
 import EmptyState from '@/components/EmptyState';
-import PublicationCover from '@/components/PublicationCover';
-import StarRating from '@/components/StarRating';
+import PublicationsCatalog from '@/components/PublicationsCatalog';
 
 /*
  * Le catalogue des publications.
  *
- * Une carte ne montre que l'essentiel : la couverture, le titre, le signataire,
- * la date de publication et les étoiles des avis. Pas de résumé, pas de bouton —
- * on ne lit ni ne télécharge depuis la liste. Tout le reste vit dans la fiche,
- * qu'on ouvre en cliquant la couverture ou le titre.
+ * La recherche, les onglets par domaine et les filtres vivent dans le
+ * catalogue ; la page ne fait que charger la matière réelle et la lui confier.
  */
 export default async function PublicationsPage() {
-  const publications = await getPublications();
+  const [publications, taxonomy] = await Promise.all([getPublications(), getTaxonomy()]);
 
   return (
     <div className="page-shell">
@@ -30,39 +25,7 @@ export default async function PublicationsPage() {
           {publications.length === 0 ? (
             <EmptyState label="Les publications seront publiées depuis l’espace d’administration." />
           ) : (
-            <div className="card-grid two-grid">
-              {publications.map((publication) => (
-                <article key={publication.id} className="publication-card large publication-card-cover">
-                  <Link
-                    href={`/publications/${publication.id}`}
-                    className="publication-cover-link"
-                    aria-label={`Ouvrir « ${publication.title} »`}
-                  >
-                    <PublicationCover
-                      title={publication.title}
-                      image={publication.coverUrl}
-                    />
-                  </Link>
-
-                  <div className="publication-card-body">
-                    <h3>
-                      <Link href={`/publications/${publication.id}`}>{publication.title}</Link>
-                    </h3>
-                    <AuthorList authors={publication.authorsList} />
-                    {publication.summary && (
-                      <p className="publication-card-summary">{publication.summary}</p>
-                    )}
-                    {publication.publishedLabel && (
-                      <p className="publication-date">{publication.publishedLabel}</p>
-                    )}
-                    <StarRating
-                      value={publication.reviewSummary.average}
-                      count={publication.reviewSummary.count}
-                    />
-                  </div>
-                </article>
-              ))}
-            </div>
+            <PublicationsCatalog publications={publications} taxonomy={taxonomy} />
           )}
         </div>
       </section>

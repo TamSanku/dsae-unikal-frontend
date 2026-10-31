@@ -17,8 +17,8 @@ const initialForm: FormState = {
   message: '',
 };
 
-export default function ContactForm() {
-  const [form, setForm] = useState<FormState>(initialForm);
+export default function ContactForm({ defaultSubject = '' }: { defaultSubject?: string }) {
+  const [form, setForm] = useState<FormState>({ ...initialForm, subject: defaultSubject });
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [failure, setFailure] = useState('');
@@ -52,7 +52,7 @@ export default function ContactForm() {
 
     if (result.success) {
       setSubmitted(true);
-      setForm(initialForm);
+      setForm({ ...initialForm, subject: defaultSubject });
     } else {
       setSubmitted(false);
       setFailure(result.message);

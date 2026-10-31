@@ -6,12 +6,13 @@ import { useEffect, useRef, useState } from 'react';
 
 const navItems = [
   { href: '/', label: 'Accueil' },
+  { href: '/actualites', label: 'Actualités' },
   { href: '/a-propos', label: 'À propos' },
   { href: '/universite', label: 'Université' },
   { href: '/equipe', label: 'Équipe' },
   { href: '/recherche', label: 'Recherche' },
   { href: '/publications', label: 'Publications' },
-  { href: '/actualites', label: 'Actualités' },
+  { href: '/alumni', label: 'Alumni' },
 ];
 
 export default function SiteHeader() {
@@ -89,8 +90,8 @@ export default function SiteHeader() {
         )}
 
         <div className="header-actions">
-          <Link href="/contact" className="btn btn-primary header-btn">
-            Contact
+          <Link href="/s-engager" className="btn btn-primary header-btn">
+            S’engager
           </Link>
           <button
             type="button"

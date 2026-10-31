@@ -22,11 +22,13 @@ export default function SiteFooter() {
           <h4>Navigation</h4>
           <ul className="footer-links">
             <li><Link href="/">Accueil</Link></li>
+            <li><Link href="/actualites">Actualités</Link></li>
             <li><Link href="/a-propos">À propos</Link></li>
             <li><Link href="/universite">Université</Link></li>
             <li><Link href="/equipe">Équipe</Link></li>
             <li><Link href="/recherche">Recherche</Link></li>
             <li><Link href="/publications">Publications</Link></li>
+            <li><Link href="/alumni">Alumni</Link></li>
           </ul>
         </div>
 
@@ -44,6 +46,8 @@ export default function SiteFooter() {
         <div>
           <h4>Contact</h4>
           <ul className="footer-links contact-list">
+            <li><Link href="/s-engager">S’engager</Link></li>
+            <li><Link href="/s-engager">Proposer un partenariat</Link></li>
             <li><Link href="/contact">Formulaire de contact</Link></li>
           </ul>
         </div>

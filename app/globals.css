@@ -1752,3 +1752,357 @@ main {
   font-size: 0.88rem;
   font-weight: 600;
 }
+
+/* ------------------------------------------------------------------
+ * Le catalogue : recherche, filtres, onglets.
+ *
+ * Une barre de recherche, des filtres à côté, puis des onglets horizontaux.
+ * Le tout défile proprement sur petit écran.
+ * ------------------------------------------------------------------ */
+.catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.catalog-controls {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.4fr) minmax(0, 2fr);
+  gap: 14px;
+  align-items: end;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+}
+
+.catalog-search input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+  background: #f9fbff;
+  font: inherit;
+  color: #101827;
+}
+
+.catalog-search input:focus {
+  outline: 2px solid rgba(13, 76, 200, 0.35);
+  outline-offset: 1px;
+}
+
+.catalog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.catalog-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 150px;
+  flex: 1 1 150px;
+}
+
+.catalog-filter > span {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #46566d;
+}
+
+.catalog-filter select {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  background: #f9fbff;
+  font: inherit;
+  color: #101827;
+}
+
+.catalog-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.catalog-tab {
+  flex: none;
+  border: 1px solid rgba(13, 76, 200, 0.2);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  color: #33415c;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.catalog-tab:hover {
+  background: #edf3ff;
+  color: #0d4cc8;
+}
+
+.catalog-tab.active {
+  background: #0d4cc8;
+  border-color: #0d4cc8;
+  color: #fff;
+}
+
+.catalog-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  color: #64748b;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.catalog-reset {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #0d4cc8;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.catalog-empty {
+  margin: 0;
+  padding: 2rem;
+  border: 1px dashed rgba(15, 23, 42, 0.14);
+  border-radius: 18px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Les onglets de la page S'engager : même dessin, un volet sous eux. */
+.engager-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.engager-panel {
+  animation: engager-fade 0.2s ease;
+}
+
+@keyframes engager-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.partner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.partner-image img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+/* Les étiquettes domaine/niveau sous une carte. */
+.publication-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.mini-tag.ghost {
+  background: #f1f5f9;
+  color: #46566d;
+}
+
+/* ------------------------------------------------------------------
+ * Le bouton « Retour au catalogue », au-dessus de la couverture.
+ * ------------------------------------------------------------------ */
+.back-to-catalog {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------
+ * Les signataires, un par ligne : 1, 2, 3…
+ * ------------------------------------------------------------------ */
+.publication-author-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #101827;
+  font-weight: 600;
+}
+
+.publication-author-list li + li {
+  margin-top: 0.15rem;
+}
+
+/* ------------------------------------------------------------------
+ * Le lecteur de document, ouvert dans la page.
+ * ------------------------------------------------------------------ */
+.reader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(9, 17, 33, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.reader-window {
+  display: flex;
+  flex-direction: column;
+  width: min(1080px, 100%);
+  height: min(90vh, 900px);
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(2, 8, 23, 0.45);
+}
+
+.reader-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f6f8fc;
+}
+
+.reader-title {
+  font-weight: 700;
+  color: #101827;
+}
+
+.reader-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.reader-download {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.82rem;
+}
+
+.reader-close {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: #e6ecf7;
+  color: #101827;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reader-close:hover {
+  background: #d6e0f2;
+}
+
+.reader-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: #eef1f6;
+}
+
+.reader-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.reader-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.reader-video,
+.reader-audio {
+  width: 100%;
+  max-height: 100%;
+}
+
+.reader-audio {
+  width: min(560px, 90%);
+}
+
+/* ------------------------------------------------------------------
+ * Les avis : deux boutons, puis la liste ou le formulaire.
+ * ------------------------------------------------------------------ */
+.reviews-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1.1rem;
+}
+
+.review-mine {
+  border-radius: 999px;
+  padding: 0.12rem 0.6rem;
+  background: #e7f5ec;
+  color: #067647;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.review-delete {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #b42318;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------------
+ * Le titre d'une fiche : plus sobre que le titre d'une page de rubrique.
+ * ------------------------------------------------------------------ */
+.publication-detail .detail-copy h1 {
+  font-size: clamp(1.5rem, 2vw, 2.05rem);
+  line-height: 1.25;
+}
+
+@media (max-width: 980px) {
+  .catalog-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-grid {
+    grid-template-columns: 1fr;
+  }
+}
