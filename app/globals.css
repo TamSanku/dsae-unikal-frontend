@@ -2165,3 +2165,192 @@ main {
     height: 420px;
   }
 }
+
+
+/* Page d’accueil : panneaux pleine largeur, empilés et centrés. */
+.home-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 76vh;
+  min-height: 76svh;
+  padding-block: clamp(4.5rem, 9vh, 7.5rem);
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.home-panel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(1200px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.home-panel-hero {
+  min-height: calc(100vh - 78px);
+  min-height: calc(100svh - 78px);
+  border-top: 0;
+  background: linear-gradient(145deg, #f4f7ff 0%, #edf2ff 58%, #f8fafc 100%);
+}
+
+.home-panel-intro,
+.home-panel-publications {
+  background: #fff;
+}
+
+.home-panel-university,
+.home-panel-news {
+  background: #f3f6fb;
+}
+
+.home-panel-team {
+  background: #fff;
+}
+
+.home-panel-research {
+  background: linear-gradient(145deg, #edf3ff, #f8faff);
+}
+
+.home-panel .section-heading,
+.home-panel .section-heading > div {
+  width: 100%;
+  text-align: center;
+}
+
+.home-panel .section-heading {
+  margin-bottom: clamp(1.8rem, 4vw, 3rem);
+}
+
+.home-panel .section-heading.split-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.home-panel .section-heading h3 {
+  max-width: 1000px;
+  margin-inline: auto;
+  font-size: clamp(1.8rem, 3.8vw, 3rem);
+  line-height: 1.12;
+}
+
+.home-panel-copy {
+  width: min(100%, 880px);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.home-panel-copy p {
+  margin: 0 auto;
+  color: #42526d;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.8;
+}
+
+.home-panel-copy .pill-list {
+  justify-content: center;
+  margin-top: 1.8rem;
+}
+
+.home-panel-copy .btn {
+  margin-inline: auto;
+}
+
+.home-hero-copy {
+  width: min(100%, 1000px);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.home-hero-copy .eyebrow {
+  margin-inline: auto;
+}
+
+.home-hero-copy h1,
+.home-hero-copy h2,
+.home-hero-copy p {
+  margin-inline: auto;
+}
+
+.home-hero-copy p {
+  max-width: 760px;
+}
+
+.home-hero-copy .hero-actions {
+  justify-content: center;
+}
+
+.home-hero-copy .hero-stats {
+  width: min(100%, 620px);
+  max-width: 620px;
+  margin-inline: auto;
+}
+
+.home-panel .card-grid {
+  width: 100%;
+}
+
+.home-panel .profile-body,
+.home-panel .research-card,
+.home-panel .publication-card-body,
+.home-panel .news-body {
+  text-align: center;
+}
+
+.home-panel .publication-card-body {
+  align-items: center;
+}
+
+.home-panel .meta-row {
+  justify-content: center;
+}
+
+.home-panel .date-label,
+.home-panel .publication-date {
+  text-align: center;
+}
+
+.home-panel-cta .cta-content {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.home-panel-cta .cta-content > div {
+  max-width: 900px;
+}
+
+.home-panel-cta .eyebrow {
+  margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  .home-panel {
+    min-height: 76vh;
+    min-height: 76svh;
+    padding-block: 4.5rem;
+  }
+
+  .home-panel-hero {
+    min-height: calc(100vh - 78px);
+    min-height: calc(100svh - 78px);
+  }
+
+  .home-panel .section-heading h3 {
+    font-size: clamp(1.65rem, 7vw, 2.2rem);
+  }
+
+  .home-panel-copy p {
+    font-size: 1rem;
+  }
+
+  .home-panel-cta .cta-content {
+    align-items: center;
+  }
+}
