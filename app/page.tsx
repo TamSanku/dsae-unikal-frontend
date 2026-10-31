@@ -38,7 +38,7 @@ export default async function HomePage() {
             </div>
             <div className="hero-stats">
               <div>
-                <strong>{String(research.length).padStart(2, '0')}</strong>
+                <strong>{research.length}</strong>
                 <span>axes de recherche</span>
               </div>
               <div>

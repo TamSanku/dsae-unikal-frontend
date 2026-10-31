@@ -933,7 +933,20 @@ main {
   }
 
   .hero-stats {
-    grid-template-columns: 1fr;
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(6px, 2vw, 12px);
+  }
+
+  .hero-stats > div {
+    min-width: 0;
+    padding: 0.75rem 0.35rem;
+  }
+
+  .hero-stats span {
+    display: block;
+    font-size: clamp(0.62rem, 2.5vw, 0.76rem);
+    line-height: 1.25;
   }
 
   .field-grid {
