@@ -1,249 +1,256 @@
-export const demoMode = true;
+import Link from 'next/link';
+import Image from 'next/image';
+import { getTeamMembers, getPublications, getResearchAreas, getNewsItems } from '@/lib/backend';
 
-export type TeamMember = {
-  id: string;
-  name: string;
-  role: string;
-  department: string;
-  specialty: string;
-  bio: string;
-  category: 'Doyen' | 'Vice-doyen' | 'Personnel académique' | 'Personnel scientifique' | 'Enseignant' | 'Chercheur';
-  image: string;
-  publications: string[];
-};
+export default async function HomePage() {
+  const [team, publications, research, news] = await Promise.all([
+    getTeamMembers(),
+    getPublications(),
+    getResearchAreas(),
+    getNewsItems(),
+  ]);
 
-export type ResearchArea = {
-  slug: string;
-  title: string;
-  category: string;
-  summary: string;
-  description: string;
-  goals: string[];
-  projects: string[];
-  publications: string[];
-};
+  const featuredTeam = team.slice(0, 3);
+  const recentPublications = publications.slice(0, 3);
 
-export type Publication = {
-  id: string;
-  title: string;
-  authors: string;
-  year: number;
-  category: string;
-  discipline: string;
-  department: string;
-  summary: string;
-  keywords: string[];
-  references: string;
-  pdfUrl: string;
-};
+  return (
+    <>
+      <section className="hero-shell">
+        <div className="container hero-grid">
+          <div className="hero-copy">
+            <span className="eyebrow">Faculté scientifique</span>
+            <h1>Université de Kalemie (UNIKAL)</h1>
+            <h2>Portail scientifique de la faculté</h2>
+            <p>
+              Un espace académique dédié à la recherche, à la production scientifique, à la formation
+              et à la diffusion des connaissances au service du développement intellectuel et
+              sociétal.
+            </p>
+            <div className="hero-actions">
+              <Link href="/a-propos" className="btn btn-primary">
+                Découvrir la faculté
+              </Link>
+              <Link href="/publications" className="btn btn-secondary">
+                Explorer les publications
+              </Link>
+            </div>
+            <div className="hero-stats">
+              <div>
+                <strong>06</strong>
+                <span>axes de recherche</span>
+              </div>
+              <div>
+                <strong>120+</strong>
+                <span>publications</span>
+              </div>
+              <div>
+                <strong>40+</strong>
+                <span>chercheurs</span>
+              </div>
+            </div>
+          </div>
 
-export type NewsItem = {
-  slug: string;
-  title: string;
-  category: string;
-  date: string;
-  excerpt: string;
-  content: string;
-  image: string;
-};
+          <div className="hero-visual">
+            <div className="hero-card card-glow">
+              <Image
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80"
+                alt="Campus universitaire"
+                width={960}
+                height={1200}
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-export const teamMembers: TeamMember[] = [
-  {
-    id: 'doyen',
-    name: 'Prof. Jean-Michel Kasongo',
-    role: 'Doyen de la faculté',
-    department: 'Faculté de Sciences',
-    specialty: 'Sciences de l’environnement',
-    category: 'Doyen',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
-    publications: ['Étude sur la gestion durable des ressources naturelles', 'Impact climatique et systèmes agroforestiers'],
-    bio: 'Le Prof. Jean-Michel Kasongo dirige la faculté avec une vision de recherche appliquée, de qualité académique et d’innovation au service du développement scientifique local.',
-  },
-  {
-    id: 'vice-doyen-recherche',
-    name: 'Dr. Marie Luvumbu',
-    role: 'Vice-doyenne chargée de la recherche',
-    department: 'Département de Biochimie',
-    specialty: 'Biotechnologie appliquée',
-    category: 'Vice-doyen',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
-    publications: ['Intégration de la biotechnologie dans l’agriculture durable', 'Analyse de la valorisation des cultures locales'],
-    bio: 'Le Dr Marie Luvumbu accompagne les initiatives de recherche et de transfert de technologie dans le domaine de la biotechnologie et de l’innovation agricole.',
-  },
-  {
-    id: 'responsable-scientifique',
-    name: 'Dr. Samuel Bakala',
-    role: 'Responsable scientifique',
-    department: 'Unité de recherche en sciences exactes',
-    specialty: 'Mathématiques appliquées',
-    category: 'Personnel scientifique',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
-    publications: ['Modélisation des systèmes complexes', 'Optimisation de la gestion des ressources'],
-    bio: 'Le Dr Samuel Bakala pilote des travaux de modélisation et de simulation pour mieux comprendre les dynamiques de systèmes complexes et les enjeux de gestion locale.',
-  },
-  {
-    id: 'enseignant-1',
-    name: 'Dr. Grace Mumbanza',
-    role: 'Enseignante-chercheuse',
-    department: 'Département de Physique',
-    specialty: 'Énergie et matériaux',
-    category: 'Enseignant',
-    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80',
-    publications: ['Évaluation des matériaux locaux pour l’énergie durable', 'Études de performance des capteurs environnementaux'],
-    bio: 'La Dr Grace Mumbanza contribue au développement des enseignements scientifiques dans le domaine de l’énergie durable et des technologies de matériaux.',
-  },
-  {
-    id: 'chercheur-1',
-    name: 'Dr. Paul Mulongo',
-    role: 'Chercheur principal',
-    department: 'Laboratoire de recherche en santé publique',
-    specialty: 'Santé et environnement',
-    category: 'Chercheur',
-    image: 'https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=800&q=80',
-    publications: ['Épidémiologie environnementale', 'Impacts du développement urbain sur la santé'],
-    bio: 'Le Dr Paul Mulongo travaille sur les liens entre environnement, santé humaine et développement durable, avec une attention particulière aux populations vulnérables.',
-  },
-  {
-    id: 'enseignant-2',
-    name: 'Prof. Aline Ndaya',
-    role: 'Professeure titulaire',
-    department: 'Département de Chimie',
-    specialty: 'Chimie organique et environnement',
-    category: 'Personnel académique',
-    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80',
-    publications: ['Synthèse de molécules bioactives', 'Valorisation des matières premières locales'],
-    bio: 'La Prof. Aline Ndaya favorise des recherches orientées vers la chimie appliquée, la valorisation des ressources locales et la protection environnementale.',
-  },
-];
+      <section className="section">
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">Présentation</span>
+            <h3>Une faculté engagée dans l’excellence scientifique</h3>
+          </div>
 
-export const researchAreas: ResearchArea[] = [
-  {
-    slug: 'agriculture-durable',
-    title: 'Agriculture durable et sécurité alimentaire',
-    category: 'Agriculture',
-    summary: 'Analyse des systèmes agricoles, amélioration des rendements et gestion des ressources.',
-    description:
-      'Ce domaine vise à renforcer la résilience des systèmes agricoles face au changement climatique, en combinant recherche fondamentale, innovation technologique et transfert de connaissances.',
-    goals: ['Améliorer la productivité agricole', 'Développer des systèmes de culture résilients', 'Renforcer la sécurité alimentaire'],
-    projects: ['Programme de semences locales améliorées', 'Étude sur la gestion durable des sols', 'Cartographie des zones à risque agricole'],
-    publications: ['Contrôle nutritionnel des sols en milieu tropical', 'Résilience des cultures locales face au climat'],
-  },
-  {
-    slug: 'energie-environnement',
-    title: 'Énergie, environnement et développement durable',
-    category: 'Énergie',
-    summary: 'Études des solutions énergétiques durables et de leur adaptation aux contextes locaux.',
-    description:
-      'Ce programme s’intéresse à la production d’énergie renouvelable, à la protection de l’environnement et à la réduction des impacts socio-économiques liés à l’utilisation des ressources naturelles.',
-    goals: ['Développer des solutions énergétiques durables', 'Évaluer les impacts environnementaux', 'Promouvoir l’innovation locale'],
-    projects: ['Étude des ressources solaires et hydrauliques', 'Énergies renouvelables et qualité de vie', 'Modèles de gestion d’énergie dans les communautés'],
-    publications: ['Performance des systèmes solaires en zone urbaine', 'Gestion durable des ressources énergétiques'],
-  },
-  {
-    slug: 'sante-publique',
-    title: 'Santé publique et environnement',
-    category: 'Santé',
-    summary: 'Analyse des liens entre environnement, santé humaine et développement communautaire.',
-    description:
-      'Ce domaine explore les déterminants environnementaux de la santé et met en relation recherche scientifique, surveillance épidémiologique et intervention de santé publique.',
-    goals: ['Mieux comprendre les risques sanitaires', 'Développer des approches préventives', 'Renforcer la qualité des interventions'],
-    projects: ['Étude de la pollution de l’eau et de la santé', 'Cartographie des risques environnementaux urbains', 'Suivi de la santé maternelle et infantile'],
-    publications: ['Santé publique et qualité de l’eau', 'Facteurs environnementaux et mortalité évitable'],
-  },
-  {
-    slug: 'sciences-mathematiques',
-    title: 'Sciences exactes et modélisation',
-    category: 'Sciences exactes',
-    summary: 'Modélisation des systèmes complexes et applications scientifiques aux défis locaux.',
-    description:
-      'Les sciences exactes jouent un rôle central dans la compréhension des systèmes complexes et dans le développement de méthodes de modélisation appliquées.',
-    goals: ['Optimiser les méthodes de calcul scientifique', 'Développer des outils de modélisation', 'Renforcer la recherche interdisciplinarité'],
-    projects: ['Modélisation des dynamiques spatiales', 'Analyse statistique sur les systèmes écologiques', 'Mécanismes de prévision des phénomènes complexes'],
-    publications: ['Analyse numérique des modèles environnementaux', 'Modélisation d’écosystèmes fragiles'],
-  },
-];
+          <div className="feature-split">
+            <div className="feature-copy">
+              <p>
+                La faculté scientifique de l’Université de Kalemie (UNIKAL) constitue un espace de
+                formation, de production et de diffusion des savoirs. Notre mission consiste à
+                promouvoir des enseignements de qualité, à soutenir la recherche et à accompagner les
+                étudiants, enseignants et chercheurs dans la transformation des connaissances en
+                solutions concrètes pour la société.
+              </p>
+              <div className="pill-list">
+                <span>Mission</span>
+                <span>Vision</span>
+                <span>Innovation</span>
+                <span>Développement</span>
+              </div>
+              <Link href="/a-propos" className="btn btn-primary mt-2">
+                En savoir plus
+              </Link>
+            </div>
+            <div className="feature-image">
+              <Image
+                src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1000&q=80"
+                alt="Laboratoire scientifique"
+                width={900}
+                height={700}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-export const publications: Publication[] = [
-  {
-    id: 'art-01',
-    title: 'Gestion durable des ressources naturelles et résilience des communautés rurales',
-    authors: 'J. Kasongo, M. Luvumbu, P. Mulongo',
-    year: 2024,
-    category: 'Articles scientifiques',
-    discipline: 'Sciences environnementales',
-    department: 'Faculté de Sciences',
-    summary: 'Cette étude examine les pratiques de gestion durable des ressources naturelles et leur capacité à renforcer la résilience des systèmes agricoles et pastoraux.',
-    keywords: ['ressources naturelles', 'résilience', 'développement durable'],
-    references: 'Kasongo, J., Luvumbu, M., Mulongo, P. (2024). Gestion durable des ressources naturelles et résilience des communautés rurales. Revue des Sciences de l’Environnement, 12(2), 55-74.',
-    pdfUrl: '#',
-  },
-  {
-    id: 'memoire-01',
-    title: 'Impact des technologies agricoles sur la productivité dans la province de Tanganyika',
-    authors: 'D. Kalonji',
-    year: 2023,
-    category: 'Mémoires',
-    discipline: 'Agronomie',
-    department: 'Département d’Agronomie',
-    summary: 'Mémoire portant sur la diffusion des technologies agricoles et leur contribution à la productivité des exploitations familiales.',
-    keywords: ['agriculture', 'productivité', 'technologie'],
-    references: 'Kalonji, D. (2023). Impact des technologies agricoles sur la productivité dans la province de Tanganyika. Mémoire de fin d’études, Université de Kalemie.',
-    pdfUrl: '#',
-  },
-  {
-    id: 'these-01',
-    title: 'Énergie renouvelable et développement local : dispositifs et modèles d’intégration',
-    authors: 'A. Ndaya',
-    year: 2022,
-    category: 'Thèses',
-    discipline: 'Chimie environnementale',
-    department: 'Département de Chimie',
-    summary: 'Thèse de doctorat consacrée aux opportunités d’intégration des énergies renouvelables dans le développement local et la réduction des émissions.',
-    keywords: ['énergie renouvelable', 'développement local', 'écologie'],
-    references: 'Ndaya, A. (2022). Énergie renouvelable et développement local : dispositifs et modèles d’intégration. Thèse de doctorat, Université de Kalemie.',
-    pdfUrl: '#',
-  },
-  {
-    id: 'rapport-01',
-    title: 'Étude sur la qualité de l’eau potable dans les zones urbaines de Kalemie',
-    authors: 'P. Mulongo, G. Mumbanza',
-    year: 2024,
-    category: 'Rapports de recherche',
-    discipline: 'Santé publique',
-    department: 'Laboratoire de santé publique',
-    summary: 'Rapport de recherche sur la qualité de l’eau, les risques sanitaires et les dispositifs de protection communautaire.',
-    keywords: ['eau', 'santé publique', 'qualité'],
-    references: 'Mulongo, P., Mumbanza, G. (2024). Étude sur la qualité de l’eau potable dans les zones urbaines de Kalemie. Rapport de recherche, Université de Kalemie.',
-    pdfUrl: '#',
-  },
-];
+      <section className="section alt-section">
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">UNIKAL</span>
+            <h3>Une université au service du savoir et du développement</h3>
+          </div>
 
-export const newsItems: NewsItem[] = [
-  {
-    slug: 'seminaire-sciences-environnement',
-    title: 'Séminaire sur les sciences de l’environnement et l’adaptation climatique',
-    category: 'Séminaire',
-    date: '15 novembre 2025',
-    excerpt: 'Rencontre scientifique autour des enjeux climatiques et de l’adaptation des systèmes territoriaux.',
-    content: 'Ce séminaire a réuni chercheurs, étudiants et acteurs territoriaux pour réfléchir aux mécanismes d’adaptation climatique et d’usage durable des ressources naturelles. Des communications scientifiques ont porté sur les nouveaux modèles d’adaptation locale, la gestion des sols et les systèmes alimentaires résilients.',
-    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    slug: 'conference-recherche-medicale',
-    title: 'Conférence internationale sur la recherche médicale et environnementale',
-    category: 'Conférence',
-    date: '28 octobre 2025',
-    excerpt: 'Une plateforme d’échange entre scientifiques, praticiens et décideurs sur les questions de santé publique.',
-    content: 'La conférence a permis d’analyser les récents résultats de recherche en santé environnementale, les meilleures pratiques de prévention et les méthodes de surveillance des risques sanitaires dans les contextes urbains et ruraux.',
-    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
-  },
-  {
-    slug: 'appel-a-contribution-recherche',
-    title: 'Appel à contributions pour la prochaine édition scientifique',
-    category: 'Appel à contributions',
-    date: '02 décembre 2025',
-    excerpt: 'Les chercheurs et enseignants sont invités à soumettre leurs travaux autour des thématiques universitaires.',
-    content: 'L’université lance un appel à contributions pour son prochain colloque scientifique, avec des thématiques centrées sur l’innovation, la recherche appliquée, les sciences de l’environnement et la transformation sociale par la connaissance.',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80',
-  },
-];
+          <div className="feature-split reverse">
+            <div className="feature-image">
+              <Image
+                src="https://images.unsplash.com/photo-1562771382-4d47f2ef6de6?auto=format&fit=crop&w=1000&q=80"
+                alt="Université de Kalemie"
+                width={900}
+                height={700}
+              />
+            </div>
+            <div className="feature-copy">
+              <p>
+                L’Université de Kalemie (UNIKAL) s’inscrit dans une dynamique de structuration des
+                savoirs, de transformation des formations et d’appui à la recherche. Son organisation
+                vise à rapprocher disciplines, unités de recherche et acteurs académiques pour une
+                meilleure contribution au développement local et national.
+              </p>
+              <Link href="/universite" className="btn btn-primary mt-2">
+                Découvrir l’université
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="section-heading split-head">
+            <div>
+              <span className="eyebrow">Équipe</span>
+              <h3>Direction et acteurs académiques</h3>
+            </div>
+            <Link href="/equipe" className="text-link">
+              Voir toute l’équipe →
+            </Link>
+          </div>
+
+          <div className="card-grid three-grid">
+            {featuredTeam.map((member) => (
+              <Link key={member.id} href={`/equipe/${member.id}`} className="profile-card">
+                <div className="profile-image-wrap">
+                  <Image src={member.image} alt={member.name} width={600} height={700} />
+                </div>
+                <div className="profile-body">
+                  <span className="mini-tag">{member.category}</span>
+                  <h4>{member.name}</h4>
+                  <p className="role">{member.role}</p>
+                  <p>{member.department}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt-section">
+        <div className="container">
+          <div className="section-heading split-head">
+            <div>
+              <span className="eyebrow">Recherche</span>
+              <h3>Axes scientifiques et projets</h3>
+            </div>
+            <Link href="/recherche" className="text-link">
+              Explorer la recherche →
+            </Link>
+          </div>
+
+          <div className="card-grid four-grid">
+            {research.slice(0, 4).map((area) => (
+              <Link key={area.slug} href={`/recherche/${area.slug}`} className="research-card">
+                <span className="mini-tag">{area.category}</span>
+                <h4>{area.title}</h4>
+                <p>{area.summary}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="section-heading split-head">
+            <div>
+              <span className="eyebrow">Publications</span>
+              <h3>Productions scientifiques récentes</h3>
+            </div>
+            <Link href="/publications" className="text-link">
+              Voir toutes les publications →
+            </Link>
+          </div>
+
+          <div className="card-grid three-grid">
+            {recentPublications.map((publication) => (
+              <Link key={publication.id} href={`/publications/${publication.id}`} className="publication-card">
+                <span className="mini-tag">{publication.category}</span>
+                <h4>{publication.title}</h4>
+                <p>{publication.authors}</p>
+                <div className="meta-row">
+                  <span>{publication.year}</span>
+                  <span>{publication.discipline}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt-section">
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">Actualités</span>
+            <h3>Conférences, séminaires et événements scientifiques</h3>
+          </div>
+
+          <div className="card-grid three-grid">
+            {news.slice(0, 3).map((item) => (
+              <Link key={item.slug} href={`/actualites/${item.slug}`} className="news-card">
+                <div className="news-image">
+                  <Image src={item.image} alt={item.title} width={800} height={520} />
+                </div>
+                <div className="news-body">
+                  <span className="mini-tag">{item.category}</span>
+                  <h4>{item.title}</h4>
+                  <p>{item.excerpt}</p>
+                  <span className="date-label">{item.date}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section cta-band">
+        <div className="container cta-content">
+          <div>
+            <span className="eyebrow">Appel à la communauté scientifique</span>
+            <h3>Découvrez les travaux, partagez les savoirs et contribuez à l’avancée scientifique.</h3>
+          </div>
+          <Link href="/publications" className="btn btn-primary">
+            Découvrir les publications
+          </Link>
+        </div>
+      </section>
+    </>
+  );
+}

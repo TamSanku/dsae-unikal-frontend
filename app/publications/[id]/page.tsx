@@ -1,60 +1,68 @@
 import Link from 'next/link';
-import { getPublications } from '@/lib/backend';
+import { notFound } from 'next/navigation';
+import { getPublicationById } from '@/lib/backend';
 
-export default async function PublicationsPage() {
-  const publications = await getPublications();
+export default async function PublicationDetailPage({ params }: { params: { id: string } }) {
+  const publication = await getPublicationById(params.id);
+
+  if (!publication) {
+    notFound();
+  }
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Publications</span>
-          <h1>Catalogue scientifique</h1>
+      <section className="section">
+        <div className="container publication-detail">
+          <div className="detail-copy">
+            <span className="mini-tag">{publication.category}</span>
+            <h1>{publication.title}</h1>
+            <p className="authors-line">{publication.authors}</p>
+            <div className="meta-row wide-row">
+              <span>{publication.year}</span>
+              <span>{publication.discipline}</span>
+              <span>{publication.department}</span>
+            </div>
+
+            <div className="publication-actions">
+              <a href={publication.pdfUrl} className="btn btn-primary" target="_blank" rel="noreferrer">
+                Consulter
+              </a>
+              <a href={publication.pdfUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
+                Télécharger
+              </a>
+            </div>
+
+            <div className="info-list-block">
+              <h3>Résumé</h3>
+              <p>{publication.summary}</p>
+            </div>
+
+            <div className="info-list-block">
+              <h3>Mots-clés</h3>
+              <div className="pill-list">
+                {publication.keywords.map((keyword) => (
+                  <span key={keyword}>{keyword}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="info-list-block">
+              <h3>Références bibliographiques</h3>
+              <p>{publication.references}</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <div className="filters-box">
-            <div className="filter-item">
-              <label htmlFor="search">Recherche</label>
-              <input id="search" type="text" placeholder="Titre, auteur, mot-clé" />
-            </div>
-            <div className="filter-item">
-              <label htmlFor="category">Catégorie</label>
-              <select id="category">
-                <option value="">Toutes</option>
-                <option>Articles scientifiques</option>
-                <option>Mémoires</option>
-                <option>Thèses</option>
-                <option>Rapports de recherche</option>
-              </select>
-            </div>
-            <div className="filter-item">
-              <label htmlFor="year">Année</label>
-              <select id="year">
-                <option value="">Toutes</option>
-                <option>2024</option>
-                <option>2023</option>
-                <option>2022</option>
-              </select>
-            </div>
+      <section className="section cta-band small">
+        <div className="container cta-content">
+          <div>
+            <span className="eyebrow">Retour</span>
+            <h3>Consultez d’autres productions scientifiques.</h3>
           </div>
-
-          <div className="card-grid two-grid">
-            {publications.map((publication) => (
-              <Link key={publication.id} href={`/publications/${publication.id}`} className="publication-card large">
-                <span className="mini-tag">{publication.category}</span>
-                <h3>{publication.title}</h3>
-                <p>{publication.authors}</p>
-                <div className="meta-row">
-                  <span>{publication.year}</span>
-                  <span>{publication.discipline}</span>
-                </div>
-                <p className="publication-summary">{publication.summary}</p>
-              </Link>
-            ))}
-          </div>
+          <Link href="/publications" className="btn btn-primary">
+            Retour au catalogue
+          </Link>
         </div>
       </section>
     </div>

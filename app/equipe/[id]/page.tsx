@@ -1,35 +1,42 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { getTeamMembers } from '@/lib/backend';
+import { notFound } from 'next/navigation';
+import { getMemberById } from '@/lib/backend';
 
-export default async function TeamPage() {
-  const team = await getTeamMembers();
+export default async function TeamDetailPage({ params }: { params: { id: string } }) {
+  const member = await getMemberById(params.id);
+
+  if (!member) {
+    notFound();
+  }
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Équipe</span>
-          <h1>Responsables et acteurs scientifiques</h1>
-        </div>
-      </section>
-
       <section className="section">
-        <div className="container">
-          <div className="card-grid three-grid">
-            {team.map((member) => (
-              <Link key={member.id} href={`/equipe/${member.id}`} className="profile-card large-card">
-                <div className="profile-image-wrap">
-                  <Image src={member.image} alt={member.name} width={600} height={700} />
-                </div>
-                <div className="profile-body">
-                  <span className="mini-tag">{member.category}</span>
-                  <h4>{member.name}</h4>
-                  <p className="role">{member.role}</p>
-                  <p>{member.department}</p>
-                </div>
-              </Link>
-            ))}
+        <div className="container detail-profile">
+          <div className="detail-image profile-detail-image">
+            <Image src={member.image} alt={member.name} width={900} height={1000} />
+          </div>
+          <div className="detail-copy">
+            <span className="mini-tag">{member.category}</span>
+            <h1>{member.name}</h1>
+            <p className="role-page">{member.role}</p>
+            <ul className="profile-meta">
+              <li><strong>Département :</strong> {member.department}</li>
+              <li><strong>Spécialité :</strong> {member.specialty}</li>
+            </ul>
+            <p>{member.bio}</p>
+            <div className="profile-publications">
+              <h3>Publications associées</h3>
+              <ul>
+                {member.publications.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <Link href="/equipe" className="btn btn-secondary mt-2">
+              Retour à l’équipe
+            </Link>
           </div>
         </div>
       </section>

@@ -16,27 +16,36 @@ Frontend institutionnel de la faculté scientifique de l’Université de Kalemi
 4. Ouvrir le navigateur
    http://localhost:3000
 
-## Préparation de l’intégration backend
+## Backend partagé
 
-Le frontend est prêt à communiquer avec le backend `dsae-backend` via la variable :
+Ce frontend consomme le backend NestJS partagé `dsae-backend`, déployé sur Render :
+`https://dsae-backend.onrender.com/api`
 
-- NEXT_PUBLIC_API_URL
+L’URL est configurable via la variable `NEXT_PUBLIC_API_URL`. En production, elle
+doit pointer vers le service Render ; en développement, elle peut pointer vers
+`http://localhost:3001/api`.
 
-Exemple :
-- http://localhost:8000/api
+Les services backend sont centralisés dans `lib/backend.ts` (avec normalisation
+des champs renvoyés par l’API). Une route de diagnostic est disponible : `/api/health`.
 
-Les services backend sont centralisés dans :
-- lib/backend.ts
+## Déploiement sur Vercel
 
-Une route de diagnostic est aussi disponible :
-- /api/health
+1. Importer le dépôt `dsae-unikal-frontend` dans Vercel (framework détecté : Next.js).
+2. Dans **Settings → Environment Variables**, ajouter :
+
+   | Nom | Valeur |
+   | --- | --- |
+   | `NEXT_PUBLIC_API_URL` | `https://dsae-backend.onrender.com/api` |
+   | `NEXT_PUBLIC_APP_ENV` | `production` |
+   | `NEXT_PUBLIC_USE_DEMO_DATA` | `false` |
+
+3. Lancer le déploiement (build : `next build`, aucune configuration supplémentaire requise).
+
+> Les variables `NEXT_PUBLIC_*` sont lues à la compilation : après les avoir
+> modifiées, relancez un déploiement pour qu’elles soient prises en compte.
 
 ## Structure principale
 
 - app/ : pages et routes Next.js
 - components/ : composants réutilisables
-- lib/ : données, mocks et intégration API
-
-## Remarque
-
-Les données de démonstration sont séparées des composants pour préparer la future connexion au backend sans réécrire l’architecture du site.
+- lib/ : données de démonstration et intégration API

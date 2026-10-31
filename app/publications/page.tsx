@@ -1,70 +1,60 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { getResearchAreaBySlug } from '@/lib/backend';
+import { getPublications } from '@/lib/backend';
 
-export default async function ResearchDetailPage({ params }: { params: { slug: string } }) {
-  const area = await getResearchAreaBySlug(params.slug);
-
-  if (!area) {
-    notFound();
-  }
+export default async function PublicationsPage() {
+  const publications = await getPublications();
 
   return (
     <div className="page-shell">
       <section className="page-hero small-hero">
         <div className="container page-hero-inner">
-          <span className="eyebrow">Axe de recherche</span>
-          <h1>{area.title}</h1>
+          <span className="eyebrow">Publications</span>
+          <h1>Catalogue scientifique</h1>
         </div>
       </section>
 
       <section className="section">
-        <div className="container detail-layout small-gap">
-          <div>
-            <p>{area.description}</p>
-            <div className="info-list-block">
-              <h3>Objectifs</h3>
-              <ul>
-                {area.goals.map((goal) => (
-                  <li key={goal}>{goal}</li>
-                ))}
-              </ul>
+        <div className="container">
+          <div className="filters-box">
+            <div className="filter-item">
+              <label htmlFor="search">Recherche</label>
+              <input id="search" type="text" placeholder="Titre, auteur, mot-clé" />
+            </div>
+            <div className="filter-item">
+              <label htmlFor="category">Catégorie</label>
+              <select id="category">
+                <option value="">Toutes</option>
+                <option>Articles scientifiques</option>
+                <option>Mémoires</option>
+                <option>Thèses</option>
+                <option>Rapports de recherche</option>
+              </select>
+            </div>
+            <div className="filter-item">
+              <label htmlFor="year">Année</label>
+              <select id="year">
+                <option value="">Toutes</option>
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+              </select>
             </div>
           </div>
-          <div className="info-card">
-            <h3>Projets</h3>
-            <ul>
-              {area.projects.map((project) => (
-                <li key={project}>{project}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
 
-      <section className="section alt-section">
-        <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Publications associées</span>
-            <h3>Productions scientifiques</h3>
-          </div>
-          <ul className="publication-list">
-            {area.publications.map((publication) => (
-              <li key={publication}>{publication}</li>
+          <div className="card-grid two-grid">
+            {publications.map((publication) => (
+              <Link key={publication.id} href={`/publications/${publication.id}`} className="publication-card large">
+                <span className="mini-tag">{publication.category}</span>
+                <h3>{publication.title}</h3>
+                <p>{publication.authors}</p>
+                <div className="meta-row">
+                  <span>{publication.year}</span>
+                  <span>{publication.discipline}</span>
+                </div>
+                <p className="publication-summary">{publication.summary}</p>
+              </Link>
             ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="section cta-band small">
-        <div className="container cta-content">
-          <div>
-            <span className="eyebrow">Retour</span>
-            <h3>Retrouvez tous les axes de recherche.</h3>
           </div>
-          <Link href="/recherche" className="btn btn-primary">
-            Voir la recherche
-          </Link>
         </div>
       </section>
     </div>
