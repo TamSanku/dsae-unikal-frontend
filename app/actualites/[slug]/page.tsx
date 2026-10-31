@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getNewsBySlug } from '@/lib/backend';
 import { withFallback } from '@/lib/fallback';
+import ContentBlocks from '@/components/ContentBlocks';
 
 export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
   const item = await getNewsBySlug(params.slug);
@@ -22,7 +23,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
             {item.category && <span className="mini-tag">{item.category}</span>}
             <h1>{item.title}</h1>
             {item.date && <p className="date-label">{item.date}</p>}
-            {item.content && <p>{item.content}</p>}
+            {item.blocks.length > 0 ? <ContentBlocks blocks={item.blocks} /> : item.content && <p>{item.content}</p>}
             <Link href="/actualites" className="btn btn-secondary mt-2">
               Retour aux actualités
             </Link>

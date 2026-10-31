@@ -115,6 +115,8 @@ export type Publication = {
   /** L'image de couverture, montrée au format A4. */
   coverUrl: string;
   pdfUrl: string;
+  /** Le corps rédigé dans l'espace de gestion : ses blocs, dans l'ordre. */
+  blocks: ContentBlock[];
   /** La note des avis : c'est ce que la carte affiche sous forme d'étoiles. */
   reviewSummary: ReviewSummary;
 };
@@ -141,6 +143,8 @@ export type NewsItem = {
   excerpt: string;
   content: string;
   image: string;
+  /** Le corps rédigé, quand l'actualité vient de l'espace de gestion. */
+  blocks: ContentBlock[];
 };
 
 export async function fetchFromApi<T>(
@@ -205,7 +209,8 @@ function normalizeResearchArea(raw: any, index: number): ResearchArea {
 
 function normalizePublication(raw: any, index: number): Publication {
   const keywords = raw.keywords ?? raw.tags;
-  const authors = raw.authors ?? raw.author ?? '';
+  const authorList = Array.isArray(raw.authors) ? raw.authors.filter(Boolean) : [];
+  const authors = authorList.length ? authorList.join(', ') : raw.authors ?? raw.author ?? '';
   const publishedAt = raw.publishedAt ?? raw.published_at ?? raw.date ?? '';
   return {
     id: raw.id ?? `publication-${index}`,
@@ -213,7 +218,7 @@ function normalizePublication(raw: any, index: number): Publication {
     title: raw.title ?? '',
     subtitle: raw.subtitle ?? '',
     authors,
-    authorsList: splitAuthors(authors),
+    authorsList: authorList.length ? authorList : splitAuthors(authors),
     year: Number(raw.year) || 0,
     publishedAt,
     publishedLabel: formatDate(publishedAt),
@@ -227,6 +232,7 @@ function normalizePublication(raw: any, index: number): Publication {
     documentName: raw.documentName ?? '',
     coverUrl: mediaUrl(raw.coverUrl ?? ''),
     pdfUrl: mediaUrl(raw.pdfUrl ?? raw.url ?? ''),
+    blocks: Array.isArray(raw.blocks) ? raw.blocks : [],
     reviewSummary: raw.reviewSummary ?? { count: 0, average: 0 },
   };
 }
@@ -240,6 +246,7 @@ function normalizeNewsItem(raw: any, index: number): NewsItem {
     excerpt: raw.excerpt ?? raw.summary ?? '',
     content: raw.content ?? '',
     image: raw.image ?? raw.photo ?? '',
+    blocks: Array.isArray(raw.blocks) ? raw.blocks : [],
   };
 }
 
@@ -377,6 +384,7 @@ type ContentEntry = {
   blocks: ContentBlock[] | null;
   coverUrl: string | null;
   socialLinks: Record<string, string>;
+  authors?: string[];
   author: string;
   location: string;
   sortOrder: number;
@@ -446,6 +454,7 @@ function normalizePublishedNews(entry: ContentEntry): NewsItem {
     excerpt: entry.summary || entry.subtitle,
     content: contentParagraphs(entry).join('\n\n'),
     image: contentImage(entry),
+    blocks: entry.blocks ?? [],
   };
 }
 
@@ -479,13 +488,15 @@ function normalizePublishedResearch(entry: ContentEntry): ResearchArea {
 function normalizePublishedPublication(entry: ContentEntry): Publication {
   const year = entry.publishedAt ? new Date(entry.publishedAt).getFullYear() : 0;
   const document = contentDocument(entry);
+  const authorList = Array.isArray(entry.authors) ? entry.authors.filter(Boolean) : [];
+  const authors = authorList.length ? authorList.join(', ') : entry.author;
   return {
     id: entry.slug ?? entry.id,
     entryId: entry.id,
     title: entry.title,
     subtitle: entry.subtitle,
-    authors: entry.author,
-    authorsList: splitAuthors(entry.author),
+    authors,
+    authorsList: authorList.length ? authorList : splitAuthors(entry.author),
     year: Number.isFinite(year) ? year : 0,
     publishedAt: entry.publishedAt ?? '',
     publishedLabel: formatDate(entry.publishedAt),
@@ -499,6 +510,7 @@ function normalizePublishedPublication(entry: ContentEntry): Publication {
     documentName: document.name,
     coverUrl: contentImage(entry),
     pdfUrl: document.url,
+    blocks: entry.blocks ?? [],
     reviewSummary: entry.reviewSummary ?? { count: 0, average: 0 },
   };
 }

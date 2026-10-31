@@ -209,7 +209,6 @@ export default async function HomePage() {
                 <Link href={`/publications/${publication.id}`} className="publication-cover-link" aria-label={`Ouvrir « ${publication.title} »`}>
                   <PublicationCover
                     title={publication.title}
-                    authors={publication.authors}
                     image={publication.coverUrl}
                   />
                 </Link>

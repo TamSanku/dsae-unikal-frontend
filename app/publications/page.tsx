@@ -40,8 +40,7 @@ export default async function PublicationsPage() {
                   >
                     <PublicationCover
                       title={publication.title}
-                      authors={publication.authors}
-                      image={publication.coverUrl}
+                        image={publication.coverUrl}
                     />
                   </Link>
 

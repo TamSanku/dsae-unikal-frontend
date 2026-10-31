@@ -1281,50 +1281,22 @@ main {
   object-position: top center;
 }
 
-/* Sans image, la page porte le document lui-même : type, titre, signataires. */
-.publication-cover-sheet {
+/* Sans image, la page ne porte qu'un repère sobre — jamais le titre écrit
+ * par-dessus une image. Un document sans couverture reste donc honnête. */
+.publication-cover-blank {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  padding: clamp(1.2rem, 4%, 2rem);
+  color: #9db2d6;
   background:
-    linear-gradient(180deg, rgba(13, 76, 200, 0.06) 0%, rgba(13, 76, 200, 0) 40%),
-    #fff;
+    linear-gradient(180deg, rgba(13, 76, 200, 0.05) 0%, rgba(13, 76, 200, 0) 45%),
+    repeating-linear-gradient(180deg, #ffffff 0 42px, #f2f6fd 42px 43px);
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
 }
 
-.publication-cover-tag {
-  align-self: flex-start;
-  border-radius: 999px;
-  padding: 0.35rem 0.7rem;
-  background: #edf3ff;
-  color: #0d4cc8;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.publication-cover-title {
-  color: #101827;
-  font-weight: 800;
-  line-height: 1.25;
-  font-size: clamp(1.05rem, 2.4vw, 1.6rem);
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.publication-cover-author {
-  color: #46566d;
-  font-size: 0.82rem;
-  font-weight: 600;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.publication-cover-blank svg {
+  opacity: 0.75;
 }
 
 /* Dans la fiche, la page est plus grande et sa propre carte. */
@@ -1334,9 +1306,80 @@ main {
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 }
 
-.publication-cover-page .publication-cover-title {
-  font-size: clamp(1.3rem, 3vw, 2rem);
+/* ------------------------------------------------------------------
+ * Le corps d'un contenu publié, en blocs.
+ * ------------------------------------------------------------------ */
+.content-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 1.6rem;
+  color: #22303f;
+  line-height: 1.75;
+  font-size: 1.02rem;
 }
+
+.content-blocks h2,
+.content-blocks h3,
+.content-blocks h4 {
+  margin: 0.4rem 0 0;
+  color: #101827;
+  line-height: 1.25;
+}
+
+.content-blocks p {
+  margin: 0;
+}
+
+.content-blocks ul,
+.content-blocks ol {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.content-blocks blockquote {
+  margin: 0;
+  padding: 0.4rem 0 0.4rem 1.1rem;
+  border-left: 3px solid #0d4cc8;
+  color: #32415d;
+  font-style: italic;
+}
+
+.content-blocks hr {
+  border: none;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.content-blocks figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.content-blocks img,
+.content-blocks video {
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+.content-blocks figcaption {
+  color: #64748b;
+  font-size: 0.86rem;
+  font-style: italic;
+}
+
+.content-blocks a {
+  color: #0d4cc8;
+  font-weight: 600;
+  word-break: break-word;
+}
+
 
 /* La grille de cartes : couverture en haut, texte dessous. */
 .publication-card-cover {

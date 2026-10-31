@@ -24,3 +24,13 @@ export function DownloadIcon({ size = 16 }: { size?: number }) {
     </svg>
   );
 }
+
+/* Un livre ouvert : le repère sobre d'un document sans image de couverture. */
+export function BookIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z" />
+      <path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z" />
+    </svg>
+  );
+}

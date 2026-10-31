@@ -5,6 +5,7 @@ import { DownloadIcon, ReadIcon } from '@/components/icons';
 import PublicationCover from '@/components/PublicationCover';
 import PublicationReviews from '@/components/PublicationReviews';
 import StarRating from '@/components/StarRating';
+import ContentBlocks from '@/components/ContentBlocks';
 
 export default async function PublicationDetailPage({ params }: { params: { id: string } }) {
   const publication = await getPublicationById(params.id);
@@ -26,7 +27,6 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
           <div className="publication-detail-cover">
             <PublicationCover
               title={publication.title}
-              authors={publication.authors}
               image={publication.coverUrl}
               size="page"
             />
@@ -76,6 +76,8 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
                 <p>{publication.summary}</p>
               </div>
             )}
+
+            <ContentBlocks blocks={publication.blocks} />
 
             <PublicationReviews entryId={publication.entryId} initialReviews={reviews} initialSummary={summary} />
           </div>
