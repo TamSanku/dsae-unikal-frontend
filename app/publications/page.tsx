@@ -40,7 +40,7 @@ export default async function PublicationsPage() {
                   >
                     <PublicationCover
                       title={publication.title}
-                        image={publication.coverUrl}
+                      image={publication.coverUrl}
                     />
                   </Link>
 
@@ -49,6 +49,9 @@ export default async function PublicationsPage() {
                       <Link href={`/publications/${publication.id}`}>{publication.title}</Link>
                     </h3>
                     <AuthorList authors={publication.authorsList} />
+                    {publication.summary && (
+                      <p className="publication-card-summary">{publication.summary}</p>
+                    )}
                     {publication.publishedLabel && (
                       <p className="publication-date">{publication.publishedLabel}</p>
                     )}
