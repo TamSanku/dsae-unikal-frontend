@@ -141,7 +141,7 @@ export default async function HomePage() {
           {featuredTeam.length === 0 ? (
             <EmptyState label="L’équipe sera publiée depuis l’espace d’administration." />
           ) : (
-          <div className="card-grid three-grid">
+          <div className="card-grid three-grid mobile-horizontal-carousel">
             {featuredTeam.map((member) => (
               <Link key={member.id} href={`/equipe/${member.id}`} className="profile-card">
                 <div className="profile-image-wrap">
@@ -175,7 +175,7 @@ export default async function HomePage() {
           {research.length === 0 ? (
             <EmptyState label="Les axes de recherche seront publiés depuis l’espace d’administration." />
           ) : (
-          <div className="card-grid four-grid">
+          <div className="card-grid four-grid mobile-horizontal-carousel">
             {research.slice(0, 4).map((area) => (
               <Link key={area.slug} href={`/recherche/${area.slug}`} className="research-card">
                 <span className="mini-tag">{area.category}</span>
@@ -203,7 +203,7 @@ export default async function HomePage() {
           {recentPublications.length === 0 ? (
             <EmptyState label="Les publications seront publiées depuis l’espace d’administration." />
           ) : (
-          <div className="card-grid three-grid">
+          <div className="card-grid three-grid mobile-horizontal-carousel">
             {recentPublications.map((publication) => (
               <article key={publication.id} className="publication-card publication-card-cover">
                 <Link href={`/publications/${publication.id}`} className="publication-cover-link" aria-label={`Ouvrir « ${publication.title} »`}>
@@ -245,7 +245,7 @@ export default async function HomePage() {
           {news.length === 0 ? (
             <EmptyState label="Les actualités seront publiées depuis l’espace d’administration." />
           ) : (
-          <div className="card-grid three-grid">
+          <div className="card-grid three-grid mobile-horizontal-carousel">
             {news.slice(0, 3).map((item) => (
               <Link key={item.slug} href={`/actualites/${item.slug}`} className="news-card">
                 <div className="news-image">

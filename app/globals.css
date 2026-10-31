@@ -2106,3 +2106,49 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  .mobile-horizontal-carousel {
+    display: grid;
+    grid-template-columns: none;
+    grid-auto-columns: minmax(0, 84%);
+    grid-auto-flow: column;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 6px 10px 14px 0;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(13, 76, 200, 0.45) transparent;
+  }
+
+  .mobile-horizontal-carousel > * {
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .mobile-horizontal-carousel .profile-image-wrap {
+    height: 220px;
+  }
+
+  .mobile-horizontal-carousel .news-image img {
+    height: 220px;
+  }
+
+  .mobile-horizontal-carousel::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .mobile-horizontal-carousel::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .mobile-horizontal-carousel::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(13, 76, 200, 0.45);
+  }
+}
