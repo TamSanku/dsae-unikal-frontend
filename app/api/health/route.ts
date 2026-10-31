@@ -6,7 +6,6 @@ export async function GET() {
     app: 'dsae-unikal-frontend',
     backend: API_BASE_URL,
     environment: process.env.NEXT_PUBLIC_APP_ENV || 'development',
-    demoMode: process.env.NEXT_PUBLIC_USE_DEMO_DATA === 'true',
     timestamp: new Date().toISOString(),
   });
 }

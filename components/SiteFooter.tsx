@@ -44,10 +44,7 @@ export default function SiteFooter() {
         <div>
           <h4>Contact</h4>
           <ul className="footer-links contact-list">
-            <li>Université de Kalemie</li>
-            <li>+243 000 000 000</li>
-            <li>contact@unikal.ac.cd</li>
-            <li>LinkedIn • Facebook • X</li>
+            <li><Link href="/contact">Formulaire de contact</Link></li>
           </ul>
         </div>
       </div>

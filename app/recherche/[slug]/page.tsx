@@ -21,40 +21,46 @@ export default async function ResearchDetailPage({ params }: { params: { slug: s
       <section className="section">
         <div className="container detail-layout small-gap">
           <div>
-            <p>{area.description}</p>
-            <div className="info-list-block">
-              <h3>Objectifs</h3>
+            {area.description && <p>{area.description}</p>}
+            {area.goals.length > 0 && (
+              <div className="info-list-block">
+                <h3>Objectifs</h3>
+                <ul>
+                  {area.goals.map((goal) => (
+                    <li key={goal}>{goal}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          {area.projects.length > 0 && (
+            <div className="info-card">
+              <h3>Projets</h3>
               <ul>
-                {area.goals.map((goal) => (
-                  <li key={goal}>{goal}</li>
+                {area.projects.map((project) => (
+                  <li key={project}>{project}</li>
                 ))}
               </ul>
             </div>
-          </div>
-          <div className="info-card">
-            <h3>Projets</h3>
-            <ul>
-              {area.projects.map((project) => (
-                <li key={project}>{project}</li>
-              ))}
-            </ul>
-          </div>
+          )}
         </div>
       </section>
 
-      <section className="section alt-section">
-        <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Publications associées</span>
-            <h3>Productions scientifiques</h3>
+      {area.publications.length > 0 && (
+        <section className="section alt-section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="eyebrow">Publications associées</span>
+              <h3>Productions scientifiques</h3>
+            </div>
+            <ul className="publication-list">
+              {area.publications.map((publication) => (
+                <li key={publication}>{publication}</li>
+              ))}
+            </ul>
           </div>
-          <ul className="publication-list">
-            {area.publications.map((publication) => (
-              <li key={publication}>{publication}</li>
-            ))}
-          </ul>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="section cta-band small">
         <div className="container cta-content">

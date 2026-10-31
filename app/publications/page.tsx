@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getPublications } from '@/lib/backend';
+import EmptyState from '@/components/EmptyState';
 
 export default async function PublicationsPage() {
   const publications = await getPublications();
@@ -15,46 +16,24 @@ export default async function PublicationsPage() {
 
       <section className="section">
         <div className="container">
-          <div className="filters-box">
-            <div className="filter-item">
-              <label htmlFor="search">Recherche</label>
-              <input id="search" type="text" placeholder="Titre, auteur, mot-clé" />
+          {publications.length === 0 ? (
+            <EmptyState label="Les publications seront publiées depuis l’espace d’administration." />
+          ) : (
+            <div className="card-grid two-grid">
+              {publications.map((publication) => (
+                <Link key={publication.id} href={`/publications/${publication.id}`} className="publication-card large">
+                  {publication.category && <span className="mini-tag">{publication.category}</span>}
+                  <h3>{publication.title}</h3>
+                  {publication.authors && <p>{publication.authors}</p>}
+                  <div className="meta-row">
+                    {publication.year > 0 && <span>{publication.year}</span>}
+                    {publication.discipline && <span>{publication.discipline}</span>}
+                  </div>
+                  {publication.summary && <p className="publication-summary">{publication.summary}</p>}
+                </Link>
+              ))}
             </div>
-            <div className="filter-item">
-              <label htmlFor="category">Catégorie</label>
-              <select id="category">
-                <option value="">Toutes</option>
-                <option>Articles scientifiques</option>
-                <option>Mémoires</option>
-                <option>Thèses</option>
-                <option>Rapports de recherche</option>
-              </select>
-            </div>
-            <div className="filter-item">
-              <label htmlFor="year">Année</label>
-              <select id="year">
-                <option value="">Toutes</option>
-                <option>2024</option>
-                <option>2023</option>
-                <option>2022</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="card-grid two-grid">
-            {publications.map((publication) => (
-              <Link key={publication.id} href={`/publications/${publication.id}`} className="publication-card large">
-                <span className="mini-tag">{publication.category}</span>
-                <h3>{publication.title}</h3>
-                <p>{publication.authors}</p>
-                <div className="meta-row">
-                  <span>{publication.year}</span>
-                  <span>{publication.discipline}</span>
-                </div>
-                <p className="publication-summary">{publication.summary}</p>
-              </Link>
-            ))}
-          </div>
+          )}
         </div>
       </section>
     </div>

@@ -61,30 +61,6 @@ export default function UniversityPage() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Coordonnées</span>
-            <h3>Contacts officiels</h3>
-          </div>
-
-          <div className="contact-grid">
-            <div className="info-card">
-              <h4>Adresse</h4>
-              <p>Université de Kalemie (UNIKAL), Avenue scientifique, Kalemie, République Démocratique du Congo.</p>
-            </div>
-            <div className="info-card">
-              <h4>Email</h4>
-              <p>contact@unikal.ac.cd</p>
-            </div>
-            <div className="info-card">
-              <h4>Téléphone</h4>
-              <p>+243 000 000 000</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="section cta-band small">
         <div className="container cta-content">
           <div>

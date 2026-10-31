@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Image à venir">
+  <rect width="800" height="600" fill="#eef2f7"/>
+  <circle cx="400" cy="250" r="70" fill="#c8d3e2"/>
+  <path d="M400 300c-70 0-130 40-150 96h300c-20-56-80-96-150-96z" fill="#c8d3e2"/>
+  <text x="400" y="500" font-family="Georgia, serif" font-size="30" fill="#8b9bb0" text-anchor="middle">Image à venir</text>
+</svg>

@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getNewsItems } from '@/lib/backend';
+import { withFallback } from '@/lib/fallback';
+import EmptyState from '@/components/EmptyState';
 
 export default async function NewsPage() {
   const news = await getNewsItems();
@@ -16,21 +18,25 @@ export default async function NewsPage() {
 
       <section className="section">
         <div className="container">
-          <div className="card-grid three-grid">
-            {news.map((item) => (
-              <Link key={item.slug} href={`/actualites/${item.slug}`} className="news-card">
-                <div className="news-image">
-                  <Image src={item.image} alt={item.title} width={800} height={520} />
-                </div>
-                <div className="news-body">
-                  <span className="mini-tag">{item.category}</span>
-                  <h4>{item.title}</h4>
-                  <p>{item.excerpt}</p>
-                  <span className="date-label">{item.date}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {news.length === 0 ? (
+            <EmptyState label="Les actualités seront publiées depuis l’espace d’administration." />
+          ) : (
+            <div className="card-grid three-grid">
+              {news.map((item) => (
+                <Link key={item.slug} href={`/actualites/${item.slug}`} className="news-card">
+                  <div className="news-image">
+                    <Image src={withFallback(item.image)} alt={item.title} width={800} height={520} />
+                  </div>
+                  <div className="news-body">
+                    {item.category && <span className="mini-tag">{item.category}</span>}
+                    <h4>{item.title}</h4>
+                    {item.excerpt && <p>{item.excerpt}</p>}
+                    {item.date && <span className="date-label">{item.date}</span>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

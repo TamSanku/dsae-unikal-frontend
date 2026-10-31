@@ -14,42 +14,51 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
       <section className="section">
         <div className="container publication-detail">
           <div className="detail-copy">
-            <span className="mini-tag">{publication.category}</span>
+            {publication.category && <span className="mini-tag">{publication.category}</span>}
             <h1>{publication.title}</h1>
-            <p className="authors-line">{publication.authors}</p>
+            {publication.authors && <p className="role-page">{publication.authors}</p>}
+
             <div className="meta-row wide-row">
-              <span>{publication.year}</span>
-              <span>{publication.discipline}</span>
-              <span>{publication.department}</span>
+              {publication.year > 0 && <span>{publication.year}</span>}
+              {publication.discipline && <span>{publication.discipline}</span>}
+              {publication.department && <span>{publication.department}</span>}
             </div>
 
-            <div className="publication-actions">
-              <a href={publication.pdfUrl} className="btn btn-primary" target="_blank" rel="noreferrer">
-                Consulter
-              </a>
-              <a href={publication.pdfUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
-                Télécharger
-              </a>
-            </div>
-
-            <div className="info-list-block">
-              <h3>Résumé</h3>
-              <p>{publication.summary}</p>
-            </div>
-
-            <div className="info-list-block">
-              <h3>Mots-clés</h3>
-              <div className="pill-list">
-                {publication.keywords.map((keyword) => (
-                  <span key={keyword}>{keyword}</span>
-                ))}
+            {publication.pdfUrl && (
+              <div className="publication-actions">
+                <a href={publication.pdfUrl} className="btn btn-primary" target="_blank" rel="noreferrer">
+                  Consulter
+                </a>
+                <a href={publication.pdfUrl} className="btn btn-secondary" target="_blank" rel="noreferrer">
+                  Télécharger
+                </a>
               </div>
-            </div>
+            )}
 
-            <div className="info-list-block">
-              <h3>Références bibliographiques</h3>
-              <p>{publication.references}</p>
-            </div>
+            {publication.summary && (
+              <div className="info-list-block">
+                <h3>Résumé</h3>
+                <p>{publication.summary}</p>
+              </div>
+            )}
+
+            {publication.keywords.length > 0 && (
+              <div className="info-list-block">
+                <h3>Mots-clés</h3>
+                <div className="pill-list">
+                  {publication.keywords.map((keyword) => (
+                    <span key={keyword}>{keyword}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {publication.references && (
+              <div className="info-list-block">
+                <h3>Références bibliographiques</h3>
+                <p>{publication.references}</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

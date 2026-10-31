@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getTeamMembers, getPublications, getResearchAreas, getNewsItems } from '@/lib/backend';
+import { withFallback } from '@/lib/fallback';
+import EmptyState from '@/components/EmptyState';
 
 export default async function HomePage() {
   const [team, publications, research, news] = await Promise.all([
@@ -36,16 +38,16 @@ export default async function HomePage() {
             </div>
             <div className="hero-stats">
               <div>
-                <strong>06</strong>
+                <strong>{String(research.length).padStart(2, '0')}</strong>
                 <span>axes de recherche</span>
               </div>
               <div>
-                <strong>120+</strong>
+                <strong>{publications.length}</strong>
                 <span>publications</span>
               </div>
               <div>
-                <strong>40+</strong>
-                <span>chercheurs</span>
+                <strong>{team.length}</strong>
+                <span>membres</span>
               </div>
             </div>
           </div>
@@ -145,21 +147,25 @@ export default async function HomePage() {
             </Link>
           </div>
 
+          {featuredTeam.length === 0 ? (
+            <EmptyState label="L’équipe sera publiée depuis l’espace d’administration." />
+          ) : (
           <div className="card-grid three-grid">
             {featuredTeam.map((member) => (
               <Link key={member.id} href={`/equipe/${member.id}`} className="profile-card">
                 <div className="profile-image-wrap">
-                  <Image src={member.image} alt={member.name} width={600} height={700} />
+                  <Image src={withFallback(member.image)} alt={member.name} width={600} height={700} />
                 </div>
                 <div className="profile-body">
-                  <span className="mini-tag">{member.category}</span>
+                  {member.category && <span className="mini-tag">{member.category}</span>}
                   <h4>{member.name}</h4>
-                  <p className="role">{member.role}</p>
-                  <p>{member.department}</p>
+                  {member.role && <p className="role">{member.role}</p>}
+                  {member.department && <p>{member.department}</p>}
                 </div>
               </Link>
             ))}
           </div>
+          )}
         </div>
       </section>
 
@@ -175,6 +181,9 @@ export default async function HomePage() {
             </Link>
           </div>
 
+          {research.length === 0 ? (
+            <EmptyState label="Les axes de recherche seront publiés depuis l’espace d’administration." />
+          ) : (
           <div className="card-grid four-grid">
             {research.slice(0, 4).map((area) => (
               <Link key={area.slug} href={`/recherche/${area.slug}`} className="research-card">
@@ -184,6 +193,7 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
+          )}
         </div>
       </section>
 
@@ -199,19 +209,23 @@ export default async function HomePage() {
             </Link>
           </div>
 
+          {recentPublications.length === 0 ? (
+            <EmptyState label="Les publications seront publiées depuis l’espace d’administration." />
+          ) : (
           <div className="card-grid three-grid">
             {recentPublications.map((publication) => (
               <Link key={publication.id} href={`/publications/${publication.id}`} className="publication-card">
-                <span className="mini-tag">{publication.category}</span>
+                {publication.category && <span className="mini-tag">{publication.category}</span>}
                 <h4>{publication.title}</h4>
-                <p>{publication.authors}</p>
+                {publication.authors && <p>{publication.authors}</p>}
                 <div className="meta-row">
-                  <span>{publication.year}</span>
-                  <span>{publication.discipline}</span>
+                  {publication.year > 0 && <span>{publication.year}</span>}
+                  {publication.discipline && <span>{publication.discipline}</span>}
                 </div>
               </Link>
             ))}
           </div>
+          )}
         </div>
       </section>
 
@@ -222,21 +236,25 @@ export default async function HomePage() {
             <h3>Conférences, séminaires et événements scientifiques</h3>
           </div>
 
+          {news.length === 0 ? (
+            <EmptyState label="Les actualités seront publiées depuis l’espace d’administration." />
+          ) : (
           <div className="card-grid three-grid">
             {news.slice(0, 3).map((item) => (
               <Link key={item.slug} href={`/actualites/${item.slug}`} className="news-card">
                 <div className="news-image">
-                  <Image src={item.image} alt={item.title} width={800} height={520} />
+                  <Image src={withFallback(item.image)} alt={item.title} width={800} height={520} />
                 </div>
                 <div className="news-body">
-                  <span className="mini-tag">{item.category}</span>
+                  {item.category && <span className="mini-tag">{item.category}</span>}
                   <h4>{item.title}</h4>
-                  <p>{item.excerpt}</p>
-                  <span className="date-label">{item.date}</span>
+                  {item.excerpt && <p>{item.excerpt}</p>}
+                  {item.date && <span className="date-label">{item.date}</span>}
                 </div>
               </Link>
             ))}
           </div>
+          )}
         </div>
       </section>
 

@@ -857,3 +857,26 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+/* État d'une rubrique sans contenu publié. */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 3rem 1.5rem;
+  border: 1px dashed var(--border, #d8dfe8);
+  border-radius: 24px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--muted, #5b6b7f);
+}
+
+.error-message {
+  margin-top: 0.8rem;
+  color: #b42318;
+}

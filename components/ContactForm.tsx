@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { postContactMessage } from '@/lib/backend';
 
 type FormState = {
   name: string;
@@ -20,6 +21,8 @@ export default function ContactForm() {
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [failure, setFailure] = useState('');
+  const [sending, setSending] = useState(false);
 
   const validate = () => {
     const nextErrors: Partial<Record<keyof FormState, string>> = {};
@@ -32,18 +35,28 @@ export default function ContactForm() {
     return nextErrors;
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
+    setFailure('');
 
     if (Object.keys(nextErrors).length > 0) {
       setSubmitted(false);
       return;
     }
 
-    setSubmitted(true);
-    setForm(initialForm);
+    setSending(true);
+    const result = await postContactMessage(form);
+    setSending(false);
+
+    if (result.success) {
+      setSubmitted(true);
+      setForm(initialForm);
+    } else {
+      setSubmitted(false);
+      setFailure(result.message);
+    }
   };
 
   return (
@@ -98,13 +111,14 @@ export default function ContactForm() {
           {errors.message && <small>{errors.message}</small>}
         </div>
 
-        <button type="submit" className="btn btn-primary">
-          Envoyer
+        <button type="submit" className="btn btn-primary" disabled={sending}>
+          {sending ? 'Envoi…' : 'Envoyer'}
         </button>
 
         {submitted && (
           <p className="success-message">Votre message a bien été enregistré. Un retour vous sera donné dès que possible.</p>
         )}
+        {failure && <p className="error-message">{failure}</p>}
       </form>
     </div>
   );

@@ -37,7 +37,6 @@ des champs renvoyés par l’API). Une route de diagnostic est disponible : `/ap
    | --- | --- |
    | `NEXT_PUBLIC_API_URL` | `https://dsae-backend.onrender.com/api` |
    | `NEXT_PUBLIC_APP_ENV` | `production` |
-   | `NEXT_PUBLIC_USE_DEMO_DATA` | `false` |
 
 3. Lancer le déploiement (build : `next build`, aucune configuration supplémentaire requise).
 
@@ -48,4 +47,4 @@ des champs renvoyés par l’API). Une route de diagnostic est disponible : `/ap
 
 - app/ : pages et routes Next.js
 - components/ : composants réutilisables
-- lib/ : données de démonstration et intégration API
+- lib/ : intégration de l’API DSAE (aucune donnée en dur : le contenu vient de l’admin)

@@ -14,20 +14,11 @@ export default function ContactPage() {
         <div className="container contact-page-grid">
           <div className="contact-info">
             <div className="info-card">
-              <h3>Adresse</h3>
-              <p>Université de Kalemie (UNIKAL), Avenue scientifique, Kalemie</p>
-            </div>
-            <div className="info-card">
-              <h3>Email</h3>
-              <p>contact@unikal.ac.cd</p>
-            </div>
-            <div className="info-card">
-              <h3>Téléphone</h3>
-              <p>+243 000 000 000</p>
-            </div>
-            <div className="info-card">
-              <h3>Réseaux</h3>
-              <p>LinkedIn • Facebook • X • YouTube</p>
+              <h3>Formulaire</h3>
+              <p>
+                Écrivez-nous via le formulaire : votre message est transmis directement à la faculté,
+                qui vous répondra dès que possible.
+              </p>
             </div>
           </div>
           <ContactForm />
