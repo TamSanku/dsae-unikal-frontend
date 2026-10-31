@@ -16,7 +16,7 @@ export default function ContactPage() {
             <div className="info-card">
               <h3>Formulaire</h3>
               <p>
-                Écrivez-nous via le formulaire : votre message est transmis directement à la faculté,
+                Écrivez-nous via le formulaire : votre message est transmis directement à l’équipe du DSAE,
                 qui vous répondra dès que possible.
               </p>
             </div>

@@ -30,7 +30,7 @@ export default async function HomePage() {
             </p>
             <div className="hero-actions">
               <Link href="/a-propos" className="btn btn-primary">
-                Découvrir la faculté
+                Découvrir le DSAE
               </Link>
               <Link href="/publications" className="btn btn-secondary">
                 Explorer les publications
@@ -70,17 +70,17 @@ export default async function HomePage() {
         <div className="container">
           <div className="section-heading">
             <span className="eyebrow">Présentation</span>
-            <h3>Une faculté engagée dans l’excellence scientifique</h3>
+            <h3>Le DSAE, engagé pour l’agronomie et l’environnement</h3>
           </div>
 
           <div className="feature-split">
             <div className="feature-copy">
               <p>
-                La faculté scientifique de l’Université de Kalemie (UNIKAL) constitue un espace de
-                formation, de production et de diffusion des savoirs. Notre mission consiste à
-                promouvoir des enseignements de qualité, à soutenir la recherche et à accompagner les
-                étudiants, enseignants et chercheurs dans la transformation des connaissances en
-                solutions concrètes pour la société.
+                Le Domaine des Sciences Agronomiques et de l’Environnement (DSAE) de l’Université de
+                Kalemie (UNIKAL) est un espace de formation, de production et de diffusion des savoirs.
+                Il promeut des enseignements de qualité, soutient la recherche et accompagne les
+                étudiants, les enseignants et les chercheurs dans la transformation des connaissances
+                en solutions concrètes pour la société.
               </p>
               <div className="pill-list">
                 <span>Mission</span>
@@ -111,7 +111,7 @@ export default async function HomePage() {
             <h3>Une université au service du savoir et du développement</h3>
           </div>
 
-          <div className="feature-split reverse">
+          <div className="feature-split reverse university-split">
             <div className="feature-image">
               <Image
                 src="https://images.unsplash.com/photo-1562771382-4d47f2ef6de6?auto=format&fit=crop&w=1000&q=80"
