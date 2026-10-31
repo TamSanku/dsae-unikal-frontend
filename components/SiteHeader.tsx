@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const navItems = [
   { href: '/', label: 'Accueil' },
@@ -18,6 +18,22 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
   return (
     <header className="site-header">
       <div className="container header-inner">
@@ -29,7 +45,19 @@ export default function SiteHeader() {
           </span>
         </Link>
 
-        <nav className={`main-nav ${open ? 'nav-open' : ''}`} aria-label="Navigation principale">
+        <nav
+          id="primary-navigation"
+          className={`main-nav ${open ? 'nav-open' : ''}`}
+          aria-label="Navigation principale"
+        >
+          <button
+            type="button"
+            className="menu-close"
+            aria-label="Fermer le menu"
+            onClick={() => setOpen(false)}
+          >
+            <span aria-hidden="true">×</span>
+          </button>
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -45,6 +73,15 @@ export default function SiteHeader() {
           })}
         </nav>
 
+        {open && (
+          <button
+            type="button"
+            className="nav-backdrop"
+            aria-label="Fermer le menu"
+            onClick={() => setOpen(false)}
+          />
+        )}
+
         <div className="header-actions">
           <Link href="/contact" className="btn btn-primary header-btn">
             Contact
@@ -52,7 +89,9 @@ export default function SiteHeader() {
           <button
             type="button"
             className="mobile-toggle"
-            aria-label="Ouvrir le menu"
+            aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={open}
+            aria-controls="primary-navigation"
             onClick={() => setOpen((prev) => !prev)}
           >
             <span />

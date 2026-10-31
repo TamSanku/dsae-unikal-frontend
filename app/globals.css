@@ -4,10 +4,14 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   font-family: Arial, Helvetica, sans-serif;
   background: #f5f7fb;
   color: #0f172a;
@@ -803,25 +807,84 @@ main {
   }
 
   .main-nav {
-    position: absolute;
-    top: 78px;
-    left: 16px;
-    right: 16px;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(86vw, 360px);
+    height: 100vh;
+    height: 100dvh;
     display: none;
     flex-direction: column;
-    align-items: flex-start;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(15, 23, 42, 0.06);
-    border-radius: 18px;
-    padding: 16px;
+    align-items: stretch;
+    gap: 14px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #0e172a;
+    color: #dfe7f7;
+    border: 0;
+    border-radius: 0;
+    padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+    box-shadow: 18px 0 48px rgba(3, 8, 20, 0.28);
+    z-index: 2;
   }
 
-  .nav-open {
+  .main-nav.nav-open {
     display: flex;
+  }
+
+  .site-header {
+    z-index: 80;
+  }
+
+  .main-nav .nav-link {
+    width: 100%;
+    padding: 10px 2px;
+    color: #dfe7f7;
+    font-size: 1.08rem;
+  }
+
+  .main-nav .nav-link.active,
+  .main-nav .nav-link:hover {
+    color: #8db5ff;
+  }
+
+  .main-nav .nav-link.active::after {
+    right: auto;
+    bottom: 4px;
+    width: 42px;
+    background: #8db5ff;
+  }
+
+  .menu-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 12px;
+    background: transparent;
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    border: 0;
+    background: rgba(4, 10, 24, 0.58);
+    cursor: pointer;
   }
 
   .mobile-toggle {
     display: inline-block;
+    position: relative;
+    z-index: 3;
   }
 
   .header-btn {
@@ -855,6 +918,21 @@ main {
 
   .field-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.menu-close,
+.nav-backdrop {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .menu-close {
+    display: inline-flex;
+  }
+
+  .nav-backdrop {
+    display: block;
   }
 }
 
