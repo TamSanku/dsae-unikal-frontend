@@ -88,10 +88,12 @@ export default function SiteHeader() {
           </Link>
           <button
             type="button"
-            className="mobile-toggle"
+            className={`mobile-toggle ${open ? 'menu-open' : ''}`}
             aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
             aria-expanded={open}
             aria-controls="primary-navigation"
+            aria-hidden={open}
+            tabIndex={open ? -1 : 0}
             onClick={() => setOpen((prev) => !prev)}
           >
             <span />
