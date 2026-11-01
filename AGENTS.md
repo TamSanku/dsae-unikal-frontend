@@ -68,10 +68,13 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
   mène au site officiel https://unikal.ac.cd.
 - Pied de page : fond blanc beige (`#f6f1e7`). Les rubriques sont en accordéon
   sur **tous** les écrans (`components/SiteFooter.tsx`, `'use client'`). Une
-  rubrique sans sous-page est un lien direct. Les entrées d'« Actualités »
-  passent `?type=<catégorie>` ; `app/actualites/page.tsx` ouvre l'onglet
-  correspondant via la prop `initialTab` de `CatalogExplorer` (type inconnu
-  ignoré).
+  rubrique sans sous-page est un lien direct. Les sous-menus de Recherche,
+  Équipe et Publications viennent du contenu publié via `getSiteNav()`
+  (`lib/backend.ts`), appelé dans `app/layout.tsx` et passé en prop `nav` ; la
+  rubrique de la page ouverte est dépliée et l'entrée courante marquée
+  (`is-current`). Les entrées d'« Actualités » passent `?type=<catégorie>`. Les
+  pages `actualites`, `equipe` et `publications` lisent ce paramètre
+  (`?type=`, `?category=`, `?domain=`) et l'ouvrent via `initialTab`.
 
 ## Piège connu (backend)
 
