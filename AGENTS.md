@@ -126,8 +126,10 @@ partagent souvent le rang 0.
 `CatalogExplorer` accepte `allTabKey` (la clé qui montre toute la liste),
 `allTabLabel` et `showAllTab`. Par défaut, un bouton « Tout » (clé vide) est
 ajouté en tête — équipe, publications, alumni s'en servent. Les actualités
-passent `allTabKey="À la une"` et `showAllTab={false}` : « À la une » est un vrai
-type du serveur et joue le rôle de vue d'ensemble, sans second bouton « Tout ».
+gardent la clé vide mais donnent au bouton le libellé du serveur
+(`taxonomy.newsFeaturedLabel`, « À la une ») : « À la une » n'est plus un type
+d'actualité, c'est la vue d'ensemble du fil. Une actualité paraît donc à la fois
+sous « À la une » et sous son type.
 
 ## Piège connu (backend)
 

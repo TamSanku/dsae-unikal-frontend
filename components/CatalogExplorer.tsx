@@ -64,12 +64,12 @@ export default function CatalogExplorer({
   initialTab?: string;
   /** L'onglet qui vaut « tout voir » : le choisir n'applique aucun filtre. Par
    * défaut la clé vide, celle du bouton « Tout ». Les actualités s'en servent
-   * pour donner ce rôle à « À la une ». */
+   * pour que « À la une » montre tout. */
   allTabKey?: string;
   /** Le libellé du bouton « tout voir » ajouté en tête. */
   allTabLabel?: string;
   /** Afficher le bouton « tout voir » ajouté en tête. Faux quand une catégorie
-   * réelle joue déjà ce rôle (actualités : « À la une »). */
+   * réelle joue déjà ce rôle. */
   showAllTab?: boolean;
 }) {
   const [query, setQuery] = useState('');
@@ -87,7 +87,7 @@ export default function CatalogExplorer({
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return items.filter((item) => {
-      /* L'onglet « tout voir » (clé vide, ou « À la une » pour les actualités)
+      /* L'onglet « tout voir » (la clé vide, celle de « Tout » et « À la une »)
        * n'écarte rien : il montre la liste entière. */
       if (tab && tab !== allTabKey && !(tabMatch ? tabMatch(item, tab) : tabOf(item) === tab)) return false;
       if (needle && !searchText(item).toLowerCase().includes(needle)) return false;

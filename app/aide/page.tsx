@@ -82,7 +82,7 @@ const guides = [
     steps: [
       'Chaque rubrique propose des onglets : catégories pour l’équipe, domaines pour les publications.',
       'Tous les onglets tiennent sur une seule ligne : faites-les défiler horizontalement au besoin.',
-      'Dans les actualités, « À la une » montre toute la liste ; « Tout » fait de même ailleurs.',
+      'Dans les actualités, « À la une » montre toute la liste ; « Tout » fait de même ailleurs. Chaque actualité paraît sous « À la une » et sous son type.',
     ],
   },
   {

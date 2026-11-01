@@ -386,13 +386,16 @@ export async function getSiteNav(): Promise<SiteNav> {
     href: `/publications?domain=${encodeURIComponent(domain)}`,
   }));
 
-  /* Les types d'actualité : la liste de référence du serveur, en entier — c'est
-   * elle qui donne les onglets de la page, le pied de page ne fait que les
-   * reprendre. */
-  const news = taxonomy.newsCategories.map((category) => ({
-    label: category,
-    href: `/actualites?type=${encodeURIComponent(category)}`,
-  }));
+  /* Les onglets d'actualité : d'abord « À la une », la vue d'ensemble qui
+   * montre tout — elle n'a pas de type, donc pas de paramètre. Puis les vrais
+   * types du serveur, qui resserrent le fil. */
+  const news = [
+    { label: taxonomy.newsFeaturedLabel, href: '/actualites' },
+    ...taxonomy.newsCategories.map((category) => ({
+      label: category,
+      href: `/actualites?type=${encodeURIComponent(category)}`,
+    })),
+  ];
 
   /* Les Alumni : les domaines réellement portés par des diplômés publiés, et à
    * défaut la liste de référence — comme pour les publications. */
@@ -426,6 +429,10 @@ export async function getPartners(): Promise<TeamMember[]> {
  */
 export type Taxonomy = {
   newsCategories: string[];
+  /** Le libellé du premier onglet du fil d'actualité, la vue d'ensemble qui
+   * montre toutes les actualités. Ce n'est pas un type choisi dans
+   * l'administration : le serveur le fournit, le portail le reprend. */
+  newsFeaturedLabel: string;
   publicationCategories: string[];
   teamCategories: string[];
   domains: string[];
@@ -437,6 +444,7 @@ export async function getTaxonomy(): Promise<Taxonomy> {
   return (
     result.data ?? {
       newsCategories: [],
+      newsFeaturedLabel: 'À la une',
       publicationCategories: [],
       teamCategories: [],
       domains: [],
