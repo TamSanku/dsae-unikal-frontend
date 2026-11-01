@@ -1,26 +1,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { getFilieres } from '@/lib/backend';
+import EmptyState from '@/components/EmptyState';
 
-const areas = [
-  {
-    title: 'Production végétale',
-    text: 'Amélioration des cultures vivrières et de rente, fertilité des sols, semences, protection des plantes et techniques culturales adaptées au contexte local.',
-  },
-  {
-    title: 'Production animale',
-    text: 'Élevage, nutrition et santé animale, pisciculture et valorisation des productions animales au service de la sécurité alimentaire.',
-  },
-  {
-    title: 'Environnement et ressources naturelles',
-    text: 'Gestion durable des sols, de l’eau et des forêts, conservation de la biodiversité et suivi de la qualité des écosystèmes, notamment autour du lac Tanganyika.',
-  },
-  {
-    title: 'Agroforesterie et changement climatique',
-    text: 'Systèmes agroforestiers, adaptation des exploitations aux aléas climatiques et réduction des pressions sur les ressources.',
-  },
-];
+/*
+ * La page « À propos ».
+ *
+ * Les filières et leurs axes de recherche viennent de l'espace de gestion
+ * (rubrique « Filières ») : la page n'en invente aucune. Tant qu'aucune filière
+ * n'est publiée, la section le dit, plutôt que d'afficher une liste écrite en
+ * dur que l'administration ne pourrait pas corriger.
+ */
+export default async function AboutPage() {
+  const filieres = await getFilieres();
 
-export default function AboutPage() {
   return (
     <div className="page-shell">
       <section className="page-hero small-hero">
@@ -95,14 +88,18 @@ export default function AboutPage() {
             <h3>Filières et axes de recherche</h3>
           </div>
 
-          <div className="card-grid two-grid">
-            {areas.map((area) => (
-              <div key={area.title} className="info-card">
-                <h4>{area.title}</h4>
-                <p>{area.text}</p>
-              </div>
-            ))}
-          </div>
+          {filieres.length === 0 ? (
+            <EmptyState label="Les filières et leurs axes de recherche seront publiés depuis l’espace d’administration." />
+          ) : (
+            <div className="card-grid two-grid">
+              {filieres.map((filiere) => (
+                <div key={filiere.slug} className="info-card">
+                  <h4>{filiere.title}</h4>
+                  <p>{filiere.summary}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

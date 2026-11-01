@@ -285,6 +285,28 @@ export async function getResearchAreas(): Promise<ResearchArea[]> {
   return (result.data ?? []).map(normalizeResearchArea);
 }
 
+/*
+ * Les filières du domaine et les axes de recherche qui s'y rattachent.
+ *
+ * Une filière porte son nom et, en résumé, les axes menés dans son cadre. La
+ * source est la rubrique `dsae-filieres` de l'espace de gestion ; sans contenu
+ * publié, la liste est vide et la page le dit.
+ */
+export type Filiere = {
+  slug: string;
+  title: string;
+  summary: string;
+};
+
+export async function getFilieres(): Promise<Filiere[]> {
+  const published = await fetchPublished('dsae-filieres');
+  return (published ?? []).map((entry) => ({
+    slug: entry.slug ?? entry.id,
+    title: entry.title,
+    summary: entry.summary,
+  }));
+}
+
 export async function getPublications(): Promise<Publication[]> {
   const published = await fetchPublished('dsae-publications');
   if (published && published.length > 0) return published.map(normalizePublishedPublication);
