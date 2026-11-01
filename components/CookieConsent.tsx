@@ -5,30 +5,29 @@ import { useEffect, useState } from 'react';
 import { getConsent, setConsent } from '@/lib/consent';
 
 /*
- * La demande aux visiteurs au sujet des cookies.
- *
- * Elle s'affiche tant que le visiteur n'a pas tranché, et propose deux issues
- * claires : accepter la mesure d'audience, ou la refuser. Refuser n'enlève
- * rien au portail — aucun contenu n'est conditionné au consentement. Le choix
- * est gardé dans le navigateur et transmis au serveur.
- *
- * Le choix n'est pas définitif : le pied de page peut rouvrir le bandeau (voir
- * CookieSettingsButton), pour changer d'avis plus tard.
+ * Le bandeau demande le choix du visiteur pour la mesure d’audience.
+ * Le choix reste modifiable depuis le bouton de gestion des cookies du footer.
  */
 
-/** L'évènement qui rouvre le bandeau depuis n'importe où dans la page. */
+/** Évènement qui rouvre le bandeau depuis le pied de page. */
 export const OPEN_CONSENT_EVENT = 'dsae:open-cookie-consent';
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [customizing, setCustomizing] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
 
   useEffect(() => {
-    /* Rien n'est affiché tant que le choix enregistré n'a pas été relu, pour
-     * éviter que le bandeau clignote à chaque page. */
-    if (getConsent() === null) setVisible(true);
+    const choice = getConsent();
+    setAnalyticsEnabled(choice === 'accepted');
+    if (choice === null) setVisible(true);
 
-    const reopen = () => setVisible(true);
+    const reopen = () => {
+      setAnalyticsEnabled(getConsent() === 'accepted');
+      setCustomizing(false);
+      setVisible(true);
+    };
     window.addEventListener(OPEN_CONSENT_EVENT, reopen);
     return () => window.removeEventListener(OPEN_CONSENT_EVENT, reopen);
   }, []);
@@ -43,22 +42,62 @@ export default function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="cookie-consent" role="dialog" aria-live="polite" aria-label="Préférences de cookies">
+    <div
+      className="cookie-consent"
+      role="dialog"
+      aria-live="polite"
+      aria-labelledby="cookie-consent-title"
+    >
       <div className="cookie-consent-inner">
         <div className="cookie-consent-text">
-          <strong>Votre vie privée</strong>
+          <strong id="cookie-consent-title">Gestion de cookies</strong>
           <p>
-            Nous utilisons un identifiant anonyme pour mesurer l’audience du portail — pages
-            consultées, durée de lecture, provenance, pays et type d’appareil — afin d’améliorer le
-            site. Aucune donnée personnelle n’est revendue, et l’adresse IP n’est pas conservée.
-            Vous pouvez accepter ou refuser&nbsp;: le portail reste entièrement accessible.
+            Nous utilisons un identifiant anonyme pour mesurer l’audience du portail. Cela comprend
+            les pages consultées, la durée de lecture, la provenance, le pays et le type d’appareil,
+            afin d’améliorer le site. Aucune donnée personnelle n’est revendue, et l’adresse IP
+            n’est pas conservée. Vous pouvez accepter ou refuser : le portail reste entièrement
+            accessible.
           </p>
           <Link href="/politique-de-confidentialite" className="cookie-consent-link">
             En savoir plus
           </Link>
+
+          <div
+            id="cookie-consent-customization"
+            className="cookie-consent-customization"
+            hidden={!customizing}
+          >
+            <p>Choisissez si vous autorisez la mesure d’audience anonyme. Le portail reste accessible sans cette mesure.</p>
+            <label className="cookie-consent-toggle-row" htmlFor="cookie-analytics-choice">
+              <input
+                id="cookie-analytics-choice"
+                type="checkbox"
+                checked={analyticsEnabled}
+                onChange={(event) => setAnalyticsEnabled(event.target.checked)}
+                disabled={busy}
+              />
+              <span>Autoriser la mesure d’audience</span>
+            </label>
+            <button
+              type="button"
+              className="btn btn-primary cookie-consent-save"
+              onClick={() => decide(analyticsEnabled)}
+              disabled={busy}
+            >
+              Enregistrer mes choix
+            </button>
+          </div>
         </div>
 
         <div className="cookie-consent-actions">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => decide(true)}
+            disabled={busy}
+          >
+            Accepter
+          </button>
           <button
             type="button"
             className="btn btn-secondary"
@@ -69,11 +108,13 @@ export default function CookieConsent() {
           </button>
           <button
             type="button"
-            className="btn btn-primary"
-            onClick={() => decide(true)}
+            className="btn btn-secondary"
+            aria-expanded={customizing}
+            aria-controls="cookie-consent-customization"
+            onClick={() => setCustomizing((current) => !current)}
             disabled={busy}
           >
-            Accepter
+            Personnaliser
           </button>
         </div>
       </div>
