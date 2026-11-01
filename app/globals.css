@@ -2513,10 +2513,23 @@ main {
  * haute (retour, titre, téléchargement), le corps (le document), et le pied
  * (les pages, pour un PDF). Seul le corps défile.
  * ------------------------------------------------------------------ */
+/* Le lecteur s'adosse **sous** l'en-tête du site, il ne le recouvre pas : la
+ * barre de navigation reste visible et utilisable pendant la lecture, si bien
+ * qu'on peut quitter le document par le menu. La hauteur est mesurée en JS et
+ * posée ici (`--reader-top`), car la barre change de taille selon l'écran.
+ * Le repli `0px` couvre le cas où l'en-tête n'existe pas. */
 .reader-full {
   position: fixed;
-  inset: 0;
-  z-index: 80;
+  top: var(--reader-top, 0px);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  /* Au-dessus de l'en-tête collant (30) et du bandeau de cookies (60) : le
+   * lecteur est un état plein écran, ses commandes ne doivent pas être
+   * recouvertes. Le bandeau de cookies n'est pas perdu pour autant — il
+   * reparaît à la fermeture du lecteur. Le menu mobile, lui, monte à 80 et
+   * reste donc au-dessus de tout. */
+  z-index: 70;
   display: flex;
   flex-direction: column;
   background: #eef1f6;
@@ -2583,6 +2596,173 @@ main {
 
 .reader-full-download:hover {
   background: #0b3ea3;
+}
+
+/* ------------------------------------------------------------------
+ * Les outils de lecture, dans la barre haute.
+ *
+ * Trois gestes au plus — surligner, souligner, gommer — et « tout effacer »
+ * seulement quand il y a quelque chose à effacer. Les libellés s'effacent sur
+ * écran étroit : il ne reste que les pastilles, qui tiennent dans la barre.
+ *
+ * Un outil actif se voit (fond bleu, texte blanc) : on sait toujours dans quel
+ * mode on est, sans avoir à s'en souvenir.
+ * ------------------------------------------------------------------ */
+.reader-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+}
+
+.reader-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.42rem 0.7rem;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 999px;
+  background: #f6f8fc;
+  color: #0b1c3d;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reader-tool:hover {
+  background: #e6ecf7;
+}
+
+.reader-tool.is-active {
+  background: #0d4cc8;
+  border-color: #0d4cc8;
+  color: #fff;
+}
+
+/* La pastille : un trait jaune pour surligner, un trait rouge souligné pour
+ * souligner, une gomme pour effacer. Elle dit le geste mieux qu'un mot. */
+.reader-tool-mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+
+.reader-tool-mark.is-highlight {
+  background: rgba(255, 214, 0, 0.85);
+}
+
+.reader-tool-mark.is-underline {
+  border-bottom: 2px solid rgba(220, 38, 38, 0.85);
+}
+
+.reader-tool-mark.is-erase {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(100, 116, 139, 0.55) 0 3px,
+    transparent 3px 6px
+  );
+}
+
+.reader-tool.is-active .reader-tool-mark.is-highlight {
+  background: #ffe680;
+}
+
+.reader-tool.is-active .reader-tool-mark.is-underline {
+  border-bottom-color: #ffb3b3;
+}
+
+.reader-tool.is-active .reader-tool-mark.is-erase {
+  background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.75) 0 3px, transparent 3px 6px);
+}
+
+.reader-tool-clear {
+  color: #9a3412;
+}
+
+/* La ligne d'aide, sous la barre, quand un outil est actif. Une phrase, pas une
+ * notice : elle dit quoi faire, puis disparaît avec l'outil. */
+.reader-hint {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  background: #0b3ea3;
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* L'avis de reprise : une ligne discrète, posée au-dessus du document. */
+.reader-resume {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+  padding: 0.55rem 1rem;
+  background: #fff8e1;
+  border-bottom: 1px solid rgba(180, 130, 0, 0.25);
+  color: #6b4e00;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.reader-resume-restart {
+  margin-left: auto;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(107, 78, 0, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: #6b4e00;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.reader-resume-restart:hover {
+  background: rgba(107, 78, 0, 0.1);
+}
+
+.reader-resume-close {
+  padding: 0 0.3rem;
+  border: 0;
+  background: transparent;
+  color: #6b4e00;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Le pager du pied : les deux flèches encadrent le numéro de page. */
+.reader-pager {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-right: auto;
+}
+
+.reader-page-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 999px;
+  background: #f6f8fc;
+  color: #0b1c3d;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reader-page-btn:hover:not(:disabled) {
+  background: #e6ecf7;
+}
+
+.reader-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .reader-full-body {
@@ -2763,6 +2943,81 @@ main {
   box-shadow: 0 6px 20px rgba(2, 8, 23, 0.18);
 }
 
+/* ------------------------------------------------------------------
+ * Les annotations du lecteur : surlignage et soulignement.
+ *
+ * Elles se posent **entre** le dessin du document et sa couche de texte, et se
+ * repèrent en fraction de la page : elles ne bougent donc pas quand le zoom
+ * change.
+ *
+ * Le surlignage se multiplie avec le texte (`mix-blend-mode: multiply`) au lieu
+ * de le recouvrir : le noir du texte reste noir, la couleur passe dessous. Le
+ * soulignement, lui, n'est qu'un trait au bas de la ligne.
+ *
+ * Les rectangles ne captent le clic que sous la gomme (`is-erasing`) : le reste
+ * du temps, on sélectionne le texte par-dessus sans être gêné.
+ * ------------------------------------------------------------------ */
+.pdf-notes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Sous la couche de texte (2) : le texte se peint donc par-dessus le trait et
+   * reste net et noir, comme surligné au marqueur. Un fond translucide suffit,
+   * sans `mix-blend-mode` — dont l'effet dépendrait de l'isolation du contexte
+   * d'empilement, pour un résultat moins sûr. */
+  z-index: 1;
+}
+
+/* Sous la gomme, la couche remonte au-dessus du texte : c'est ce qui permet au
+ * clic d'atteindre le rectangle. Le temps de l'effacement, le trait passe donc
+ * devant — sans conséquence, puisqu'on le regarde pour le retirer. */
+.pdf-notes.is-erasing {
+  z-index: 4;
+}
+
+.pdf-note {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.pdf-note-highlight {
+  background: rgba(255, 214, 0, 0.5);
+  border-radius: 2px;
+}
+
+.pdf-note-underline {
+  border-bottom: 2px solid rgba(220, 38, 38, 0.78);
+}
+
+.pdf-notes.is-erasing .pdf-note {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.pdf-notes.is-erasing .pdf-note:hover {
+  outline: 2px solid rgba(220, 38, 38, 0.85);
+  outline-offset: 1px;
+}
+
+/* La sélection reste visible par-dessus les annotations : le navigateur la
+ * peint au-dessus de tout, sans quoi un surlignage jaune la masquerait. */
+.pdf-stage ::selection {
+  background: rgba(13, 76, 200, 0.32);
+}
+
+/* Le cadre entier devient un curseur de texte pendant qu'un outil d'annotation
+ * est actif : on comprend qu'il faut sélectionner, pas cliquer. */
+.pdf-stage.is-annotating {
+  cursor: text;
+}
+
+.pdf-stage.is-erasing {
+  cursor: crosshair;
+}
+
 /* Le numéro de la page, posé sur son coin. */
 .pdf-page-number {
   position: absolute;
@@ -2774,6 +3029,7 @@ main {
   color: #fff;
   font-size: 0.72rem;
   font-weight: 700;
+  z-index: 3;
 }
 
 /* ------------------------------------------------------------------
@@ -2931,6 +3187,40 @@ main {
 
   .reader-full-download-label {
     display: none;
+  }
+
+  /* Sur un écran étroit, les outils se réduisent à leurs pastilles : les
+   * libellés disparaîtraient de toute façon, et la barre doit rester sur une
+   * ligne — retour, titre, outils, téléchargement. */
+  .reader-tools {
+    gap: 0.25rem;
+  }
+
+  .reader-tool {
+    padding: 0.42rem 0.5rem;
+  }
+
+  .reader-tool-label {
+    display: none;
+  }
+
+  .reader-tool-clear {
+    font-size: 0.76rem;
+  }
+
+  .reader-hint {
+    font-size: 0.78rem;
+    padding: 0.45rem 0.7rem;
+  }
+
+  .reader-resume {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.7rem;
+  }
+
+  .reader-resume-restart {
+    font-size: 0.76rem;
+    padding: 0.28rem 0.55rem;
   }
 
   .reader-doc-word,

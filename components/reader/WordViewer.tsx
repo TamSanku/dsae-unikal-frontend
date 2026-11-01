@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ReaderError, ReaderSpinner } from '@/components/reader/ReaderStates';
 import { useDocumentBytes } from '@/components/reader/useDocumentBytes';
+import { useScrollMemory } from '@/components/reader/useScrollMemory';
 
 /*
  * Le Word, converti en HTML lisible dans la page.
@@ -23,14 +24,23 @@ export default function WordViewer({
   url,
   download,
   onDownload,
+  storageKey,
+  resetTick,
 }: {
   url: string;
   download: string;
   onDownload: () => void;
+  storageKey: string;
+  resetTick: number;
 }) {
   const bytes = useDocumentBytes(url);
   const [html, setHtml] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
+  /* Le document défile dans son cadre, pas dans le corps : la position se
+   * mesure donc sur le cadre (`stageRef`), et le HTML se monte dans la feuille
+   * (`hostRef`). Confondre les deux ferait mesurer une hauteur nulle, et la
+   * reprise ne mènerait nulle part. */
+  const stageRef = useScrollMemory<HTMLDivElement>(storageKey, resetTick);
   const hostRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -73,12 +83,16 @@ export default function WordViewer({
     for (const node of Array.from(parsed.body.childNodes)) {
       host.appendChild(document.importNode(node, true));
     }
-  }, [html]);
+  }, [html, hostRef]);
 
   if (bytes.status === 'loading') return <ReaderSpinner label="Conversion du document…" />;
   if (bytes.status === 'error') return <ReaderError message={bytes.message} download={download} onDownload={onDownload} />;
   if (failure) return <ReaderError message={failure} download={download} onDownload={onDownload} />;
   if (html === null) return <ReaderSpinner label="Conversion du document…" />;
 
-  return <div className="reader-doc reader-doc-word" ref={hostRef} />;
+  return (
+    <div className="reader-stage reader-stage-plain" ref={stageRef}>
+      <div className="reader-doc reader-doc-word" ref={hostRef} />
+    </div>
+  );
 }

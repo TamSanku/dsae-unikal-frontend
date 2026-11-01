@@ -89,8 +89,38 @@ inventé : sans document joint, la fiche affiche un message au lieu des boutons.
   import statique.
 - **Le retour du navigateur ferme le lecteur**, il ne quitte pas la fiche : un
   état est poussé dans l'historique à l'ouverture, et retiré à la fermeture.
-  Échap ferme aussi, le focus entre sur le bouton « Retour », et le défilement
-  du corps est figé pendant la lecture.
+  Échap ferme aussi (l'outil actif d'abord, le lecteur ensuite), le focus entre
+  sur le bouton « Retour », et le défilement du corps est figé pendant la
+  lecture.
+- **L'en-tête du site reste visible pendant la lecture.** Le lecteur ne couvre
+  pas l'écran depuis le bord : il commence **sous** la barre de navigation, dont
+  la hauteur est mesurée et suivie (`--reader-top`, `ResizeObserver`) car elle
+  change entre bureau et téléphone. La zone de lecture garde ainsi ~91 % de
+  l'écran, et le visiteur peut quitter le document par le menu à tout moment.
+- **Le lecteur monte à `z-index: 70`**, au-dessus de l'en-tête collant (30) et
+  du bandeau de cookies (60) — sinon ses commandes seraient recouvertes. Le menu
+  mobile (80) reste au-dessus de tout.
+
+### Annotations et reprise de lecture
+
+- **Annotations (surligner, souligner, gommer) : PDF seulement.** C'est le seul
+  format dont le texte est sélectionnable ; les autres gardent la barre nue
+  plutôt qu'un bouton inerte. La sélection est découpée en rectangles rapportés
+  à leur page **par géométrie** (comparaison aux cadres des pages), jamais par
+  `elementFromPoint` : celui-ci dépendrait de ce qui recouvre le point et
+  échouerait pour un texte hors écran.
+- **Les annotations vivent dans le navigateur du visiteur**, jamais au serveur
+  (`lib/reader-notes.ts`, `localStorage`). Elles sont repérées en **fraction de
+  la page** (0–1), donc stables au changement de zoom.
+- **`addNotes` prend un lot**, pas une annotation : une sélection traversant
+  plusieurs pages produit un groupe par page, et tout doit s'enregistrer en une
+  fois — sinon chaque appel écraserait le précédent (même liste de départ).
+- **La reprise** garde la page pour le PDF (`useReadingProgress`), et une
+  **fraction de défilement** pour Word, classeur et texte (`useScrollMemory`).
+  Le crochet rend une **référence de rappel**, pas un objet : ces visionneuses
+  affichent d'abord un sablier, et leur cadre n'existe pas au premier rendu. Un
+  avis propose « Recommencer au début », qui oublie la position sans recharger
+  la page.
 
 ## Réglages du portail : le logo du site
 

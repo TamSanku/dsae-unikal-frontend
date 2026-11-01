@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useScrollMemory } from '@/components/reader/useScrollMemory';
 import { ReaderError, ReaderSpinner } from '@/components/reader/ReaderStates';
 import { useDocumentBytes } from '@/components/reader/useDocumentBytes';
 
@@ -22,12 +23,17 @@ export default function SheetViewer({
   url,
   download,
   onDownload,
+  storageKey,
+  resetTick,
 }: {
   url: string;
   download: string;
   onDownload: () => void;
+  storageKey: string;
+  resetTick: number;
 }) {
   const bytes = useDocumentBytes(url);
+  const stageRef = useScrollMemory<HTMLDivElement>(storageKey, resetTick);
   const [sheets, setSheets] = useState<Sheet[] | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const [active, setActive] = useState(0);
@@ -97,7 +103,7 @@ export default function SheetViewer({
           ))}
         </div>
       )}
-      <div className="sheet-stage">
+      <div className="sheet-stage" ref={stageRef}>
         <div className="reader-doc reader-doc-sheet" ref={hostRef} />
       </div>
     </div>

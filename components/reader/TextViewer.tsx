@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ReaderError, ReaderSpinner } from '@/components/reader/ReaderStates';
 import { useDocumentBytes } from '@/components/reader/useDocumentBytes';
+import { useScrollMemory } from '@/components/reader/useScrollMemory';
 
 /*
  * Le texte brut, affiché tel quel.
@@ -16,12 +17,17 @@ export default function TextViewer({
   url,
   download,
   onDownload,
+  storageKey,
+  resetTick,
 }: {
   url: string;
   download: string;
   onDownload: () => void;
+  storageKey: string;
+  resetTick: number;
 }) {
   const bytes = useDocumentBytes(url);
+  const stageRef = useScrollMemory<HTMLDivElement>(storageKey, resetTick);
   const [text, setText] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
 
@@ -40,7 +46,7 @@ export default function TextViewer({
   if (text === null) return <ReaderSpinner label="Ouverture du fichier…" />;
 
   return (
-    <div className="reader-stage reader-stage-plain">
+    <div className="reader-stage reader-stage-plain" ref={stageRef}>
       <pre className="reader-doc reader-doc-text">{text}</pre>
     </div>
   );
