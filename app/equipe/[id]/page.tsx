@@ -27,7 +27,13 @@ export default async function TeamDetailPage({ params }: { params: { id: string 
             <Image src={withFallback(member.image)} alt={member.name} width={900} height={1000} />
           </div>
           <div className="detail-copy">
-            {member.category && <span className="mini-tag">{member.category}</span>}
+            {(member.categories ?? []).length > 0 && (
+              <p className="publication-tags">
+                {(member.categories ?? []).map((category) => (
+                  <span className="mini-tag" key={category}>{category}</span>
+                ))}
+              </p>
+            )}
             <h1>{member.name}</h1>
             {member.role && <p className="role-page">{member.role}</p>}
             <ul className="profile-meta">

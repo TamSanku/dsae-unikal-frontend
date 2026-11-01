@@ -43,6 +43,12 @@ export default function PeopleCatalog({
 
   const tabOf = (member: TeamMember) => (isAlumni ? member.domain : member.category);
 
+  /* L'équipe onglette par catégorie, et une personne peut en relever plusieurs :
+   * elle apparaît alors sous chacune de ses catégories. */
+  const tabMatch = isAlumni
+    ? undefined
+    : (member: TeamMember, tab: string) => (member.categories ?? []).includes(tab);
+
   const hrefOf = (member: TeamMember) => (isAlumni ? `/alumni/${member.id}` : `/equipe/${member.id}`);
 
   /* Un filtre par domaine : on y choisit le niveau d'études. Seuls les alumni
@@ -69,6 +75,7 @@ export default function PeopleCatalog({
       }
       tabs={tabs}
       tabOf={tabOf}
+      tabMatch={tabMatch}
       filters={filters}
       initialTab={initialTab}
       resultNoun="profil"
@@ -79,7 +86,9 @@ export default function PeopleCatalog({
             <Image src={withFallback(member.image)} alt={member.name} width={600} height={700} />
           </div>
           <div className="profile-body">
-            {member.category && <span className="mini-tag">{member.category}</span>}
+            {(member.categories ?? []).map((category) => (
+              <span className="mini-tag" key={category}>{category}</span>
+            ))}
             <h4>{member.name}</h4>
             {member.role && <p className="role">{member.role}</p>}
             {member.department && <p>{member.department}</p>}

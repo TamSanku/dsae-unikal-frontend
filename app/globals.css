@@ -146,6 +146,88 @@ main {
   border-radius: 999px;
 }
 
+/* Une entrée à sous-menu (« Aide et support ») : un bouton, un « + », et le
+ * sous-menu qui s'ouvre en dessous. */
+.nav-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-group-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav-group-plus {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+}
+
+.nav-group-plus::before,
+.nav-group-plus::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 10px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translateY(-50%);
+}
+
+.nav-group-plus::after {
+  transform: translateY(-50%) rotate(90deg);
+  transition: opacity 0.2s ease;
+}
+
+.nav-group.is-open .nav-group-plus::after {
+  opacity: 0;
+}
+
+.nav-submenu {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 230px;
+  display: none;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  z-index: 5;
+}
+
+.nav-group.is-open .nav-submenu {
+  display: flex;
+}
+
+.nav-sublink {
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  color: #16233c;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-sublink:hover {
+  background: #edf3ff;
+  color: #0d4cc8;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -860,6 +942,55 @@ main {
     bottom: 4px;
     width: 42px;
     background: #8db5ff;
+  }
+
+  /* Dans le tiroir, le sous-menu s'insère dans la liste au lieu de flotter. */
+  .main-nav .nav-group {
+    display: block;
+    width: 100%;
+  }
+
+  .main-nav .nav-group-trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 2px;
+    color: #dfe7f7;
+    font-size: 1.08rem;
+  }
+
+  .main-nav .nav-group-trigger.active,
+  .main-nav .nav-group-trigger:hover {
+    color: #8db5ff;
+  }
+
+  .main-nav .nav-submenu {
+    position: static;
+    transform: none;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 4px 0.4rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .main-nav .nav-group:not(.is-open) .nav-submenu {
+    display: none;
+  }
+
+  .main-nav .nav-sublink {
+    padding: 8px 2px 8px 0.9rem;
+    border-left: 2px solid rgba(141, 181, 255, 0.35);
+    border-radius: 0;
+    color: #cdd8ee;
+    font-size: 0.98rem;
+  }
+
+  .main-nav .nav-sublink:hover {
+    background: transparent;
+    color: #8db5ff;
   }
 
   .menu-close {
@@ -1941,11 +2072,13 @@ main {
   gap: 1.1rem;
 }
 
+/* La recherche et l'icône de filtres tiennent sur une seule ligne ; le panneau
+ * des filtres, quand il est ouvert, occupe toute la largeur en dessous. */
 .catalog-controls {
   display: grid;
-  grid-template-columns: minmax(240px, 1.4fr) minmax(0, 2fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 14px;
-  align-items: end;
+  align-items: center;
   padding: 1.1rem 1.2rem;
   border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 22px;
@@ -1953,9 +2086,23 @@ main {
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
 }
 
+/* La loupe vit dans la barre : le champ se décale pour lui laisser la place. */
+.catalog-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.catalog-search svg {
+  position: absolute;
+  left: 0.95rem;
+  color: #7c8aa5;
+  pointer-events: none;
+}
+
 .catalog-search input {
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem 1rem 0.85rem 2.7rem;
   border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 14px;
   background: #f9fbff;
@@ -1968,10 +2115,58 @@ main {
   outline-offset: 1px;
 }
 
+/* L'icône d'entonnoir : elle ouvre et referme les filtres. */
+.catalog-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.05rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+  background: #f9fbff;
+  color: #33415c;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.catalog-filter-toggle:hover {
+  border-color: rgba(13, 76, 200, 0.4);
+  color: #0d4cc8;
+}
+
+.catalog-filter-toggle.is-open {
+  border-color: #0d4cc8;
+  background: #edf3ff;
+  color: #0d4cc8;
+}
+
+.catalog-filter-toggle.has-active {
+  border-color: rgba(13, 76, 200, 0.45);
+}
+
+.catalog-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: #0d4cc8;
+  color: #fff;
+  font-size: 0.72rem;
+  font-style: normal;
+}
+
 .catalog-filters {
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.07);
 }
 
 .catalog-filter {
@@ -1999,17 +2194,34 @@ main {
   color: #101827;
 }
 
-/* Les onglets passent à la ligne : aucun ne doit rester hors de vue. */
+/* Les onglets tiennent sur une seule ligne, quelle que soit la largeur : la
+ * rangée défile horizontalement au lieu de passer à la ligne, pour que les
+ * onglets restent alignés et lisibles d'un seul coup d'œil. */
 .catalog-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.catalog-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.catalog-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.catalog-tabs::-webkit-scrollbar-thumb {
+  background: rgba(13, 76, 200, 0.25);
+  border-radius: 999px;
 }
 
 .catalog-tab {
   flex: none;
-  max-width: 100%;
   border: 1px solid rgba(13, 76, 200, 0.2);
   border-radius: 999px;
   padding: 0.5rem 1rem;
@@ -2017,10 +2229,9 @@ main {
   color: #33415c;
   font-size: 0.85rem;
   font-weight: 700;
-  /* Un intitulé très long (un domaine, par exemple) passe à la ligne plutôt que
-   * de déborder : il reste lisible en entier sur un téléphone. */
-  white-space: normal;
-  overflow-wrap: anywhere;
+  /* Un intitulé très long (un domaine, par exemple) reste sur une ligne : c'est
+   * la rangée qui défile, pas l'onglet qui se coupe. */
+  white-space: nowrap;
   text-align: center;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -2279,12 +2490,20 @@ main {
 }
 
 @media (max-width: 980px) {
-  .catalog-controls {
-    grid-template-columns: 1fr;
-  }
-
   .catalog-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Sur un écran étroit, l'icône d'entonnoir suffit : le mot « Filtres » est
+ * retiré, mais la recherche et l'icône restent sur la même ligne. */
+@media (max-width: 560px) {
+  .catalog-filter-toggle span {
+    display: none;
+  }
+
+  .catalog-filter-toggle {
+    padding: 0.85rem;
   }
 }
 
@@ -2696,6 +2915,65 @@ main {
   margin: 1rem 0 0;
   text-align: center;
   color: #46566d;
+}
+
+/* ---------------------------------------------------------------------------
+   Aide et support.
+   Un sommaire d'ancres, les questions fréquentes (déjà stylées), les guides en
+   trois cartes et le signalement.
+--------------------------------------------------------------------------- */
+
+.aide-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.aide-nav a {
+  padding: 0.6rem 1.1rem;
+  border: 1px solid rgba(13, 76, 200, 0.2);
+  border-radius: 999px;
+  background: #fff;
+  color: #33415c;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.aide-nav a:hover {
+  background: #edf3ff;
+  color: #0d4cc8;
+  border-color: rgba(13, 76, 200, 0.4);
+}
+
+/* Les ancres ne se cachent pas sous l'en-tête collant. */
+.aide-nav,
+#faq,
+#guides,
+#signaler {
+  scroll-margin-top: 110px;
+}
+
+.guide-steps {
+  margin: 0.6rem 0 0;
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #46566d;
+  line-height: 1.6;
+}
+
+.aide-report {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+  max-width: 720px;
+}
+
+.aide-report p {
+  margin: 0;
 }
 
 

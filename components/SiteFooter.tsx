@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useId, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import type { SiteLogo, SiteNav } from '@/lib/backend';
+import { AIDE_LINKS } from '@/lib/aide';
 import BrandMark from './BrandMark';
 import CookieSettingsButton from './CookieSettingsButton';
 
@@ -39,6 +40,7 @@ function buildGroups(nav: SiteNav): FooterGroup[] {
     { id: 'publications', title: 'Publications', href: '/publications', links: nav.publications },
     { id: 's-engager', title: 'S’engager', href: '/s-engager', links: nav.engager },
     { id: 'alumni', title: 'Alumni', href: '/alumni', links: nav.alumni },
+    { id: 'aide', title: 'Aide et support', href: '/aide', links: AIDE_LINKS.map((link) => ({ label: link.label, href: link.href })) },
     {
       id: 'legal',
       title: 'Légal et confiance',
@@ -62,6 +64,7 @@ function activeGroup(pathname: string): string {
     '/actualites',
     '/s-engager',
     '/alumni',
+    '/aide',
     '/mentions-legales',
     '/politique-de-confidentialite',
     '/conditions-d-utilisation',

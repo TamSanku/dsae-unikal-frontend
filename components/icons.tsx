@@ -34,3 +34,22 @@ export function BookIcon({ size = 16 }: { size?: number }) {
     </svg>
   );
 }
+
+/* La loupe : posée dans la barre de recherche, elle dit ce que le champ fait. */
+export function SearchIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </svg>
+  );
+}
+
+/* L'entonnoir : ouvre et referme les filtres, à côté de la recherche. */
+export function FilterIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 5h18l-7 8v6l-4 2v-8z" />
+    </svg>
+  );
+}

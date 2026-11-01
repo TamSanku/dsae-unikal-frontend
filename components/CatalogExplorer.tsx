@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { FilterIcon, SearchIcon } from '@/components/icons';
 
 /*
  * Le catalogue : une barre de recherche, des filtres à côté, des onglets
@@ -36,6 +37,7 @@ export default function CatalogExplorer({
   searchPlaceholder = 'Rechercher…',
   tabs,
   tabOf,
+  tabMatch,
   filters = [],
   renderItem,
   emptyLabel,
@@ -47,6 +49,10 @@ export default function CatalogExplorer({
   searchPlaceholder?: string;
   tabs: CatalogTab[];
   tabOf: (item: any) => string;
+  /** Vrai si l'élément relève de l'onglet donné. Par défaut, on compare
+   * `tabOf(item)` à l'onglet. Une personne peut relever de plusieurs
+   * catégories : la page Équipe s'en sert. */
+  tabMatch?: (item: any, tab: string) => boolean;
   filters?: CatalogFilter[];
   renderItem: (item: any) => ReactNode;
   emptyLabel: string;
@@ -57,6 +63,8 @@ export default function CatalogExplorer({
   const [query, setQuery] = useState('');
   const [tab, setTab] = useState(initialTab);
   const [chosen, setChosen] = useState<Record<string, string>>({});
+  /* Les filtres restent repliés : l'icône d'entonnoir les ouvre et les referme. */
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   /* Un lien qui ne change que la requête (le pied de page, par exemple) réutilise
    * le même composant : l'onglet doit suivre la nouvelle adresse. */
@@ -67,7 +75,7 @@ export default function CatalogExplorer({
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return items.filter((item) => {
-      if (tab && tabOf(item) !== tab) return false;
+      if (tab && !(tabMatch ? tabMatch(item, tab) : tabOf(item) === tab)) return false;
       if (needle && !searchText(item).toLowerCase().includes(needle)) return false;
       for (const filter of filters) {
         const selected = chosen[filter.key] ?? '';
@@ -77,7 +85,7 @@ export default function CatalogExplorer({
       }
       return true;
     });
-  }, [items, query, tab, chosen, filters, tabOf, searchText]);
+  }, [items, query, tab, chosen, filters, tabOf, tabMatch, searchText]);
 
   const activeFilters = filters.filter((filter) => chosen[filter.key]);
 
@@ -85,6 +93,7 @@ export default function CatalogExplorer({
     <div className="catalog">
       <div className="catalog-controls">
         <div className="catalog-search">
+          <SearchIcon size={17} />
           <input
             type="search"
             value={query}
@@ -95,7 +104,21 @@ export default function CatalogExplorer({
         </div>
 
         {filters.length > 0 && (
-          <div className="catalog-filters">
+          <button
+            type="button"
+            className={`catalog-filter-toggle${filtersOpen ? ' is-open' : ''}${activeFilters.length > 0 ? ' has-active' : ''}`}
+            aria-expanded={filtersOpen}
+            aria-controls="catalog-filters-panel"
+            onClick={() => setFiltersOpen((value) => !value)}
+          >
+            <FilterIcon size={17} />
+            <span>Filtres</span>
+            {activeFilters.length > 0 && <em className="catalog-filter-count">{activeFilters.length}</em>}
+          </button>
+        )}
+
+        {filters.length > 0 && filtersOpen && (
+          <div className="catalog-filters" id="catalog-filters-panel">
             {filters.map((filter) => (
               <label key={filter.key} className="catalog-filter">
                 <span>{filter.label}</span>

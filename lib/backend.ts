@@ -61,7 +61,11 @@ export type TeamMember = {
   department: string;
   specialty: string;
   bio: string;
+  /** La catégorie principale (la première de `categories`). */
   category: string;
+  /** Toutes les catégories : une personne peut en relever plusieurs
+   * (gouvernance de l'Université et du DSAE, par exemple). */
+  categories: string[];
   /** Le domaine et le niveau, pour les alumni (facultatif ailleurs). */
   domain: string;
   level: string;
@@ -197,6 +201,11 @@ function normalizeTeamMember(raw: any, index: number): TeamMember {
     specialty: raw.specialty ?? '',
     bio: raw.bio ?? '',
     category: raw.category ?? '',
+    categories: Array.isArray(raw.categories) && raw.categories.length > 0
+      ? raw.categories.filter(Boolean)
+      : raw.category
+        ? [raw.category]
+        : [],
     domain: raw.domain ?? '',
     level: raw.level ?? '',
     image: raw.image ?? raw.photo ?? '',
@@ -558,6 +567,8 @@ type ContentEntry = {
   id: string;
   slug: string | null;
   category: string;
+  /** Toutes les catégories, quand le serveur les donne. */
+  categories?: string[];
   title: string;
   subtitle: string;
   summary: string;
@@ -641,6 +652,15 @@ function normalizePublishedNews(entry: ContentEntry): NewsItem {
   };
 }
 
+/** Les catégories d'un contenu : la liste complète quand le serveur la donne,
+ * sinon la seule catégorie principale. Une personne peut relever de plusieurs
+ * catégories (gouvernance de l'Université et du DSAE, par exemple). */
+function memberCategories(entry: ContentEntry): string[] {
+  const list = Array.isArray(entry.categories) ? entry.categories.filter(Boolean) : [];
+  if (list.length > 0) return list;
+  return entry.category ? [entry.category] : [];
+}
+
 function normalizePublishedMember(entry: ContentEntry): TeamMember {
   return {
     id: entry.slug ?? entry.id,
@@ -650,6 +670,7 @@ function normalizePublishedMember(entry: ContentEntry): TeamMember {
     specialty: entry.category,
     bio: entry.summary || contentParagraphs(entry).join('\n\n'),
     category: entry.category,
+    categories: memberCategories(entry),
     domain: entry.domain ?? '',
     level: entry.level ?? '',
     image: contentImage(entry),
