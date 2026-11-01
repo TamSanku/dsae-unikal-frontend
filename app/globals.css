@@ -2464,3 +2464,76 @@ main {
     flex: 1;
   }
 }
+
+.footer-subheading {
+  margin: 1.35rem 0 0.7rem;
+  color: #dfe7f7;
+  font-size: 0.95rem;
+}
+
+.faq-list {
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.faq-item {
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+}
+
+.faq-item summary {
+  position: relative;
+  padding: 1.1rem 3.25rem 1.1rem 1.25rem;
+  color: #101827;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  transform: translateY(-50%);
+  color: #0d4cc8;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.faq-item[open] summary::after {
+  content: '−';
+}
+
+.faq-answer {
+  padding: 0 1.25rem 1.2rem;
+  color: #46566d;
+  line-height: 1.7;
+}
+
+.faq-answer p {
+  margin: 0;
+}
+
+.faq-answer a,
+.faq-contact-note a {
+  color: #0d4cc8;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.faq-contact-note {
+  margin: 1rem 0 0;
+  text-align: center;
+  color: #46566d;
+}

@@ -26,6 +26,10 @@ export default function MentionsLegalesPage() {
           ],
         },
         {
+          heading: 'Conception du site',
+          paragraphs: ['Concepteur du site : MALABA ALEWO Jean-Martin.'],
+        },
+        {
           heading: 'Contenus et propriété intellectuelle',
           paragraphs: [
             'Les textes, documents, marques, photographies et autres contenus affichés restent soumis aux droits de leurs auteurs ou titulaires respectifs. Sauf indication contraire, leur présence sur ce portail n’accorde pas d’autorisation de reproduction ou de réutilisation.',

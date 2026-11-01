@@ -1,6 +1,17 @@
 import ContactForm from '@/components/ContactForm';
 
-export default function ContactPage() {
+type ContactPageProps = {
+  searchParams?: {
+    subject?: string | string[];
+  };
+};
+
+export default function ContactPage({ searchParams }: ContactPageProps) {
+  const subject = Array.isArray(searchParams?.subject)
+    ? searchParams.subject[0]
+    : searchParams?.subject;
+  const defaultSubject = subject === 'report' ? 'Signaler un problème sur le site' : '';
+
   return (
     <div className="page-shell">
       <section className="page-hero small-hero">
@@ -21,7 +32,7 @@ export default function ContactPage() {
               </p>
             </div>
           </div>
-          <ContactForm />
+          <ContactForm defaultSubject={defaultSubject} />
         </div>
       </section>
     </div>

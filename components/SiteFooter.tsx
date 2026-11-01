@@ -51,6 +51,12 @@ export default function SiteFooter() {
             <li><Link href="/s-engager">Proposer un partenariat</Link></li>
             <li><Link href="/contact">Formulaire de contact</Link></li>
           </ul>
+          <h4 className="footer-subheading">Assistance</h4>
+          <ul className="footer-links contact-list">
+            <li><Link href="/faq">FAQ</Link></li>
+            <li><Link href="/contact">Nous contacter</Link></li>
+            <li><Link href="/contact?subject=report">Signaler un problème</Link></li>
+          </ul>
         </div>
       </div>
 
