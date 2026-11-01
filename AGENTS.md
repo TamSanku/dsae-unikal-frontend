@@ -66,6 +66,16 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
 - Le logo du site se pose de la même façon, sans vignette ni cadre.
 - Page Université : le bouton « En savoir plus sur l'université de Kalemie »
   mène au site officiel https://unikal.ac.cd.
+- Menu principal (`components/SiteHeader.tsx`, `navItems`) et pied de page : la
+  même suite, `Accueil → Actualités → À propos → Université → Équipe → Recherche
+  → Publications → S’engager → Alumni` (puis « Légal et confiance » au pied de
+  page). `S’engager` mène à `/s-engager`.
+- Fin de fiche : un carrousel « à lire aussi » (`components/RelatedCarousel.tsx`,
+  `'use client'`) ferme `app/actualites/[slug]` (les autres actualités) et
+  `app/publications/[id]` (les autres documents, même domaine d'abord). Les
+  cartes sont écrites par la page et passées en `children` ; le composant ne
+  gère que le défilement (flèches d'un cran, éteintes aux deux bouts). La
+  section disparaît s'il n'y a rien d'autre à lire.
 - Pied de page : fond blanc beige (`#f6f1e7`). Les rubriques sont en accordéon
   sur **tous** les écrans (`components/SiteFooter.tsx`, `'use client'`). Une
   rubrique sans sous-page est un lien direct. Les sous-menus de Recherche,
