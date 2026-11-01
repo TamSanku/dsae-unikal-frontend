@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { getPartners } from '@/lib/backend';
 import { withFallback } from '@/lib/fallback';
+import { ENGAGER_TABS } from '@/lib/engager';
 import ContactForm from '@/components/ContactForm';
 import EngagerTabs from '@/components/EngagerTabs';
 
@@ -9,9 +10,18 @@ import EngagerTabs from '@/components/EngagerTabs';
  * partenaires. Les partenaires viennent de la rubrique `dsae-partners` du
  * backoffice ; tant qu'elle est vide, l'onglet le dit. Aucun partenaire n'est
  * inventé.
+ *
+ * Le paramètre `volet` ouvre d'emblée le volet voulu : le pied de page s'en sert
+ * pour ses liens. Un volet inconnu est ignoré — on retombe sur le premier.
  */
-export default async function EngagerPage() {
+export default async function EngagerPage({
+  searchParams,
+}: {
+  searchParams?: { volet?: string | string[] };
+}) {
   const partners = await getPartners();
+  const requested = Array.isArray(searchParams?.volet) ? searchParams?.volet[0] : searchParams?.volet;
+  const initialTab = ENGAGER_TABS.some((tab) => tab.key === requested) ? requested! : '';
 
   const partnersPanel = (
     <div className="engager-partners">
@@ -62,6 +72,16 @@ export default async function EngagerPage() {
     </div>
   );
 
+  /* Les libellés viennent de la définition partagée : la page et le pied de page
+   * ne peuvent pas se contredire. */
+  const labelOf = (key: string) => ENGAGER_TABS.find((tab) => tab.key === key)?.label ?? key;
+
+  const panels = [
+    { key: 'partenariat', label: labelOf('partenariat'), content: proposalPanel },
+    { key: 'contact', label: labelOf('contact'), content: contactPanel },
+    { key: 'partenaires', label: labelOf('partenaires'), content: partnersPanel },
+  ];
+
   return (
     <div className="page-shell">
       <section className="page-hero small-hero">
@@ -73,13 +93,7 @@ export default async function EngagerPage() {
 
       <section className="section">
         <div className="container">
-          <EngagerTabs
-            panels={[
-              { key: 'partenariat', label: 'Proposer le partenariat', content: proposalPanel },
-              { key: 'contact', label: 'Nous contacter', content: contactPanel },
-              { key: 'partenaires', label: 'Nos partenaires', content: partnersPanel },
-            ]}
-          />
+          <EngagerTabs initialTab={initialTab} panels={panels} />
         </div>
       </section>
     </div>

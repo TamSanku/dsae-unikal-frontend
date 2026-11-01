@@ -76,15 +76,26 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
   cartes sont écrites par la page et passées en `children` ; le composant ne
   gère que le défilement (flèches d'un cran, éteintes aux deux bouts). La
   section disparaît s'il n'y a rien d'autre à lire.
+- Le titre d'une fiche d'actualité (`.news-detail .detail-copy h1`) est réduit
+  comme celui d'une publication : `clamp(1.5rem, 2vw, 2.05rem)`.
 - Pied de page : fond blanc beige (`#f6f1e7`). Les rubriques sont en accordéon
   sur **tous** les écrans (`components/SiteFooter.tsx`, `'use client'`). Une
-  rubrique sans sous-page est un lien direct. Les sous-menus de Recherche,
-  Équipe et Publications viennent du contenu publié via `getSiteNav()`
-  (`lib/backend.ts`), appelé dans `app/layout.tsx` et passé en prop `nav` ; la
-  rubrique de la page ouverte est dépliée et l'entrée courante marquée
-  (`is-current`). Les entrées d'« Actualités » passent `?type=<catégorie>`. Les
-  pages `actualites`, `equipe` et `publications` lisent ce paramètre
-  (`?type=`, `?category=`, `?domain=`) et l'ouvrent via `initialTab`.
+  rubrique sans sous-page est un lien direct, **sans** le repère « + » ; toute
+  rubrique qui a des sous-liens porte le « + ». Les sous-menus viennent du
+  contenu publié via `getSiteNav()` (`lib/backend.ts`), appelé dans
+  `app/layout.tsx` et passé en prop `nav`. `getSiteNav` fournit `news` (tous les
+  types d'actualité), `team`, `research`, `publications`, `engager` (les volets
+  de `lib/engager.ts`) et `alumni` (domaines des diplômés publiés, à défaut la
+  liste de référence).
+- Le pied de page marque l'entrée courante d'après le **chemin et la requête**
+  (`isHere`, table `LINK_PARAM`) : `?type=` pour Actualités, `?domain=` pour
+  Publications et Alumni, `?volet=` pour S'engager. La rubrique ouverte est
+  dépliée (`activeGroup`). `SiteFooter` lit `useSearchParams()`, donc il est
+  enveloppé d'un `<Suspense>` dans `app/layout.tsx` — sans quoi toutes les pages
+  échouent au prérendu.
+- Les pages `actualites`, `equipe`, `publications`, `alumni` et `s-engager`
+  lisent leur paramètre (`?type=`, `?category=`, `?domain=`, `?volet=`) et
+  l'ouvrent via `initialTab`. Un paramètre inconnu est ignoré.
 
 ## Piège connu (backend)
 

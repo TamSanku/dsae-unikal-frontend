@@ -2774,6 +2774,13 @@ main {
   transition: transform 0.25s ease;
 }
 
+/* Le titre d'une fiche d'actualité : plus sobre que le titre d'une page de
+ * rubrique, pour laisser la place au texte. */
+.news-detail .detail-copy h1 {
+  font-size: clamp(1.5rem, 2vw, 2.05rem);
+  line-height: 1.25;
+}
+
 .footer-accordion-chevron::before,
 .footer-accordion-chevron::after {
   content: '';

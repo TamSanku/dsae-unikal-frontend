@@ -6,6 +6,8 @@
  * page l'affiche au lieu de montrer un contenu inventé.
  */
 
+import { ENGAGER_TABS, engagerHref } from '@/lib/engager';
+
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'https://dsae-backend.onrender.com/api';
 
@@ -326,13 +328,17 @@ export type SiteNav = {
   research: { label: string; href: string }[];
   team: { label: string; href: string }[];
   publications: { label: string; href: string }[];
+  news: { label: string; href: string }[];
+  alumni: { label: string; href: string }[];
+  engager: { label: string; href: string }[];
 };
 
 export async function getSiteNav(): Promise<SiteNav> {
-  const [areas, taxonomy, publications] = await Promise.all([
+  const [areas, taxonomy, publications, alumni] = await Promise.all([
     getResearchAreas(),
     getTaxonomy(),
     getPublications(),
+    getAlumni(),
   ]);
 
   const research = areas.map((area) => ({ label: area.title, href: `/recherche/${area.slug}` }));
@@ -349,7 +355,26 @@ export async function getSiteNav(): Promise<SiteNav> {
     href: `/publications?domain=${encodeURIComponent(domain)}`,
   }));
 
-  return { research, team, publications: pub };
+  /* Les types d'actualité : la liste de référence du serveur, en entier — c'est
+   * elle qui donne les onglets de la page, le pied de page ne fait que les
+   * reprendre. */
+  const news = taxonomy.newsCategories.map((category) => ({
+    label: category,
+    href: `/actualites?type=${encodeURIComponent(category)}`,
+  }));
+
+  /* Les Alumni : les domaines réellement portés par des diplômés publiés, et à
+   * défaut la liste de référence — comme pour les publications. */
+  const alumniDomains = Array.from(new Set(alumni.map((item) => item.domain).filter(Boolean)));
+  const alumniList = alumniDomains.length > 0 ? alumniDomains : taxonomy.domains;
+  const alumniNav = alumniList.map((domain) => ({
+    label: domain,
+    href: `/alumni?domain=${encodeURIComponent(domain)}`,
+  }));
+
+  const engager = ENGAGER_TABS.map((tab) => ({ label: tab.label, href: engagerHref(tab.key) }));
+
+  return { research, team, publications: pub, news, alumni: alumniNav, engager };
 }
 
 /*

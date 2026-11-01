@@ -1,4 +1,5 @@
 import './globals.css';
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { getSiteLogo, getSiteNav } from '@/lib/backend';
 import SiteHeader from '@/components/SiteHeader';
@@ -30,7 +31,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="site-body">
         <SiteHeader logo={logo} />
         <main>{children}</main>
-        <SiteFooter logo={logo} nav={nav} />
+        {/* Le pied de page lit la requête pour marquer l'entrée courante : la
+            limite de suspense permet aux pages de rester prérendues. */}
+        <Suspense fallback={null}>
+          <SiteFooter logo={logo} nav={nav} />
+        </Suspense>
         <AnalyticsTracker />
         <CookieConsent />
       </body>
