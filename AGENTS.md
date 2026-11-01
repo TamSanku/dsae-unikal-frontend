@@ -7,12 +7,18 @@ Render `dsae-backend` avec le back-office `dsae-admin`.
 
 ```bash
 npm install
-npx next build      # le build doit passer sans erreur ni avertissement
+npm run build       # copie le moteur PDF.js puis `next build`, sans erreur ni avertissement
 npx next start      # sert le build de production (utile pour voir les erreurs runtime)
 ```
 
 L'URL du backend vient de `NEXT_PUBLIC_API_URL` (repli :
 `https://dsae-backend.onrender.com/api`).
+
+`npm run dev` et `npm run build` commencent tous deux par
+`npm run sync:pdf-worker` : le script recopie `pdf.worker.min.mjs` de
+`pdfjs-dist` dans `public/`. Le fichier n'est **pas** versionné (il est dans
+`.gitignore`) et suit la version installée — le lecteur PDF ne charge donc
+jamais un moteur qui ne correspond pas à sa bibliothèque.
 
 ## Pièges à connaître
 
@@ -35,6 +41,13 @@ L'URL du backend vient de `NEXT_PUBLIC_API_URL` (repli :
   rattachent à l'origine du backend via `mediaUrl()` de `lib/backend.ts`. Ne pas
   concaténer la base complète (`.../api`) : cela donne `/api/api/...` → 404.
 
+- **`xlsx` vient du CDN SheetJS, pas de npm.** `package.json` pointe sur
+  `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`. La version npm est
+  figée à 0.18.5, qui porte des vulnérabilités connues (prototype pollution) —
+  et ce lecteur ouvre des fichiers **téléversés**, donc non fiables. Ne pas
+  « simplifier » en `npm i xlsx`. L'alternative serait `exceljs`, mais il ne lit
+  pas le `.xls` ni l'`.ods`.
+
 ## Vérifier un déploiement Vercel sans le tableau de bord
 
 ```bash
@@ -43,6 +56,41 @@ curl -s https://dsae-unikal-frontend.vercel.app/<page> | grep -c "Une erreur est
 `0` = pas d'erreur. Les pages dynamiques sont servies côté serveur : le HTML
 renvoyé contient déjà le contenu réel (les pages statiques, elles, montrent le
 squelette « Chargement du contenu scientifique... »).
+
+## Le lecteur plein écran (`components/DocumentReader.tsx`)
+
+« Lire », sur une fiche de publication, n'ouvre plus un onglet : le document
+prend tout l'écran par-dessus la fiche, qui reste en dessous. Rien n'est
+inventé : sans document joint, la fiche affiche un message au lieu des boutons.
+
+- **Le nom du fichier n'apparaît jamais.** La barre haute porte le retour et le
+  **titre de l'article** — jamais `DSAE-UNIKAL_04.pdf`. C'est aussi la règle du
+  protocole (voir « Pièges à connaître »).
+- **Pas de `<iframe>` pour un PDF.** Un `<iframe>` ou un `<embed>` n'ouvre rien
+  sur Android et fait apparaître le bouton « Ouvrir » du lecteur natif, ce qui
+  faisait sortir le visiteur. Le PDF est dessiné dans la page par PDF.js
+  (`react-pdf`), avec le moteur servi depuis notre domaine (`/pdf.worker.min.mjs`).
+- **La visionneuse suit le format** (`lib/document-kind.ts`) : PDF → `react-pdf` ;
+  `.docx` → `mammoth`, converti en HTML ; classeurs et CSV → `xlsx` (SheetJS),
+  une feuille par onglet ; diaporamas et anciens formats bureautiques →
+  visionneuse Office en ligne dans un `<iframe>` ; image, son, vidéo, texte →
+  affichage direct ; le reste → message clair avec le téléchargement.
+- **`.doc` et `.rtf` ne passent pas par mammoth** : il ne lit que le format
+  OOXML, un ancien `.doc` lui arrive illisible. Ils vont à la visionneuse en
+  ligne, qui les affiche vraiment.
+- **Le HTML converti (Word, classeur) est monté par le navigateur**, jamais par
+  `dangerouslySetInnerHTML` : un document venu de l'extérieur n'écrit pas dans
+  notre page. Le texte brut est posé comme nœud de texte, pas comme HTML.
+- **Le zoom PDF est une fraction de la largeur disponible**, pas des pixels :
+  sur téléphone, « 100 % » montre la page entière, sans défilement horizontal.
+- **Le lecteur pèse lourd** (PDF.js, mammoth, SheetJS). Il est chargé en
+  `dynamic(() => import(...), { ssr: false })` **au clic sur « Lire »** : la
+  fiche reste à ~5 ko, sinon elle monterait à ~116 ko. Ne pas le remonter en
+  import statique.
+- **Le retour du navigateur ferme le lecteur**, il ne quitte pas la fiche : un
+  état est poussé dans l'historique à l'ouverture, et retiré à la fermeture.
+  Échap ferme aussi, le focus entre sur le bouton « Retour », et le défilement
+  du corps est figé pendant la lecture.
 
 ## Réglages du portail : le logo du site
 

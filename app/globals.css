@@ -2507,86 +2507,142 @@ main {
 }
 
 /* ------------------------------------------------------------------
- * Le lecteur de document, ouvert dans la page.
+ * Le lecteur plein écran.
+ *
+ * Le document prend tout l'écran, par-dessus la fiche. Trois étages : la barre
+ * haute (retour, titre, téléchargement), le corps (le document), et le pied
+ * (les pages, pour un PDF). Seul le corps défile.
  * ------------------------------------------------------------------ */
-.reader-overlay {
+.reader-full {
   position: fixed;
   inset: 0;
-  z-index: 60;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(9, 17, 33, 0.72);
-  backdrop-filter: blur(2px);
-}
-
-.reader-window {
+  z-index: 80;
   display: flex;
   flex-direction: column;
-  width: min(1080px, 100%);
-  height: min(90vh, 900px);
+  background: #eef1f6;
+}
+
+.reader-full-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem 1rem;
   background: #fff;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 30px 70px rgba(2, 8, 23, 0.45);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+  /* L'encoche d'un téléphone ne doit pas manger le bouton Retour. */
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
 }
 
-.reader-bar {
-  display: flex;
+.reader-back {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 999px;
   background: #f6f8fc;
-}
-
-.reader-title {
+  color: #0b1c3d;
   font-weight: 700;
-  color: #101827;
-}
-
-.reader-tools {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.reader-download {
-  padding: 0.45rem 0.8rem;
-  font-size: 0.82rem;
-}
-
-.reader-close {
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 10px;
-  background: #e6ecf7;
-  color: #101827;
-  font-size: 1.4rem;
-  line-height: 1;
+  font-size: 0.9rem;
   cursor: pointer;
 }
 
-.reader-close:hover {
-  background: #d6e0f2;
+.reader-back:hover {
+  background: #e6ecf7;
 }
 
+.reader-full-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0b1c3d;
+  /* Un titre long se coupe sur une ligne, avec des points de suspension : la
+   * barre garde sa hauteur, le document garde sa place. Le titre entier reste
+   * lisible dans l'attribut `title`, et sur la fiche, juste en dessous. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reader-full-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: #0d4cc8;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.reader-full-download:hover {
+  background: #0b3ea3;
+}
+
+.reader-full-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.reader-full-foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+.reader-pages {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #33415c;
+}
+
+/* Le pied du lecteur : la page à gauche, le zoom à droite. Sur un écran
+ * étroit, les deux restent sur une ligne et se partagent la largeur. */
+.reader-full-foot .reader-pages {
+  margin-right: auto;
+}
+
+.reader-full-foot .reader-zoom {
+  margin-left: auto;
+}
+
+/* Le corps qui centre son contenu : images, son, vidéo, messages. */
 .reader-stage {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: auto;
+  padding: 16px;
+}
+
+.reader-stage-plain {
+  align-items: flex-start;
+  justify-content: center;
   background: #eef1f6;
 }
 
 .reader-frame {
+  flex: 1 1 auto;
   width: 100%;
-  height: 100%;
+  min-height: 0;
   border: 0;
+  background: #fff;
 }
 
 .reader-image {
@@ -2595,16 +2651,300 @@ main {
   object-fit: contain;
 }
 
-.reader-video,
-.reader-audio {
-  width: 100%;
+.reader-video {
+  max-width: 100%;
   max-height: 100%;
 }
 
 .reader-audio {
-  width: min(560px, 90%);
+  width: min(560px, 100%);
 }
 
+/* ------------------------------------------------------------------
+ * Les états : il charge, il a échoué, le format n'est pas affichable.
+ * ------------------------------------------------------------------ */
+.reader-state {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 32px 20px;
+  text-align: center;
+  color: #33415c;
+}
+
+.reader-state h2 {
+  margin: 0;
+  color: #0b1c3d;
+  font-size: 1.15rem;
+}
+
+.reader-state p {
+  margin: 0;
+  max-width: 46ch;
+}
+
+.reader-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(13, 76, 200, 0.22);
+  border-top-color: #0d4cc8;
+  border-radius: 50%;
+  animation: reader-spin 0.8s linear infinite;
+}
+
+@keyframes reader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Le PDF, page par page.
+ *
+ * PDF.js dessine chaque page sur un canvas. Le cadre défile, les pages
+ * s'empilent, le zoom change leur largeur.
+ * ------------------------------------------------------------------ */
+.pdf-viewer {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.reader-zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reader-zoom-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 8px;
+  background: #fff;
+  color: #0b1c3d;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reader-zoom-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.reader-zoom-value {
+  min-width: 4.2ch;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #33415c;
+}
+
+.pdf-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 12px;
+}
+
+.pdf-page {
+  position: relative;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(2, 8, 23, 0.18);
+}
+
+/* Le numéro de la page, posé sur son coin. */
+.pdf-page-number {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(11, 28, 61, 0.72);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------
+ * Word et classeur : le texte converti, monté dans la page.
+ * ------------------------------------------------------------------ */
+.reader-doc {
+  background: #fff;
+  color: #101827;
+}
+
+.reader-doc-word {
+  width: min(820px, 100%);
+  margin: 0 auto;
+  padding: 34px 30px;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(2, 8, 23, 0.12);
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+
+.reader-doc-word h1,
+.reader-doc-word h2,
+.reader-doc-word h3 {
+  color: #0b1c3d;
+  line-height: 1.3;
+}
+
+.reader-doc-word img {
+  max-width: 100%;
+  height: auto;
+}
+
+.reader-doc-word table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.reader-doc-word th,
+.reader-doc-word td {
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+}
+
+.reader-doc-text {
+  width: min(820px, 100%);
+  margin: 0 auto;
+  padding: 28px 26px;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(2, 8, 23, 0.12);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* ------------------------------------------------------------------
+ * Le classeur : une feuille par onglet, le tableau dans un cadre qui défile.
+ * ------------------------------------------------------------------ */
+.sheet-viewer {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-tabs {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  overflow-x: auto;
+  background: #f6f8fc;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.sheet-tab {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 999px;
+  background: #fff;
+  color: #33415c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sheet-tab.is-active {
+  background: #0d4cc8;
+  border-color: #0d4cc8;
+  color: #fff;
+}
+
+.sheet-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+}
+
+.reader-doc-sheet {
+  display: inline-block;
+  min-width: 100%;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.reader-doc-sheet table {
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.reader-doc-sheet td,
+.reader-doc-sheet th {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  padding: 0.35rem 0.6rem;
+  white-space: nowrap;
+}
+
+/* La première ligne d'un classeur est presque toujours son en-tête. */
+.reader-doc-sheet tr:first-child td {
+  background: #f2f6fd;
+  font-weight: 700;
+  color: #0b1c3d;
+}
+
+/* ------------------------------------------------------------------
+ * Le lecteur, sur un écran étroit.
+ *
+ * La barre garde ses trois éléments sur une ligne : le mot « Télécharger »
+ * disparaît, l'icône reste. Le titre se serre entre les deux.
+ * ------------------------------------------------------------------ */
+@media (max-width: 620px) {
+  .reader-full-bar {
+    gap: 0.5rem;
+    padding-left: max(0.6rem, env(safe-area-inset-left));
+    padding-right: max(0.6rem, env(safe-area-inset-right));
+  }
+
+  .reader-back {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .reader-full-title {
+    font-size: 0.9rem;
+  }
+
+  .reader-full-download {
+    padding: 0.45rem 0.6rem;
+  }
+
+  .reader-full-download-label {
+    display: none;
+  }
+
+  .reader-doc-word,
+  .reader-doc-text {
+    padding: 22px 18px;
+    border-radius: 0;
+  }
+
+  .pdf-stage,
+  .sheet-stage,
+  .reader-stage {
+    padding: 10px 8px;
+  }
+}
 /* ------------------------------------------------------------------
  * Les avis : deux boutons, puis la liste ou le formulaire.
  * ------------------------------------------------------------------ */

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { DownloadIcon, ReadIcon } from '@/components/icons';
 import { trackInteraction } from '@/lib/tracker';
 import type { DocumentKind } from '@/lib/document-kind';
@@ -8,11 +9,10 @@ import type { DocumentKind } from '@/lib/document-kind';
 /*
  * Les deux gestes d'un document : lire sur place, télécharger.
  *
- * « Lire » ouvre le document dans la page, sans quitter le site : PDF, image,
- * vidéo ou son s'affichent directement ; un document bureautique (Word, Excel,
- * PowerPoint) passe par la visionneuse Office, qui a besoin d'une adresse
- * publique — c'est le cas de nos médias. Rien n'est inventé : sans document,
- * le message le dit.
+ * « Lire » ouvre le document dans la page, en plein écran, sans quitter le
+ * site : la fiche s'efface derrière le lecteur, qui choisit sa visionneuse
+ * selon le format (PDF, Word, classeur, diaporama, image, son, vidéo, texte).
+ * Rien n'est inventé : sans document, le message le dit.
  *
  * Le nom du fichier n'est jamais montré. Le serveur a déjà deviné le format
  * (`kind`) : le lecteur ne reçoit donc aucune trace du nom d'origine.
@@ -20,14 +20,31 @@ import type { DocumentKind } from '@/lib/document-kind';
  * Les deux gestes sont mesurés : « lire » et « télécharger » sont deux choses
  * différentes, et le back-office doit pouvoir les distinguer. La règle du
  * consentement, elle, vit dans `lib/tracker.ts` et sur le serveur.
+ *
+ * Le lecteur et ses visionneuses ne sont chargés qu'au clic sur « Lire » : ils
+ * pèsent lourd (PDF.js, mammoth, SheetJS), et la plupart des visites ne lisent
+ * pas le document. La fiche s'affiche donc sans eux, et ils arrivent ensuite.
  */
+const DocumentReader = dynamic(() => import('@/components/DocumentReader'), {
+  ssr: false,
+  loading: () => (
+    <div className="reader-full" role="status" aria-live="polite">
+      <div className="reader-state">
+        <span className="reader-spinner" aria-hidden="true" />
+        <p>Ouverture du lecteur…</p>
+      </div>
+    </div>
+  ),
+});
 export default function DocumentActions({
   url,
   kind,
+  title,
   download,
 }: {
   url: string;
   kind: DocumentKind;
+  title: string;
   download: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -35,11 +52,6 @@ export default function DocumentActions({
   if (!url) {
     return <p className="publication-nodoc">Aucun document joint à cette publication pour le moment.</p>;
   }
-
-  const embedSrc =
-    kind === 'office'
-      ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`
-      : url;
 
   /* On mesure le geste, puis on laisse le lien suivre son cours : la mesure ne
    * doit jamais retarder le téléchargement. */
@@ -62,33 +74,14 @@ export default function DocumentActions({
       </div>
 
       {open && (
-        <div className="reader-overlay" role="dialog" aria-modal="true" aria-label="Lecteur de document">
-          <div className="reader-window">
-            <div className="reader-bar">
-              <span className="reader-title">Lecture du document</span>
-              <div className="reader-tools">
-                <a href={download} className="btn btn-secondary reader-download" onClick={trackDownload} data-track-skip>
-                  <DownloadIcon /> Télécharger
-                </a>
-                <button type="button" className="reader-close" aria-label="Fermer le lecteur" onClick={() => setOpen(false)}>
-                  ×
-                </button>
-              </div>
-            </div>
-            <div className="reader-stage">
-              {kind === 'image' ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img className="reader-image" src={url} alt="Document" />
-              ) : kind === 'video' ? (
-                <video className="reader-video" src={url} controls autoPlay />
-              ) : kind === 'audio' ? (
-                <audio className="reader-audio" src={url} controls autoPlay />
-              ) : (
-                <iframe className="reader-frame" src={embedSrc} title="Lecteur de document" />
-              )}
-            </div>
-          </div>
-        </div>
+        <DocumentReader
+          url={url}
+          kind={kind}
+          title={title}
+          download={download}
+          onDownload={trackDownload}
+          onClose={() => setOpen(false)}
+        />
       )}
     </>
   );

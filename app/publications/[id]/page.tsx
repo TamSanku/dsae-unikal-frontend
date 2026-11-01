@@ -91,6 +91,7 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
             <DocumentActions
               url={publication.documentUrl}
               kind={documentKind(publication.documentName, publication.documentUrl)}
+              title={publication.title}
               download={downloadUrl(publication.documentUrl)}
             />
 
