@@ -59,6 +59,10 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
 - Le bandeau des partenaires ne montre **que des logos** : ni nom, ni carte, ni
   cadre. Il est transparent et chaque logo se pose sur la couleur de fond de
   l'endroit où la bande est placée. Un partenaire sans logo publié ne paraît pas.
+- Le défilement est automatique et sans fin (deux copies de la liste, boucle
+  invisible) ; aucune commande visible, survol en pause. Tous les logos ont le
+  même cadre fixe. La bande est séparée de l'hero par un trait et une barre
+  dégradée.
 - Le logo du site se pose de la même façon, sans vignette ni cadre.
 - Page Université : le bouton « En savoir plus sur l'université de Kalemie »
   mène au site officiel https://unikal.ac.cd.
