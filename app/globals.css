@@ -2631,3 +2631,302 @@ main {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Footer : identité d’abord, accordéons exclusifs au centre, puis liens et réseaux alignés. */
+.site-footer-accordion {
+  padding-top: 42px;
+}
+
+.footer-brand-intro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding-bottom: 28px;
+}
+
+.footer-brand-intro .footer-brand {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.footer-brand-description {
+  max-width: 580px;
+  margin: 0;
+  color: #dfe7f7;
+  line-height: 1.65;
+}
+
+.footer-accordion-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-bottom: 26px;
+}
+
+.footer-accordion {
+  border-top: 1px solid rgba(220, 230, 248, 0.15);
+}
+
+.footer-accordion-item {
+  border-bottom: 1px solid rgba(220, 230, 248, 0.15);
+}
+
+.footer-accordion-heading {
+  margin: 0;
+}
+
+.footer-accordion-trigger {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 62px;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 54px;
+  border: 0;
+  background: transparent;
+  color: #f2f6ff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.footer-accordion-trigger:hover {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.footer-accordion-trigger:focus-visible {
+  outline: 2px solid #8db5ff;
+  outline-offset: -3px;
+}
+
+.footer-accordion-indicator {
+  position: absolute;
+  right: 18px;
+  color: #9dbdff;
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.footer-accordion-panel {
+  padding: 0 18px 22px;
+  color: #dfe7f7;
+  text-align: center;
+}
+
+.footer-accordion-panel[hidden] {
+  display: none;
+}
+
+.footer-accordion-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 24px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.footer-accordion-links a {
+  color: #dfe7f7;
+}
+
+.footer-accordion-links a:hover {
+  color: #9dbdff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-accordion-description {
+  margin: 0 0 14px;
+  color: #dfe7f7;
+  line-height: 1.6;
+}
+
+.footer-bottom-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+}
+
+.footer-legal-group {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: #dfe7f7;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.footer-legal-group a,
+.footer-legal-group .legal-link-button {
+  color: #dfe7f7;
+}
+
+.footer-legal-left {
+  justify-items: start;
+  text-align: left;
+}
+
+.footer-legal-right {
+  justify-items: end;
+  text-align: right;
+}
+
+.footer-social-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.footer-bottom-layout .footer-social-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 50%;
+}
+
+.footer-bottom-layout .footer-social-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-bottom-layout .footer-tamsanku-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.footer-tamsanku-logo-compact .footer-tamsanku-name {
+  display: none;
+}
+
+.footer-copyright {
+  padding-top: 12px;
+  padding-bottom: 24px;
+  color: rgba(220, 230, 248, 0.78);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.footer-copyright span {
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .site-footer-accordion {
+    padding-top: 30px;
+  }
+
+  .footer-brand-intro {
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 22px;
+    text-align: center;
+  }
+
+  .footer-brand-description {
+    font-size: 0.92rem;
+  }
+
+  .footer-accordion-container {
+    padding-bottom: 22px;
+  }
+
+  .footer-accordion-trigger {
+    min-height: 56px;
+    padding: 12px 44px;
+  }
+
+  .footer-accordion-indicator {
+    right: 12px;
+  }
+
+  .footer-accordion-links {
+    gap: 10px 16px;
+  }
+
+  .footer-bottom-layout {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 6px;
+    padding-top: 13px;
+  }
+
+  .footer-legal-group {
+    gap: 6px;
+    font-size: 0.68rem;
+    overflow-wrap: anywhere;
+  }
+
+  .footer-social-center {
+    gap: 4px;
+  }
+
+  .footer-bottom-layout .footer-social-icon,
+  .footer-bottom-layout .footer-tamsanku-mark {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+
+  .footer-bottom-layout .footer-social-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .footer-copyright {
+    padding-top: 10px;
+    padding-bottom: 18px;
+    font-size: 0.74rem;
+  }
+}
+
+
+.footer-social-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.footer-social-caption {
+  color: rgba(220, 230, 248, 0.86);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.footer-social-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .footer-social-icons {
+    gap: 4px;
+  }
+}
+
+
+@media (max-width: 860px) {
+  .footer-brand-intro {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
