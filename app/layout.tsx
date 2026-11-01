@@ -2,6 +2,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
+import CookieConsent from '@/components/CookieConsent';
+import AnalyticsTracker from '@/components/AnalyticsTracker';
 
 export const metadata: Metadata = {
   title: 'DSAE UNIKAL | Sciences agronomiques et environnement',
@@ -24,6 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        <AnalyticsTracker />
+        <CookieConsent />
       </body>
     </html>
   );
