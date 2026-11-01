@@ -97,6 +97,19 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
   lisent leur paramètre (`?type=`, `?category=`, `?domain=`, `?volet=`) et
   l'ouvrent via `initialTab`. Un paramètre inconnu est ignoré.
 
+## Filières et axes de recherche (`/a-propos`)
+
+La section « Filières et axes de recherche » de `app/a-propos/page.tsx` n'est pas
+écrite en dur : elle lit la rubrique **Filières** (`dsae-filieres`, `kind:
+research`) publiée depuis `dsae-admin` (écran « Filières »), via `getFilieres()`
+de `lib/backend.ts`. Chaque fiche porte le nom de la filière et, en `summary`,
+les axes de recherche qui s'y rattachent. Les quatre filières semées à
+l'installation (migration `0014-seed-filieres`) sont Agroéconomie, Production
+végétale, Production animale et Gestion des ressources naturelles et
+renouvelables ; le semis n'a lieu que si la rubrique est vide, donc une filière
+corrigée depuis l'admin n'est jamais réécrite. Sans filière publiée, la section
+affiche `EmptyState`.
+
 ## Piège connu (backend)
 
 Un contenu **publié** exige un résumé, un contenu ou un bloc, sinon `POST
