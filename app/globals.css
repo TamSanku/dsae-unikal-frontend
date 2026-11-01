@@ -2975,6 +2975,171 @@ main {
   line-height: 1.6;
 }
 
+/* ---------------------------------------------------------------------------
+   Le navigateur de l'aide : recherche, thèmes, entrées.
+   Une barre de recherche en tête de volet, puis les questions (ou les guides)
+   rangés par thème. Rien ne vient du serveur : la recherche resserre ce qui est
+   déjà rendu.
+--------------------------------------------------------------------------- */
+
+.help-browser {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.help-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+}
+
+.help-search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 320px;
+  max-width: 520px;
+}
+
+.help-search-field svg {
+  position: absolute;
+  left: 0.95rem;
+  color: #7c8aa5;
+  pointer-events: none;
+}
+
+.help-search-field input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.7rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+  background: #f9fbff;
+  font: inherit;
+  color: #101827;
+}
+
+.help-search-field input:focus {
+  outline: 2px solid rgba(13, 76, 200, 0.35);
+  outline-offset: 1px;
+  background: #fff;
+}
+
+/* « Effacer » ne s'affiche qu'une fois un mot tapé : il vit dans le champ, à
+   droite, sans déplacer la loupe. */
+.help-search-clear {
+  position: absolute;
+  right: 0.6rem;
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(13, 76, 200, 0.08);
+  color: #0d4cc8;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.help-search-clear:hover {
+  background: rgba(13, 76, 200, 0.16);
+}
+
+.help-search-count {
+  margin: 0;
+  color: #46566d;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.help-empty {
+  margin: 0;
+  padding: 1.4rem 1.25rem;
+  border: 1px dashed rgba(15, 23, 42, 0.16);
+  border-radius: 16px;
+  background: #f9fbff;
+  color: #46566d;
+  text-align: center;
+}
+
+/* Un thème : un intitulé, puis ses entrées. Le compteur, à droite du titre,
+   dit combien d'entrées restent — il fond quand on filtre. */
+.help-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.help-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.05rem;
+}
+
+.help-group-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: rgba(13, 76, 200, 0.1);
+  color: #0d4cc8;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* Les guides : deux colonnes de fiches sur grand écran, une seule sur petit.
+   Les fiches d'un même thème gardent la même hauteur, ce qui aligne les
+   intitulés voisins. */
+.help-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.1rem;
+}
+
+.help-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.help-guide h5 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.02rem;
+}
+
+.guide-intro {
+  margin: 0;
+  color: #46566d;
+  line-height: 1.6;
+}
+
+/* L'astuce d'un guide : un encadré discret, détaché des étapes. */
+.guide-tip {
+  margin: 0.35rem 0 0;
+  padding: 0.7rem 0.85rem;
+  border-left: 3px solid rgba(13, 76, 200, 0.4);
+  border-radius: 0 10px 10px 0;
+  background: rgba(13, 76, 200, 0.05);
+  color: #334155;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
 .aide-report {
   display: flex;
   flex-direction: column;

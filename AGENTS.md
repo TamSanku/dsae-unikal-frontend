@@ -111,6 +111,18 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
   l'en-tête et du pied de page ouvrent le bon volet, et un clic met l'ancre à
   jour (`history.replaceState`). `AIDE_LINKS` (`lib/aide.ts`) reste la source
   des clés et des libellés (page, en-tête, pied de page).
+- **Contenu de l'aide.** Les textes vivent dans `app/aide/content.tsx`
+  (`FAQ_GROUPS`, `GUIDES_GROUPS`), pas dans la page : celle-ci ne fait que les
+  ranger en onglets. Chaque entrée porte un champ `search` — la question ou le
+  titre, le corps en clair, plus des synonymes. La recherche lit ce champ, jamais
+  le HTML rendu. La FAQ (6 thèmes) et les guides (4 thèmes, avec étapes et
+  astuce) sont rendus par `components/HelpBrowser.tsx` : recherche locale sans
+  accents ni casse, un mot par terme (ET), thèmes vides masqués, compteur, et
+  état « aucun résultat ». Chaque volet passe sa propre `key` — sans elle, React
+  réutilise le composant d'un onglet à l'autre et la requête fuit d'un volet au
+  suivant. Rien n'est inventé : les textes décrivent ce que le portail fait
+  réellement (loupe + Ctrl/⌘ K, entonnoir, « À la une », avis sans compte,
+  « Gérer les cookies »).
 - **Recherche globale.** Le backend expose `GET /api/public/content/search?q=`
   (`public-content.controller.ts`, `content.service.ts: search()`), déclaré
   **avant** `:collection` — sinon « search » serait pris pour une rubrique. Il

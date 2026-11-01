@@ -2,11 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AIDE_LINKS } from '@/lib/aide';
 import AideTabs from '@/components/AideTabs';
+import HelpBrowser, { type HelpGroup } from '@/components/HelpBrowser';
+import { FAQ_GROUPS, GUIDES_GROUPS, GuideBody } from './content';
+
 
 export const metadata: Metadata = {
   title: 'Aide et support | DSAE UNIKAL',
   description:
-    'Aide et support du portail DSAE UNIKAL : questions fréquentes, guides d’utilisation et signalement d’un problème.',
+    'Centre d’aide du portail DSAE UNIKAL : questions fréquentes, guides d’utilisation pas à pas et signalement d’un problème.',
 };
 
 /*
@@ -21,87 +24,41 @@ export const metadata: Metadata = {
  * (`/aide#faq`, `/aide#guides`, `/aide#signaler`) : la page ouvre directement le
  * bon volet.
  *
- * Rien n'est inventé : les guides décrivent ce que le portail fait réellement,
- * et le signalement renvoie au formulaire de contact avec l'objet prérempli.
+ * La FAQ et les guides sont longs : chaque volet porte donc une barre de
+ * recherche (`components/HelpBrowser.tsx`) qui resserre la liste sans rien
+ * demander au serveur. Les entrées sont rangées par thème, pour qu'on trouve
+ * vite ce que l'on cherche.
+ *
+ * Rien n'est inventé : chaque réponse et chaque étape décrivent ce que le
+ * portail fait réellement — les rubriques, la recherche, les onglets, le
+ * téléchargement, les avis, les cookies. Le signalement renvoie au formulaire
+ * de contact avec l'objet prérempli.
  */
-
-const faq = [
-  {
-    question: 'Qu’est-ce que le DSAE ?',
-    answer:
-      'Le Domaine des Sciences Agronomiques et de l’Environnement est une composante de l’Université de Kalemie. Il contribue à la formation, à la recherche et à la diffusion des connaissances en agronomie et en environnement.',
-  },
-  {
-    question: 'Où trouver les publications et les axes de recherche ?',
-    answer: (
-      <>
-        Consultez les pages <Link href="/publications">Publications</Link> et{' '}
-        <Link href="/recherche">Recherche</Link>. Les contenus disponibles y sont présentés par
-        rubrique.
-      </>
-    ),
-  },
-  {
-    question: 'Comment proposer une publication ou une actualité ?',
-    answer: (
-      <>
-        Contactez l’équipe du DSAE en décrivant votre proposition. Son examen et sa publication ne
-        sont pas automatiques. Vous pouvez écrire depuis le{' '}
-        <Link href="/contact">formulaire de contact</Link>.
-      </>
-    ),
-  },
-  {
-    question: 'Comment demander une inscription à la newsletter ?',
-    answer: (
-      <>
-        Envoyez une demande d’inscription à l’équipe du DSAE depuis le{' '}
-        <Link href="/contact?subject=newsletter">formulaire de contact</Link>. L’équipe pourra vous
-        confirmer la prise en compte de votre demande.
-      </>
-    ),
-  },
-  {
-    question: 'Comment signaler un problème sur le site ?',
-    answer: (
-      <>
-        Utilisez le formulaire de contact et choisissez l’objet prérempli « Signaler un problème sur
-        le site », puis décrivez la page concernée et ce qui ne fonctionne pas.{' '}
-        <Link href="/contact?subject=report">Ouvrir le formulaire de signalement</Link>.
-      </>
-    ),
-  },
-];
-
-const guides = [
-  {
-    title: 'Rechercher dans le catalogue',
-    steps: [
-      'Ouvrez la rubrique voulue : Équipe, Publications, Actualités ou Alumni.',
-      'Tapez un mot dans la barre de recherche : la liste se resserre aussitôt.',
-      'Cliquez sur l’icône d’entonnoir, à côté de la recherche, pour afficher les filtres.',
-    ],
-  },
-  {
-    title: 'Naviguer par onglets',
-    steps: [
-      'Chaque rubrique propose des onglets : catégories pour l’équipe, domaines pour les publications.',
-      'Tous les onglets tiennent sur une seule ligne : faites-les défiler horizontalement au besoin.',
-      'Dans les actualités, « À la une » montre toute la liste ; « Tout » fait de même ailleurs. Chaque actualité paraît sous « À la une » et sous son type.',
-    ],
-  },
-  {
-    title: 'Lire une publication ou une actualité',
-    steps: [
-      'Cliquez sur une carte pour ouvrir sa fiche.',
-      'Le document joint se lit ou se télécharge depuis la fiche.',
-      'En bas de la fiche, un carrousel propose les autres documents ou actualités.',
-    ],
-  },
-];
 
 export default function AidePage() {
   const labelOf = (key: string) => AIDE_LINKS.find((link) => link.key === key)?.label ?? key;
+
+  const faqGroups: HelpGroup[] = FAQ_GROUPS.map((group) => ({
+    key: group.key,
+    label: group.label,
+    entries: group.items.map((item) => ({
+      key: item.key,
+      title: item.question,
+      searchText: item.search,
+      body: <p>{item.answer}</p>,
+    })),
+  }));
+
+  const guideGroups: HelpGroup[] = GUIDES_GROUPS.map((group) => ({
+    key: group.key,
+    label: group.label,
+    entries: group.items.map((item) => ({
+      key: item.key,
+      title: item.title,
+      searchText: item.search,
+      body: <GuideBody guide={item} />,
+    })),
+  }));
 
   const faqPanel = (
     <section className="section">
@@ -109,17 +66,19 @@ export default function AidePage() {
         <div className="section-heading">
           <span className="eyebrow">Questions fréquentes</span>
           <h3>FAQ</h3>
+          <p className="lead-text">
+            Les réponses aux questions les plus courantes, rangées par thème. Cherchez un mot pour
+            aller droit au but.
+          </p>
         </div>
-        <div className="faq-list">
-          {faq.map((item) => (
-            <details className="faq-item" key={item.question}>
-              <summary>{item.question}</summary>
-              <div className="faq-answer">
-                <p>{item.answer}</p>
-              </div>
-            </details>
-          ))}
-        </div>
+        <HelpBrowser
+          key="faq"
+          groups={faqGroups}
+          placeholder="Rechercher une question…"
+          noun="question"
+          variant="faq"
+          emptyHint="Aucune question ne correspond. Essayez un mot plus général, ou parcourez les thèmes ci-dessus."
+        />
       </div>
     </section>
   );
@@ -130,19 +89,19 @@ export default function AidePage() {
         <div className="section-heading">
           <span className="eyebrow">Pas à pas</span>
           <h3>Guides d’utilisation</h3>
+          <p className="lead-text">
+            Des marches à suivre courtes, de la première visite à la prise de contact. Chaque guide
+            décrit ce que le portail fait réellement.
+          </p>
         </div>
-        <div className="card-grid three-grid">
-          {guides.map((guide) => (
-            <article className="info-card" key={guide.title}>
-              <h4>{guide.title}</h4>
-              <ol className="guide-steps">
-                {guide.steps.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ol>
-            </article>
-          ))}
-        </div>
+        <HelpBrowser
+          key="guides"
+          groups={guideGroups}
+          placeholder="Rechercher un guide…"
+          noun="guide"
+          variant="guide"
+          emptyHint="Aucun guide ne correspond. Essayez un mot plus général, ou parcourez les thèmes ci-dessus."
+        />
       </div>
     </section>
   );
@@ -183,6 +142,9 @@ export default function AidePage() {
         <div className="container page-hero-inner">
           <span className="eyebrow">Assistance</span>
           <h1>Aide et support</h1>
+          <p className="lead-text">
+            Réponses immédiates, guides pas à pas et moyen de nous joindre — au même endroit.
+          </p>
         </div>
       </section>
 
@@ -190,3 +152,4 @@ export default function AidePage() {
     </div>
   );
 }
+
