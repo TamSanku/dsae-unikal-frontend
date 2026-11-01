@@ -9,8 +9,8 @@ import NewsCatalog from '@/components/NewsCatalog';
  * vide le dit franchement. Rien n'est inventé.
  *
  * Le paramètre `type` ouvre d'emblée l'onglet correspondant : le pied de page
- * s'en sert pour ses liens « À la une », « Événements »… Un type inconnu est
- * ignoré — on retombe sur « Tout ».
+ * s'en sert pour ses liens « À la une », « Presse »… Un type inconnu est
+ * ignoré — on retombe sur « À la une », qui montre la liste complète.
  */
 type NewsPageProps = {
   searchParams?: { type?: string | string[] };

@@ -43,6 +43,9 @@ export default function CatalogExplorer({
   emptyLabel,
   resultNoun = 'résultat',
   initialTab = '',
+  allTabKey = '',
+  allTabLabel = 'Tout',
+  showAllTab = true,
 }: {
   items: any[];
   searchText: (item: any) => string;
@@ -59,9 +62,18 @@ export default function CatalogExplorer({
   resultNoun?: string;
   /** L'onglet ouvert d'emblée (par exemple depuis un lien du pied de page). */
   initialTab?: string;
+  /** L'onglet qui vaut « tout voir » : le choisir n'applique aucun filtre. Par
+   * défaut la clé vide, celle du bouton « Tout ». Les actualités s'en servent
+   * pour donner ce rôle à « À la une ». */
+  allTabKey?: string;
+  /** Le libellé du bouton « tout voir » ajouté en tête. */
+  allTabLabel?: string;
+  /** Afficher le bouton « tout voir » ajouté en tête. Faux quand une catégorie
+   * réelle joue déjà ce rôle (actualités : « À la une »). */
+  showAllTab?: boolean;
 }) {
   const [query, setQuery] = useState('');
-  const [tab, setTab] = useState(initialTab);
+  const [tab, setTab] = useState(initialTab || allTabKey);
   const [chosen, setChosen] = useState<Record<string, string>>({});
   /* Les filtres restent repliés : l'icône d'entonnoir les ouvre et les referme. */
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -69,13 +81,15 @@ export default function CatalogExplorer({
   /* Un lien qui ne change que la requête (le pied de page, par exemple) réutilise
    * le même composant : l'onglet doit suivre la nouvelle adresse. */
   useEffect(() => {
-    setTab(initialTab);
-  }, [initialTab]);
+    setTab(initialTab || allTabKey);
+  }, [initialTab, allTabKey]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return items.filter((item) => {
-      if (tab && !(tabMatch ? tabMatch(item, tab) : tabOf(item) === tab)) return false;
+      /* L'onglet « tout voir » (clé vide, ou « À la une » pour les actualités)
+       * n'écarte rien : il montre la liste entière. */
+      if (tab && tab !== allTabKey && !(tabMatch ? tabMatch(item, tab) : tabOf(item) === tab)) return false;
       if (needle && !searchText(item).toLowerCase().includes(needle)) return false;
       for (const filter of filters) {
         const selected = chosen[filter.key] ?? '';
@@ -85,7 +99,7 @@ export default function CatalogExplorer({
       }
       return true;
     });
-  }, [items, query, tab, chosen, filters, tabOf, tabMatch, searchText]);
+  }, [items, query, tab, chosen, filters, tabOf, tabMatch, searchText, allTabKey]);
 
   const activeFilters = filters.filter((filter) => chosen[filter.key]);
 
@@ -141,17 +155,19 @@ export default function CatalogExplorer({
         )}
       </div>
 
-      {tabs.length > 0 && (
+      {(tabs.length > 0 || showAllTab) && (
         <div className="catalog-tabs" role="tablist" aria-label="Filtrer par catégorie">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === ''}
-            className={tab === '' ? 'catalog-tab active' : 'catalog-tab'}
-            onClick={() => setTab('')}
-          >
-            Tout
-          </button>
+          {showAllTab && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === allTabKey}
+              className={tab === allTabKey ? 'catalog-tab active' : 'catalog-tab'}
+              onClick={() => setTab(allTabKey)}
+            >
+              {allTabLabel}
+            </button>
+          )}
           {tabs.map((entry) => (
             <button
               key={entry.key}

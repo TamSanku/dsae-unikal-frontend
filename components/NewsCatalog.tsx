@@ -10,7 +10,9 @@ import CatalogExplorer from '@/components/CatalogExplorer';
  * Le fil des actualités : recherche, onglets par type.
  *
  * Les onglets sont les types du serveur (« À la une », « DSAE », les domaines,
- * « Presse », « Communiqué »). Une actualité sans type se lit sous « Tout ».
+ * « Presse », « Communiqué »). Il n'y a pas d'onglet « Tout » : « À la une »
+ * ouvre la liste complète — le premier onglet joue le rôle de vue d'ensemble,
+ * et les autres resserrent par type.
  */
 export default function NewsCatalog({
   news,
@@ -31,6 +33,8 @@ export default function NewsCatalog({
       tabs={taxonomy.newsCategories.map((category) => ({ key: category, label: category }))}
       tabOf={(item: NewsItem) => item.category}
       initialTab={initialTab}
+      allTabKey="À la une"
+      showAllTab={false}
       resultNoun="actualité"
       emptyLabel={emptyLabel}
       renderItem={(item: NewsItem) => (
