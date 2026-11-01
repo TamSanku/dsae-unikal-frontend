@@ -453,6 +453,74 @@ export async function getTaxonomy(): Promise<Taxonomy> {
   );
 }
 
+/*
+ * La recherche globale : une requête sur tout le portail.
+ *
+ * Le backend interroge toutes les rubriques à la fois et ne rend que les
+ * contenus publiés. Le portail n'ajoute rien : il traduit chaque résultat en un
+ * lien vers sa fiche. Sans correspondance, la liste est vide.
+ */
+export type GlobalSearchResult = {
+  id: string;
+  collection: string;
+  slug: string | null;
+  title: string;
+  subtitle: string;
+  summary: string;
+  category: string;
+  coverUrl: string | null;
+  publishedAt: string | null;
+};
+
+/* La rubrique d'un contenu, telle que le portail la nomme et l'adresse. Un
+ * résultat de recherche mène à la page de la rubrique, ou à sa fiche. */
+const COLLECTION_LABELS: Record<string, string> = {
+  'dsae-news': 'Actualités',
+  'dsae-publications': 'Publications',
+  'dsae-team': 'Équipe',
+  'dsae-alumni': 'Alumni',
+  'dsae-research': 'Recherche',
+  'dsae-filieres': 'Filières',
+  'dsae-partners': 'Partenaires',
+};
+
+export function collectionLabel(collection: string): string {
+  return COLLECTION_LABELS[collection] ?? 'Contenu';
+}
+
+/** L'adresse de la fiche d'un résultat, d'après sa rubrique. Les filières et
+ * les partenaires n'ont pas de fiche propre : on mène à leur page. */
+export function resultHref(result: GlobalSearchResult): string {
+  const slug = result.slug ?? result.id;
+  switch (result.collection) {
+    case 'dsae-news':
+      return `/actualites/${encodeURIComponent(slug)}`;
+    case 'dsae-publications':
+      return `/publications/${encodeURIComponent(slug)}`;
+    case 'dsae-team':
+      return `/equipe/${encodeURIComponent(slug)}`;
+    case 'dsae-alumni':
+      return `/alumni/${encodeURIComponent(slug)}`;
+    case 'dsae-research':
+      return `/recherche/${encodeURIComponent(slug)}`;
+    case 'dsae-filieres':
+      return '/a-propos';
+    case 'dsae-partners':
+      return '/s-engager?volet=partenaires';
+    default:
+      return '/';
+  }
+}
+
+export async function searchSite(query: string): Promise<GlobalSearchResult[]> {
+  const value = query.trim();
+  if (!value) return [];
+  const result = await fetchFromApi<{ results: GlobalSearchResult[] }>(
+    `/public/content/search?q=${encodeURIComponent(value)}`
+  );
+  return result.data?.results ?? [];
+}
+
 export async function getNewsItems(): Promise<NewsItem[]> {
   const published = await fetchPublished('dsae-news');
   if (published && published.length > 0) return published.map(normalizePublishedNews);

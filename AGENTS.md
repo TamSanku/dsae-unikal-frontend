@@ -97,6 +97,34 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
   lisent leur paramètre (`?type=`, `?category=`, `?domain=`, `?volet=`) et
   l'ouvrent via `initialTab`. Un paramètre inconnu est ignoré.
 
+## Aide et support (`/aide`) et recherche globale
+
+- **En-tête.** Toutes les entrées de `navItems` (`components/SiteHeader.tsx`)
+  sont des liens simples, **sans** « + » ni sous-menu : « Aide et support » mène
+  à `/aide` comme les autres. Les volets (FAQ, guides, signalement) sont des
+  onglets **dans** la page. Un clic sur la loupe ouvre la recherche globale
+  (`components/SiteSearch.tsx`, `'use client'`), posée sous la barre.
+- **Page Aide.** `app/aide/page.tsx` monte `components/AideTabs.tsx` : trois
+  onglets alignés sur une ligne (mêmes classes `.catalog-tabs`/`.catalog-tab`),
+  un seul volet visible — choisir « FAQ » ne montre que la FAQ. Le volet suit
+  l'ancre (`/aide#faq`, `/aide#guides`, `/aide#signaler`) : les liens de
+  l'en-tête et du pied de page ouvrent le bon volet, et un clic met l'ancre à
+  jour (`history.replaceState`). `AIDE_LINKS` (`lib/aide.ts`) reste la source
+  des clés et des libellés (page, en-tête, pied de page).
+- **Recherche globale.** Le backend expose `GET /api/public/content/search?q=`
+  (`public-content.controller.ts`, `content.service.ts: search()`), déclaré
+  **avant** `:collection` — sinon « search » serait pris pour une rubrique. Il
+  interroge toutes les rubriques publiées ; chaque mot de la requête doit se
+  retrouver dans la fiche (ET), un titre qui contient la requête passe devant,
+  puis les plus récentes. Le portail traduit chaque résultat en lien via
+  `resultHref()` / `collectionLabel()` (`lib/backend.ts`). `SiteSearch`
+  interroge après une pause de 250 ms et ignore une réponse périmée (numéro de
+  requête). Sans correspondance, la liste le dit franchement.
+- **Anciennes classes retirées** : `.nav-group`, `.nav-group-trigger`,
+  `.nav-group-plus`, `.nav-submenu`, `.nav-sublink` (en-tête) et `.aide-nav`.
+  Le `.nav-group` du **pied de page** n'existe pas : l'accordéon du pied de
+  page a ses propres classes `.footer-accordion-*`.
+
 ## Filières et axes de recherche (`/a-propos`)
 
 La section « Filières et axes de recherche » de `app/a-propos/page.tsx` n'est pas

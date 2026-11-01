@@ -4,22 +4,22 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import type { SiteLogo } from '@/lib/backend';
-import { AIDE_LINKS } from '@/lib/aide';
 import BrandMark from './BrandMark';
+import SiteSearch from './SiteSearch';
 
 /*
  * La barre de navigation.
  *
- * Les entrées simples mènent à leur page. « Aide et support » porte un « + » :
- * il déplie son sous-menu (FAQ, Guides d'utilisation, Signaler un problème).
- * Sur le bureau le sous-menu s'ouvre sous l'entrée ; dans le tiroir du
- * téléphone il s'insère dans la liste. Les libellés viennent de `lib/aide.ts`,
- * comme la page et le pied de page — les trois ne peuvent pas se contredire.
+ * Toutes les entrées se ressemblent : un lien, la même règle. « Aide et
+ * support » mène à sa page comme les autres — ses volets (FAQ, guides,
+ * signalement) sont des onglets dans la page, pas un sous-menu d'en-tête.
+ *
+ * La loupe ouvre la recherche globale (`SiteSearch`) : elle interroge tout le
+ * portail, pas seulement la rubrique ouverte.
  */
 type NavItem = {
   href: string;
   label: string;
-  children?: { label: string; href: string }[];
 };
 
 const navItems: NavItem[] = [
@@ -32,18 +32,12 @@ const navItems: NavItem[] = [
   { href: '/publications', label: 'Publications' },
   { href: '/s-engager', label: 'S’engager' },
   { href: '/alumni', label: 'Alumni' },
-  {
-    href: '/aide',
-    label: 'Aide et support',
-    children: AIDE_LINKS.map((link) => ({ label: link.label, href: link.href })),
-  },
+  { href: '/aide', label: 'Aide et support' },
 ];
 
 export default function SiteHeader({ logo = null }: { logo?: SiteLogo | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  /* Le sous-menu ouvert, par chemin d'entrée ; un seul à la fois. */
-  const [submenu, setSubmenu] = useState('');
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -65,11 +59,6 @@ export default function SiteHeader({ logo = null }: { logo?: SiteLogo | null }) 
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [open]);
-
-  /* Refermer le sous-menu quand on change de page. */
-  useEffect(() => {
-    setSubmenu('');
-  }, [pathname]);
 
   return (
     <header className={`site-header ${open ? 'menu-open' : ''}`}>
@@ -99,49 +88,15 @@ export default function SiteHeader({ logo = null }: { logo?: SiteLogo | null }) 
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
 
-            if (!item.children) {
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={isActive ? 'nav-link active' : 'nav-link'}
-                  onClick={() => setOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              );
-            }
-
-            const expanded = submenu === item.href;
             return (
-              <div className={`nav-group${expanded ? ' is-open' : ''}`} key={item.href}>
-                <button
-                  type="button"
-                  className={`nav-link nav-group-trigger${isActive ? ' active' : ''}`}
-                  aria-expanded={expanded}
-                  aria-controls={`nav-submenu-${item.href.slice(1)}`}
-                  onClick={() => setSubmenu(expanded ? '' : item.href)}
-                >
-                  {item.label}
-                  <span className="nav-group-plus" aria-hidden="true" />
-                </button>
-                <div className="nav-submenu" id={`nav-submenu-${item.href.slice(1)}`} role="menu">
-                  {item.children.map((child) => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      role="menuitem"
-                      className="nav-sublink"
-                      onClick={() => {
-                        setSubmenu('');
-                        setOpen(false);
-                      }}
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              <Link
+                key={item.href}
+                href={item.href}
+                className={isActive ? 'nav-link active' : 'nav-link'}
+                onClick={() => setOpen(false)}
+              >
+                {item.label}
+              </Link>
             );
           })}
         </nav>
@@ -156,6 +111,7 @@ export default function SiteHeader({ logo = null }: { logo?: SiteLogo | null }) 
         )}
 
         <div className="header-actions">
+          <SiteSearch />
           <Link href="/s-engager" className="btn btn-primary header-btn">
             S’engager
           </Link>

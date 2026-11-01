@@ -146,92 +146,167 @@ main {
   border-radius: 999px;
 }
 
-/* Une entrée à sous-menu (« Aide et support ») : un bouton, un « + », et le
- * sous-menu qui s'ouvre en dessous. */
-.nav-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.nav-group-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.nav-group-plus {
-  position: relative;
-  width: 10px;
-  height: 10px;
-  flex: 0 0 auto;
-}
-
-.nav-group-plus::before,
-.nav-group-plus::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 10px;
-  height: 2px;
-  border-radius: 2px;
-  background: currentColor;
-  transform: translateY(-50%);
-}
-
-.nav-group-plus::after {
-  transform: translateY(-50%) rotate(90deg);
-  transition: opacity 0.2s ease;
-}
-
-.nav-group.is-open .nav-group-plus::after {
-  opacity: 0;
-}
-
-.nav-submenu {
-  position: absolute;
-  top: calc(100% + 14px);
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 230px;
-  display: none;
-  flex-direction: column;
-  padding: 8px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-  z-index: 5;
-}
-
-.nav-group.is-open .nav-submenu {
-  display: flex;
-}
-
-.nav-sublink {
-  padding: 0.65rem 0.85rem;
-  border-radius: 10px;
-  color: #16233c;
-  font-weight: 600;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.nav-sublink:hover {
-  background: #edf3ff;
-  color: #0d4cc8;
-}
-
 .header-actions {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* ---------------------------------------------------------------------------
+   La recherche globale, ouverte depuis la loupe de l'en-tête.
+   Un bouton rond, puis un panneau posé sous la barre : le champ, et les
+   résultats. Le panneau flotte au-dessus de la page, la barre reste en place.
+--------------------------------------------------------------------------- */
+
+.site-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.site-search-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  background: #fff;
+  color: #16233c;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.site-search-toggle:hover {
+  border-color: rgba(13, 76, 200, 0.4);
+  color: #0d4cc8;
+  background: #edf3ff;
+}
+
+.site-search-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  background: rgba(4, 10, 24, 0.28);
+  cursor: pointer;
+}
+
+.site-search-panel {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  z-index: 5;
+  width: min(460px, calc(100vw - 32px));
+  padding: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+}
+
+.site-search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  background: #f7f9fd;
+  color: #64748b;
+}
+
+.site-search-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #0f172a;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.site-search-results {
+  margin-top: 10px;
+  max-height: min(60vh, 460px);
+  overflow-y: auto;
+}
+
+.site-search-note {
+  margin: 0.3rem 0.2rem;
+  color: #64748b;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.site-search-results ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.site-search-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0.6rem 0.7rem;
+  border-radius: 12px;
+  transition: background 0.15s ease;
+}
+
+.site-search-result:hover {
+  background: #edf3ff;
+}
+
+.site-search-badge {
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #e6ecf7;
+  color: #33415c;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.site-search-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.site-search-copy strong {
+  color: #101827;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+
+.site-search-copy small {
+  color: #5b6b7f;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Sur petit écran, le panneau se pose sur toute la largeur, sous la barre :
+ * ancré à droite, il déborderait à gauche du champ. */
+@media (max-width: 640px) {
+  .site-search-panel {
+    position: fixed;
+    top: 86px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
 }
 
 .btn {
@@ -942,55 +1017,6 @@ main {
     bottom: 4px;
     width: 42px;
     background: #8db5ff;
-  }
-
-  /* Dans le tiroir, le sous-menu s'insère dans la liste au lieu de flotter. */
-  .main-nav .nav-group {
-    display: block;
-    width: 100%;
-  }
-
-  .main-nav .nav-group-trigger {
-    width: 100%;
-    justify-content: space-between;
-    padding: 10px 2px;
-    color: #dfe7f7;
-    font-size: 1.08rem;
-  }
-
-  .main-nav .nav-group-trigger.active,
-  .main-nav .nav-group-trigger:hover {
-    color: #8db5ff;
-  }
-
-  .main-nav .nav-submenu {
-    position: static;
-    transform: none;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 0 0 4px 0.4rem;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .main-nav .nav-group:not(.is-open) .nav-submenu {
-    display: none;
-  }
-
-  .main-nav .nav-sublink {
-    padding: 8px 2px 8px 0.9rem;
-    border-left: 2px solid rgba(141, 181, 255, 0.35);
-    border-radius: 0;
-    color: #cdd8ee;
-    font-size: 0.98rem;
-  }
-
-  .main-nav .nav-sublink:hover {
-    background: transparent;
-    color: #8db5ff;
   }
 
   .menu-close {
@@ -2919,39 +2945,24 @@ main {
 
 /* ---------------------------------------------------------------------------
    Aide et support.
-   Un sommaire d'ancres, les questions fréquentes (déjà stylées), les guides en
-   trois cartes et le signalement.
+   Trois onglets sur une ligne (même dessin que les catalogues), un seul volet
+   visible : la FAQ, les guides en trois cartes, ou le signalement.
 --------------------------------------------------------------------------- */
 
-.aide-nav {
+.aide-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding-top: 2rem;
 }
 
-.aide-nav a {
-  padding: 0.6rem 1.1rem;
-  border: 1px solid rgba(13, 76, 200, 0.2);
-  border-radius: 999px;
-  background: #fff;
-  color: #33415c;
-  font-size: 0.88rem;
-  font-weight: 700;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+.aide-panel {
+  animation: aide-fade 0.2s ease;
 }
 
-.aide-nav a:hover {
-  background: #edf3ff;
-  color: #0d4cc8;
-  border-color: rgba(13, 76, 200, 0.4);
-}
-
-/* Les ancres ne se cachent pas sous l'en-tête collant. */
-.aide-nav,
-#faq,
-#guides,
-#signaler {
-  scroll-margin-top: 110px;
+@keyframes aide-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .guide-steps {

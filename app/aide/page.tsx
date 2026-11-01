@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AIDE_LINKS } from '@/lib/aide';
+import AideTabs from '@/components/AideTabs';
 
 export const metadata: Metadata = {
   title: 'Aide et support | DSAE UNIKAL',
@@ -11,10 +12,14 @@ export const metadata: Metadata = {
 /*
  * Aide et support.
  *
- * Une seule page pour les trois volets : les questions fréquentes, les guides
- * d'utilisation et le signalement d'un problème. Les liens de l'en-tête et du
- * pied de page pointent vers ses ancres (`/aide#faq`, `/aide#guides`,
- * `/aide#signaler`), pour que chaque entrée mène directement au bon volet.
+ * Une seule page, trois volets : les questions fréquentes, les guides
+ * d'utilisation et le signalement d'un problème. Ce sont des onglets, alignés
+ * sur une ligne comme les autres catalogues du portail — choisir « FAQ » ne
+ * montre que la FAQ.
+ *
+ * Les liens de l'en-tête et du pied de page portent l'ancre du volet
+ * (`/aide#faq`, `/aide#guides`, `/aide#signaler`) : la page ouvre directement le
+ * bon volet.
  *
  * Rien n'est inventé : les guides décrivent ce que le portail fait réellement,
  * et le signalement renvoie au formulaire de contact avec l'objet prérempli.
@@ -96,6 +101,82 @@ const guides = [
 ];
 
 export default function AidePage() {
+  const labelOf = (key: string) => AIDE_LINKS.find((link) => link.key === key)?.label ?? key;
+
+  const faqPanel = (
+    <section className="section">
+      <div className="container">
+        <div className="section-heading">
+          <span className="eyebrow">Questions fréquentes</span>
+          <h3>FAQ</h3>
+        </div>
+        <div className="faq-list">
+          {faq.map((item) => (
+            <details className="faq-item" key={item.question}>
+              <summary>{item.question}</summary>
+              <div className="faq-answer">
+                <p>{item.answer}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
+  const guidesPanel = (
+    <section className="section">
+      <div className="container">
+        <div className="section-heading">
+          <span className="eyebrow">Pas à pas</span>
+          <h3>Guides d’utilisation</h3>
+        </div>
+        <div className="card-grid three-grid">
+          {guides.map((guide) => (
+            <article className="info-card" key={guide.title}>
+              <h4>{guide.title}</h4>
+              <ol className="guide-steps">
+                {guide.steps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
+  const signalerPanel = (
+    <section className="section">
+      <div className="container">
+        <div className="section-heading">
+          <span className="eyebrow">Support</span>
+          <h3>Signaler un problème</h3>
+        </div>
+        <div className="info-card aide-report">
+          <p>
+            Une page ne s’affiche pas comme il faut, un document ne s’ouvre pas, une information
+            vous paraît erronée ? Écrivez-nous : indiquez la page concernée et ce qui ne fonctionne
+            pas. L’équipe du DSAE en prendra connaissance.
+          </p>
+          <Link href="/contact?subject=report" className="btn btn-primary">
+            Signaler un problème
+          </Link>
+        </div>
+        <p className="faq-contact-note">
+          Une autre question ? <Link href="/contact">Nous contacter</Link>.
+        </p>
+      </div>
+    </section>
+  );
+
+  const panels = [
+    { key: 'faq', label: labelOf('faq'), content: faqPanel },
+    { key: 'guides', label: labelOf('guides'), content: guidesPanel },
+    { key: 'signaler', label: labelOf('signaler'), content: signalerPanel },
+  ];
+
   return (
     <div className="page-shell">
       <section className="page-hero small-hero">
@@ -105,79 +186,7 @@ export default function AidePage() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <nav className="aide-nav" aria-label="Sommaire de l’aide">
-            {AIDE_LINKS.map((link) => (
-              <a key={link.key} href={link.href}>
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </section>
-
-      <section className="section" id="faq">
-        <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Questions fréquentes</span>
-            <h3>FAQ</h3>
-          </div>
-          <div className="faq-list">
-            {faq.map((item) => (
-              <details className="faq-item" key={item.question}>
-                <summary>{item.question}</summary>
-                <div className="faq-answer">
-                  <p>{item.answer}</p>
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section alt-section" id="guides">
-        <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Pas à pas</span>
-            <h3>Guides d’utilisation</h3>
-          </div>
-          <div className="card-grid three-grid">
-            {guides.map((guide) => (
-              <article className="info-card" key={guide.title}>
-                <h4>{guide.title}</h4>
-                <ol className="guide-steps">
-                  {guide.steps.map((step) => (
-                    <li key={step}>{step}</li>
-                  ))}
-                </ol>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section" id="signaler">
-        <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Support</span>
-            <h3>Signaler un problème</h3>
-          </div>
-          <div className="info-card aide-report">
-            <p>
-              Une page ne s’affiche pas comme il faut, un document ne s’ouvre pas, une information
-              vous paraît erronée ? Écrivez-nous : indiquez la page concernée et ce qui ne fonctionne
-              pas. L’équipe du DSAE en prendra connaissance.
-            </p>
-            <Link href="/contact?subject=report" className="btn btn-primary">
-              Signaler un problème
-            </Link>
-          </div>
-          <p className="faq-contact-note">
-            Une autre question ? <Link href="/contact">Nous contacter</Link>.
-          </p>
-        </div>
-      </section>
+      <AideTabs panels={panels} />
     </div>
   );
 }
