@@ -1346,6 +1346,94 @@ main {
 }
 
 /* ------------------------------------------------------------------
+ * Le carrousel « à lire aussi », en fin de fiche.
+ *
+ * Une bande que l'on fait glisser à la main : d'autres actualités, ou d'autres
+ * documents. Les cartes gardent leur mise en page d'origine ; seul le cadre
+ * change — une largeur fixe pour qu'elles s'alignent côte à côte, et le
+ * défilement horizontal. Les flèches avancent d'un cran, et s'éteignent aux
+ * deux bouts : rien à cliquer quand il n'y a plus rien à voir.
+ * ------------------------------------------------------------------ */
+
+.related-section {
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.related-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.related-head .section-heading {
+  margin-bottom: 0;
+}
+
+.related-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.related-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(13, 76, 200, 0.25);
+  border-radius: 999px;
+  background: #fff;
+  color: #0d4cc8;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.related-arrow:hover:not(:disabled) {
+  background: #edf3ff;
+}
+
+.related-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.related-track {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+/* Une carte par cran : la largeur est fixe, la carte s'y adapte. Sans cela,
+   une carte garderait la largeur de la grille dont elle vient. */
+.related-track > * {
+  flex: 0 0 auto;
+  width: min(340px, 78vw);
+  scroll-snap-align: start;
+}
+
+.related-track .news-card,
+.related-track .publication-card {
+  margin: 0;
+}
+
+/* Dans une carte étroite, la vignette garde une proportion d'image, pas la
+   hauteur fixe des grandes cartes de la page. */
+.related-track .news-image img {
+  height: auto;
+  aspect-ratio: 16 / 10;
+}
+
+/* ------------------------------------------------------------------
  * La couverture d'un document, au format A4.
  *
  * Un document se présente comme une page : 210 × 297 mm, soit un rapport

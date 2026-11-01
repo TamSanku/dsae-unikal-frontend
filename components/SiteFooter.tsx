@@ -46,6 +46,7 @@ function buildGroups(nav: SiteNav): FooterGroup[] {
     { id: 'equipe', title: 'Équipe', href: '/equipe', links: nav.team },
     { id: 'recherche', title: 'Recherche', href: '/recherche', links: nav.research },
     { id: 'publications', title: 'Publications', href: '/publications', links: nav.publications },
+    { id: 's-engager', title: 'S’engager', href: '/s-engager', links: [] },
     { id: 'alumni', title: 'Alumni', href: '/alumni', links: [] },
     {
       id: 'legal',

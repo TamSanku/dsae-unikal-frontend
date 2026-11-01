@@ -14,6 +14,7 @@ const navItems = [
   { href: '/equipe', label: 'Équipe' },
   { href: '/recherche', label: 'Recherche' },
   { href: '/publications', label: 'Publications' },
+  { href: '/s-engager', label: 'S’engager' },
   { href: '/alumni', label: 'Alumni' },
 ];
 
