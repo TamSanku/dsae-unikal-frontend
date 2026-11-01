@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
 /*
  * Le catalogue : une barre de recherche, des filtres à côté, des onglets
@@ -57,6 +57,12 @@ export default function CatalogExplorer({
   const [query, setQuery] = useState('');
   const [tab, setTab] = useState(initialTab);
   const [chosen, setChosen] = useState<Record<string, string>>({});
+
+  /* Un lien qui ne change que la requête (le pied de page, par exemple) réutilise
+   * le même composant : l'onglet doit suivre la nouvelle adresse. */
+  useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();

@@ -9,8 +9,16 @@ import PeopleCatalog from '@/components/PeopleCatalog';
  * « Tout ». La recherche couvre le nom, la fonction, le département et le
  * parcours. La barre et les onglets restent visibles même sans contenu.
  */
-export default async function TeamPage() {
+export default async function TeamPage({
+  searchParams,
+}: {
+  searchParams?: { category?: string | string[] };
+}) {
   const [team, taxonomy] = await Promise.all([getTeamMembers(), getTaxonomy()]);
+  const requested = Array.isArray(searchParams?.category)
+    ? searchParams?.category[0]
+    : searchParams?.category;
+  const initialTab = requested && taxonomy.teamCategories.includes(requested) ? requested : '';
 
   return (
     <div className="page-shell">
@@ -27,6 +35,7 @@ export default async function TeamPage() {
             people={team}
             variant="team"
             taxonomy={taxonomy}
+            initialTab={initialTab}
             searchPlaceholder="Rechercher une personne…"
             emptyLabel={
               team.length === 0

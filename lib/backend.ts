@@ -314,6 +314,45 @@ export async function getSiteLogo(): Promise<SiteLogo> {
 }
 
 /*
+ * Les entrées de sous-menu du pied de page, tirées du contenu réel : les axes de
+ * recherche, les catégories d'équipe et les domaines de publication. Le pied de
+ * page s'en sert pour déplier ces trois rubriques ; quand une liste est vide, la
+ * rubrique reste un lien direct vers sa page.
+ *
+ * Les trois appels partent ensemble : le pied de page ne doit pas retarder
+ * l'affichage plus que le plus lent des trois.
+ */
+export type SiteNav = {
+  research: { label: string; href: string }[];
+  team: { label: string; href: string }[];
+  publications: { label: string; href: string }[];
+};
+
+export async function getSiteNav(): Promise<SiteNav> {
+  const [areas, taxonomy, publications] = await Promise.all([
+    getResearchAreas(),
+    getTaxonomy(),
+    getPublications(),
+  ]);
+
+  const research = areas.map((area) => ({ label: area.title, href: `/recherche/${area.slug}` }));
+
+  const team = taxonomy.teamCategories.map((category) => ({
+    label: category,
+    href: `/equipe?category=${encodeURIComponent(category)}`,
+  }));
+
+  const domains = Array.from(new Set(publications.map((item) => item.domain).filter(Boolean)));
+  const list = domains.length > 0 ? domains : taxonomy.domains;
+  const pub = list.map((domain) => ({
+    label: domain,
+    href: `/publications?domain=${encodeURIComponent(domain)}`,
+  }));
+
+  return { research, team, publications: pub };
+}
+
+/*
  * Les partenaires : les institutions liées au domaine. La page « S'engager »
  * les liste ; sans contenu publié, elle le dit franchement.
  */

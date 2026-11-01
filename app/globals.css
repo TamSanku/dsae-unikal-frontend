@@ -1911,16 +1911,17 @@ main {
   color: #101827;
 }
 
+/* Les onglets passent à la ligne : aucun ne doit rester hors de vue. */
 .catalog-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
   padding-bottom: 4px;
-  scrollbar-width: thin;
 }
 
 .catalog-tab {
   flex: none;
+  max-width: 100%;
   border: 1px solid rgba(13, 76, 200, 0.2);
   border-radius: 999px;
   padding: 0.5rem 1rem;
@@ -1928,7 +1929,11 @@ main {
   color: #33415c;
   font-size: 0.85rem;
   font-weight: 700;
-  white-space: nowrap;
+  /* Un intitulé très long (un domaine, par exemple) passe à la ligne plutôt que
+   * de déborder : il reste lisible en entier sur un téléphone. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
@@ -2751,6 +2756,12 @@ main {
 
 .footer-accordion-item.is-open .footer-accordion-links {
   padding-bottom: 12px;
+}
+
+/* La page ouverte : l'entrée courante se distingue sans crier. */
+.footer-accordion-links a.is-current {
+  color: #7a5c2e;
+  font-weight: 700;
 }
 
 .footer-bottom {

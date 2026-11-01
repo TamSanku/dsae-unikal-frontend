@@ -31,9 +31,12 @@ function publicationYears(items: Publication[]): string[] {
 export default function PublicationsCatalog({
   publications,
   taxonomy,
+  initialTab = '',
 }: {
   publications: Publication[];
   taxonomy: Taxonomy;
+  /** Le domaine ouvert d'emblée, par exemple depuis un lien du pied de page. */
+  initialTab?: string;
 }) {
   const years = publicationYears(publications);
 
@@ -73,6 +76,7 @@ export default function PublicationsCatalog({
       tabs={taxonomy.domains.map((domain) => ({ key: domain, label: domain }))}
       tabOf={(item: Publication) => item.domain}
       filters={filters}
+      initialTab={initialTab}
       resultNoun="document"
       emptyLabel="Aucun document ne correspond à cette recherche. Modifiez les mots-clés ou les filtres."
       renderItem={(publication: Publication) => (

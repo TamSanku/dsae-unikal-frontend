@@ -8,8 +8,16 @@ import PublicationsCatalog from '@/components/PublicationsCatalog';
  * catalogue ; la page ne fait que charger la matière réelle et la lui confier.
  * La barre et les onglets restent visibles même sans document publié.
  */
-export default async function PublicationsPage() {
+export default async function PublicationsPage({
+  searchParams,
+}: {
+  searchParams?: { domain?: string | string[] };
+}) {
   const [publications, taxonomy] = await Promise.all([getPublications(), getTaxonomy()]);
+  const requested = Array.isArray(searchParams?.domain)
+    ? searchParams?.domain[0]
+    : searchParams?.domain;
+  const initialTab = requested && taxonomy.domains.includes(requested) ? requested : '';
 
   return (
     <div className="page-shell">
@@ -22,7 +30,11 @@ export default async function PublicationsPage() {
 
       <section className="section">
         <div className="container">
-          <PublicationsCatalog publications={publications} taxonomy={taxonomy} />
+          <PublicationsCatalog
+            publications={publications}
+            taxonomy={taxonomy}
+            initialTab={initialTab}
+          />
         </div>
       </section>
     </div>

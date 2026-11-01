@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { getSiteLogo } from '@/lib/backend';
+import { getSiteLogo, getSiteNav } from '@/lib/backend';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import CookieConsent from '@/components/CookieConsent';
@@ -24,13 +24,13 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const logo = await getSiteLogo();
+  const [logo, nav] = await Promise.all([getSiteLogo(), getSiteNav()]);
   return (
     <html lang="fr">
       <body className="site-body">
         <SiteHeader logo={logo} />
         <main>{children}</main>
-        <SiteFooter logo={logo} />
+        <SiteFooter logo={logo} nav={nav} />
         <AnalyticsTracker />
         <CookieConsent />
       </body>

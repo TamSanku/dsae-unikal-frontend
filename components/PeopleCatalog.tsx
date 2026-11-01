@@ -24,12 +24,15 @@ export default function PeopleCatalog({
   taxonomy,
   searchPlaceholder,
   emptyLabel,
+  initialTab = '',
 }: {
   people: TeamMember[];
   variant: 'team' | 'alumni';
   taxonomy: Taxonomy;
   searchPlaceholder: string;
   emptyLabel: string;
+  /** L'onglet ouvert d'emblée, par exemple depuis un lien du pied de page. */
+  initialTab?: string;
 }) {
   const isAlumni = variant === 'alumni';
 
@@ -67,6 +70,7 @@ export default function PeopleCatalog({
       tabs={tabs}
       tabOf={tabOf}
       filters={filters}
+      initialTab={initialTab}
       resultNoun="profil"
       emptyLabel={emptyLabel}
       renderItem={(member: TeamMember) => (
