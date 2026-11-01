@@ -25,7 +25,7 @@ export default async function TeamPage({
     <div className="page-shell">
       <PageHero title="Équipe" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container">
           <PeopleCatalog
             people={team}

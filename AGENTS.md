@@ -70,6 +70,16 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
   (client), posé par chaque page avec `title`. Il ne porte **que le nom de la
   page** — l'étiquette « eyebrow » qui le répétait a été retirée. L'accroche de
   `/aide` est descendue sous le titre de la page, dans le volet.
+- Le bandeau est **centré** et il **monte du bas** à l'ouverture, puis le
+  contenu de la page apparaît (classe `page-enter` sur le premier bloc). Le
+  bandeau reste dans le flux et la hauteur de page ne change pas : pas de saut.
+  Le premier bloc de chaque page porte `page-enter` ; en ajouter un nouveau sur
+  une page, c'est poser cette classe sur son premier bloc.
+- Les deux retards du titre (écriture des lettres, défilement de la vague) sont
+  des variables distinctes, `--letter-delay` et `--sheen-delay`. Un
+  `animation-delay` unique les écraserait tous les deux et **figerait la vague**.
+- Le mouvement est exprimé en `vh`, jamais en pixels : une barre de navigateur
+  qui se range sur téléphone ne peut pas le fausser.
 - Le titre s'écrit lettre à lettre dans un dégradé qui défile sans fin (vague de
   couleur). Les lettres sont groupées **par mot** : un titre long se replie entre
   les mots, jamais au milieu d'un mot. `aria-label` porte le nom entier ; les

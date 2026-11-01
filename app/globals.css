@@ -679,19 +679,60 @@ main {
   padding-bottom: 30px;
 }
 
+/* ---------------------------------------------------------------------------
+   Le bandeau de tête : centré, et il monte du bas.
+
+   À l'ouverture d'une page, le bandeau sort de sous l'écran et monte jusqu'à sa
+   place, tout en haut. Une fois posé, son titre s'écrit lettre à lettre et le
+   contenu de la page apparaît derrière lui.
+
+   Le bandeau reste dans le flux : il ne se superpose jamais au contenu, et la
+   page garde sa hauteur définitive dès le premier rendu — pas de saut de mise
+   en page. Pendant la montée, le contenu du dessous est invisible (voir
+   `.page-enter`) : il n'y a donc rien derrière le bandeau qui monte.
+
+   Le mouvement est exprimé en `vh`, jamais en pixels : sur téléphone, une barre
+   du navigateur qui se range ne peut pas le fausser.
+--------------------------------------------------------------------------- */
+
 .page-hero {
   background: linear-gradient(180deg, #edf4ff 0%, #f6f8fc 100%);
   border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  padding: 60px 0;
+  animation: hero-rise 0.7s cubic-bezier(0.22, 0.68, 0.2, 1) both;
 }
 
-.small-hero {
-  padding: 60px 0;
+@keyframes hero-rise {
+  from {
+    transform: translateY(100vh);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* Le premier bloc de contenu : il apparaît une fois le bandeau posé. */
+.page-enter {
+  animation: page-enter 0.5s cubic-bezier(0.22, 0.68, 0.2, 1) 0.8s both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .page-hero-inner {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
+  text-align: center;
 }
 
 /* ---------------------------------------------------------------------------
@@ -746,8 +787,8 @@ main {
     color: transparent;
     opacity: 0;
     animation:
-      hero-letter 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) forwards,
-      hero-sheen 7s linear infinite;
+      hero-letter 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) var(--letter-delay, 0ms) forwards,
+      hero-sheen 7s linear var(--sheen-delay, 0ms) infinite;
   }
 }
 
@@ -778,6 +819,12 @@ main {
     background-image: none;
     -webkit-text-fill-color: currentColor;
     color: #0b1c3d;
+  }
+
+  /* Sans mouvement : le bandeau est déjà posé, le contenu déjà visible. */
+  .page-hero,
+  .page-enter {
+    animation: none;
   }
 }
 

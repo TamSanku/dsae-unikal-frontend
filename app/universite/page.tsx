@@ -6,7 +6,7 @@ export default function UniversityPage() {
     <div className="page-shell">
       <PageHero title="Université" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container detail-layout">
           <div>
             <p>

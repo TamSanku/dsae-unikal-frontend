@@ -19,7 +19,7 @@ export default async function AboutPage() {
     <div className="page-shell">
       <PageHero title="À propos" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container detail-layout">
           <div>
             <p>

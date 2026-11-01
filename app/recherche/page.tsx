@@ -10,7 +10,7 @@ export default async function ResearchPage() {
     <div className="page-shell">
       <PageHero title="Recherche" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container">
           <div className="section-heading">
             <span className="eyebrow">Politique</span>

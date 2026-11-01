@@ -87,7 +87,7 @@ export default async function EngagerPage({
     <div className="page-shell">
       <PageHero title="S’engager" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container">
           <EngagerTabs initialTab={initialTab} panels={panels} />
         </div>

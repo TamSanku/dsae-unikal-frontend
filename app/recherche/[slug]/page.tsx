@@ -22,7 +22,7 @@ export default async function ResearchDetailPage({ params }: { params: { slug: s
     <div className="page-shell">
       <PageHero title={area.title} />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container detail-layout small-gap">
           <div>
             {area.description && <p>{area.description}</p>}

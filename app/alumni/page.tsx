@@ -30,7 +30,7 @@ export default async function AlumniPage({
     <div className="page-shell">
       <PageHero title="Alumni" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container">
           <PeopleCatalog
             people={alumni}

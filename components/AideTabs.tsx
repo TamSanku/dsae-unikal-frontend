@@ -47,7 +47,7 @@ export default function AideTabs({
   };
 
   return (
-    <div className="aide-tabs">
+    <div className="aide-tabs page-enter">
       <div className="container">
         <div className="catalog-tabs" role="tablist" aria-label="Aide et support">
           {panels.map((panel) => (

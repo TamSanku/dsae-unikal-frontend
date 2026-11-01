@@ -28,7 +28,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     <div className="page-shell">
       <PageHero title="Actualités" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container">
           <NewsCatalog
             news={news}

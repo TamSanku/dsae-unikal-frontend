@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <>
       <PageHero title="Page introuvable" />
-      <section className="section not-found-section">
+      <section className="section not-found-section page-enter">
         <div className="container not-found-box">
           <p>La page demandée n’existe pas ou a été déplacée.</p>
           <Link href="/" className="btn btn-primary">

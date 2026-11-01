@@ -24,7 +24,7 @@ export default async function PublicationsPage({
     <div className="page-shell">
       <PageHero title="Publications" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container">
           <PublicationsCatalog
             publications={publications}

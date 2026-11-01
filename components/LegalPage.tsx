@@ -16,7 +16,7 @@ export default function LegalPage({ title, intro, sections }: LegalPageProps) {
   return (
     <div className="page-shell">
       <PageHero title={title} />
-      <section className="section legal-section">
+      <section className="section legal-section page-enter">
         <article className="container legal-content">
           <p className="legal-intro">{intro}</p>
           {sections.map((section) => (

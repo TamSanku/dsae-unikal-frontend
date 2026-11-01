@@ -21,7 +21,7 @@ export default function ContactPage({ searchParams }: ContactPageProps) {
     <div className="page-shell">
       <PageHero title="Contact" />
 
-      <section className="section">
+      <section className="section page-enter">
         <div className="container contact-page-grid">
           <div className="contact-info">
             <div className="info-card">
