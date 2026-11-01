@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 export default function UniversityPage() {
   return (
@@ -64,12 +63,12 @@ export default function UniversityPage() {
       <section className="section cta-band small">
         <div className="container cta-content">
           <div>
-            <span className="eyebrow">Nous contacter</span>
-            <h3>Pour toute demande ou information institutionnelle.</h3>
+            <span className="eyebrow">Université de Kalemie</span>
+            <h3>Découvrir l’institution sur son site officiel.</h3>
           </div>
-          <Link href="/contact" className="btn btn-primary">
-            Contacter l’université
-          </Link>
+          <a href="https://unikal.ac.cd" className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            En savoir plus sur l’université de Kalemie
+          </a>
         </div>
       </section>
     </div>

@@ -5,16 +5,15 @@ import { useRef } from 'react';
 /*
  * Le bandeau des partenaires, juste après l'accueil.
  *
- * Un carrousel horizontal des logos des institutions partenaires. Les logos
- * viennent de la rubrique « Partenaires » de l'espace de gestion : rien n'est
- * inventé. Un partenaire sans logo publié montre son nom, jamais une image de
- * remplacement — la bande reste honnête.
+ * Une bande horizontale de logos, à l'air libre : ni carte, ni cadre, ni nom.
+ * Le logo se pose sur la couleur de fond de la bande, comme s'il y était
+ * imprimé. Les logos viennent de la rubrique « Partenaires » de l'espace de
+ * gestion ; un partenaire sans logo publié ne paraît pas — la bande ne montre
+ * que ce qui existe, jamais une image de remplacement.
  */
 export type PartnerLogo = {
   id: string;
   name: string;
-  nature: string;
-  location: string;
   logo: string;
 };
 
@@ -28,32 +27,16 @@ export default function PartnersCarousel({ partners }: { partners: PartnerLogo[]
     track.scrollBy({ left: direction * amount, behavior: 'smooth' });
   };
 
-  if (partners.length === 0) return null;
+  const logos = partners.filter((partner) => partner.logo);
+  if (logos.length === 0) return null;
 
   return (
     <section className="partners-band" aria-label="Partenaires du DSAE">
       <div className="container partners-band-inner">
-        <div className="partners-band-head">
-          <span className="eyebrow">Partenaires</span>
-          <h3>Les institutions qui accompagnent le DSAE</h3>
-        </div>
-
         <div className="partners-track" ref={trackRef} tabIndex={0} aria-label="Logos des partenaires">
-          {partners.map((partner) => (
-            <article className="partner-logo-card" key={partner.id}>
-              <div className="partner-logo-frame">
-                {partner.logo ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={partner.logo} alt={partner.name} loading="lazy" />
-                ) : (
-                  <span className="partner-logo-text">{partner.name}</span>
-                )}
-              </div>
-              <div className="partner-logo-meta">
-                <strong>{partner.name}</strong>
-                {partner.nature ? <span>{partner.nature}</span> : null}
-              </div>
-            </article>
+          {logos.map((partner) => (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img className="partner-logo" key={partner.id} src={partner.logo} alt={partner.name} loading="lazy" />
           ))}
         </div>
 

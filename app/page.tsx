@@ -63,8 +63,6 @@ export default async function HomePage() {
         partners={partners.map((partner) => ({
           id: partner.id,
           name: partner.name,
-          nature: partner.role,
-          location: partner.department,
           logo: partner.image,
         }))}
       />
