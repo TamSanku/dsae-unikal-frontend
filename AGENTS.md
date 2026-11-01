@@ -56,6 +56,18 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
   portail n'affiche jamais une image inventée.
 - Les logos de partenaires du carrousel viennent de la rubrique « Partenaires »
   (collection `dsae-partners`) ; seuls les contenus **publiés** sont visibles.
+- Le bandeau des partenaires ne montre **que des logos** : ni nom, ni carte, ni
+  cadre. Il est transparent et chaque logo se pose sur la couleur de fond de
+  l'endroit où la bande est placée. Un partenaire sans logo publié ne paraît pas.
+- Le logo du site se pose de la même façon, sans vignette ni cadre.
+- Page Université : le bouton « En savoir plus sur l'université de Kalemie »
+  mène au site officiel https://unikal.ac.cd.
+
+## Piège connu (backend)
+
+Un contenu **publié** exige un résumé, un contenu ou un bloc, sinon `POST
+/api/content/<collection>` renvoie `400`. Pour un partenaire publié, fournir au
+minimum `summary`.
 
 ## Vérifier en local (bout en bout)
 
