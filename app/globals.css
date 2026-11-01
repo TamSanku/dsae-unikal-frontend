@@ -1255,80 +1255,92 @@ main {
  * Une bande horizontale de logos, à l'air libre. Aucun fond propre : la bande
  * laisse voir la couleur de l'endroit où elle est posée, et chaque logo s'y
  * imprime directement — ni carte, ni cadre, ni nom.
+ *
+ * Un trait sépare nettement la bande de l'accueil au-dessus. Le défilement est
+ * automatique et sans fin : la piste contient deux copies de la liste, elle
+ * glisse de la largeur d'une copie puis recommence, ce qui rend la boucle
+ * invisible. Le visiteur peut aussi faire défiler à la main.
  * ------------------------------------------------------------------ */
 
 .partners-band {
   position: relative;
   width: 100%;
-  padding-block: clamp(2.5rem, 6vh, 4rem);
+  padding-block: clamp(2.75rem, 6vh, 4.25rem);
   background: transparent;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
 }
 
-.partners-band-inner {
-  position: relative;
+.partners-band::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #0b3d91, #164ec8 55%, #7aa7ff);
 }
 
 .partners-track {
   display: flex;
-  align-items: center;
-  gap: clamp(2rem, 6vw, 4.5rem);
+  width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-block: 0.4rem;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(13, 76, 200, 0.35) transparent;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 
-.partners-track:focus-visible {
-  outline: 2px solid #0d4cc8;
-  outline-offset: 6px;
-  border-radius: 12px;
+.partners-track::-webkit-scrollbar {
+  display: none;
 }
 
+.partners-group {
+  display: flex;
+  align-items: center;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  flex: 0 0 auto;
+  padding-inline: clamp(1.25rem, 3vw, 2.5rem);
+  animation: partners-scroll 45s linear infinite;
+}
+
+.partners-band:hover .partners-group,
+.partners-band:focus-within .partners-group {
+  animation-play-state: paused;
+}
+
+@keyframes partners-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partners-group {
+    animation: none;
+  }
+}
+
+/* Tous les logos partagent le même cadre : hauteur et largeur fixes, l'image
+   se cale dedans sans se déformer. La bande paraît ainsi régulière. */
 .partner-logo {
   display: block;
   flex: 0 0 auto;
-  height: clamp(48px, 7vw, 76px);
-  width: auto;
-  max-width: 220px;
+  width: clamp(104px, 11vw, 148px);
+  height: clamp(64px, 7vw, 92px);
   object-fit: contain;
 }
 
-.partners-carousel-controls {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 1.6rem;
-}
-
-.partners-carousel-controls > button {
-  display: inline-grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  border-radius: 50%;
-  background: transparent;
-  color: #123e83;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.partners-carousel-controls > button:hover {
-  transform: translateY(-1px);
-  background: rgba(13, 76, 200, 0.08);
-}
-
 @media (max-width: 640px) {
-  .partners-track {
-    gap: 1.8rem;
+  .partners-group {
+    gap: 2.25rem;
   }
 
   .partner-logo {
-    height: 44px;
+    width: 104px;
+    height: 64px;
   }
 }
 
