@@ -694,10 +694,91 @@ main {
   gap: 12px;
 }
 
-.page-hero-inner h1 {
+/* ---------------------------------------------------------------------------
+   Le titre du bandeau : un nom qui ondule.
+   Chaque lettre porte le même dégradé, mais glisse à son propre rythme — une
+   vague de couleur traverse alors le mot, sans fin. Les lettres se posent l'une
+   après l'autre à l'ouverture (`hero-letter`), la vague prend le relais
+   (`hero-sheen`). `prefers-reduced-motion` fige le tout : le nom garde sa
+   couleur, sans mouvement.
+--------------------------------------------------------------------------- */
+
+.page-hero-title {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.3em;
+  row-gap: 0.04em;
   margin: 0;
   font-size: clamp(2.2rem, 4vw, 3.5rem);
-  color: #0f172a;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.page-hero-word {
+  display: inline-flex;
+}
+
+.page-hero-char {
+  display: inline-block;
+  white-space: pre;
+  color: #0b1c3d;
+}
+
+/* Le dégradé ne s'applique que si le navigateur sait découper le texte sur le
+   fond. Sinon les lettres resteraient invisibles — elles gardent alors la
+   couleur pleine posée plus haut. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .page-hero-char {
+    background-image: linear-gradient(
+      100deg,
+      #0b1c3d 0%,
+      #0d4cc8 26%,
+      #1c8ed6 46%,
+      #16a37f 62%,
+      #0d4cc8 82%,
+      #0b1c3d 100%
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    opacity: 0;
+    animation:
+      hero-letter 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) forwards,
+      hero-sheen 7s linear infinite;
+  }
+}
+
+@keyframes hero-letter {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em) rotate(2deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-sheen {
+  from {
+    background-position: 300% 50%;
+  }
+  to {
+    background-position: -300% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-hero-char {
+    animation: none;
+    opacity: 1;
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+    color: #0b1c3d;
+  }
 }
 
 .detail-layout,

@@ -1,18 +1,14 @@
 import Link from 'next/link';
 import { getResearchAreas } from '@/lib/backend';
 import EmptyState from '@/components/EmptyState';
+import PageHero from '@/components/PageHero';
 
 export default async function ResearchPage() {
   const research = await getResearchAreas();
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Recherche</span>
-          <h1>Politique, axes de recherche et projets</h1>
-        </div>
-      </section>
+      <PageHero title="Recherche" />
 
       <section className="section">
         <div className="container">

@@ -1,4 +1,5 @@
 import ContactForm from '@/components/ContactForm';
+import PageHero from '@/components/PageHero';
 
 type ContactPageProps = {
   searchParams?: {
@@ -18,12 +19,7 @@ export default function ContactPage({ searchParams }: ContactPageProps) {
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Contact</span>
-          <h1>Nous contacter</h1>
-        </div>
-      </section>
+      <PageHero title="Contact" />
 
       <section className="section">
         <div className="container contact-page-grid">

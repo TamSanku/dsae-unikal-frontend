@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getAlumni, getTaxonomy } from '@/lib/backend';
 import PeopleCatalog from '@/components/PeopleCatalog';
+import PageHero from '@/components/PageHero';
 
 /*
  * Les Alumni : les diplômés du domaine.
@@ -27,12 +28,7 @@ export default async function AlumniPage({
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Alumni</span>
-          <h1>Les diplômés du domaine</h1>
-        </div>
-      </section>
+      <PageHero title="Alumni" />
 
       <section className="section">
         <div className="container">

@@ -4,6 +4,7 @@ import { withFallback } from '@/lib/fallback';
 import { ENGAGER_TABS } from '@/lib/engager';
 import ContactForm from '@/components/ContactForm';
 import EngagerTabs from '@/components/EngagerTabs';
+import PageHero from '@/components/PageHero';
 
 /*
  * S'engager : trois volets — proposer un partenariat, nous contacter, nos
@@ -84,12 +85,7 @@ export default async function EngagerPage({
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">S’engager</span>
-          <h1>Travailler avec le DSAE</h1>
-        </div>
-      </section>
+      <PageHero title="S’engager" />
 
       <section className="section">
         <div className="container">

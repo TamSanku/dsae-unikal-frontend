@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getFilieres } from '@/lib/backend';
 import EmptyState from '@/components/EmptyState';
+import PageHero from '@/components/PageHero';
 
 /*
  * La page « À propos ».
@@ -16,12 +17,7 @@ export default async function AboutPage() {
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">À propos</span>
-          <h1>Domaine des Sciences Agronomiques et de l’Environnement</h1>
-        </div>
-      </section>
+      <PageHero title="À propos" />
 
       <section className="section">
         <div className="container detail-layout">

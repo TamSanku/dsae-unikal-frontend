@@ -1,5 +1,6 @@
 import { getPublications, getTaxonomy } from '@/lib/backend';
 import PublicationsCatalog from '@/components/PublicationsCatalog';
+import PageHero from '@/components/PageHero';
 
 /*
  * Le catalogue des publications.
@@ -21,12 +22,7 @@ export default async function PublicationsPage({
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Publications</span>
-          <h1>Catalogue scientifique</h1>
-        </div>
-      </section>
+      <PageHero title="Publications" />
 
       <section className="section">
         <div className="container">

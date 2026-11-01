@@ -1,5 +1,6 @@
 import { getNewsItems, getTaxonomy } from '@/lib/backend';
 import NewsCatalog from '@/components/NewsCatalog';
+import PageHero from '@/components/PageHero';
 
 /*
  * Le fil des actualités.
@@ -25,12 +26,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Actualités</span>
-          <h1>Événements, séminaires et conférences</h1>
-        </div>
-      </section>
+      <PageHero title="Actualités" />
 
       <section className="section">
         <div className="container">

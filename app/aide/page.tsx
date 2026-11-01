@@ -4,7 +4,7 @@ import { AIDE_LINKS } from '@/lib/aide';
 import AideTabs from '@/components/AideTabs';
 import HelpBrowser, { type HelpGroup } from '@/components/HelpBrowser';
 import { FAQ_GROUPS, GUIDES_GROUPS, GuideBody } from './content';
-
+import PageHero from '@/components/PageHero';
 
 export const metadata: Metadata = {
   title: 'Aide et support | DSAE UNIKAL',
@@ -138,15 +138,7 @@ export default function AidePage() {
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Assistance</span>
-          <h1>Aide et support</h1>
-          <p className="lead-text">
-            Réponses immédiates, guides pas à pas et moyen de nous joindre — au même endroit.
-          </p>
-        </div>
-      </section>
+      <PageHero title="Aide et support" />
 
       <AideTabs panels={panels} />
     </div>

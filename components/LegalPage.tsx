@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import PageHero from '@/components/PageHero';
 
 export type LegalSection = {
   heading: string;
@@ -14,12 +15,7 @@ type LegalPageProps = {
 export default function LegalPage({ title, intro, sections }: LegalPageProps) {
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Informations institutionnelles</span>
-          <h1>{title}</h1>
-        </div>
-      </section>
+      <PageHero title={title} />
       <section className="section legal-section">
         <article className="container legal-content">
           <p className="legal-intro">{intro}</p>

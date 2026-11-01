@@ -66,6 +66,16 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
 - Le logo du site se pose de la même façon, sans vignette ni cadre.
 - Page Université : le bouton « En savoir plus sur l'université de Kalemie »
   mène au site officiel https://unikal.ac.cd.
+- Le bandeau de tête des pages intérieures est unique : `components/PageHero.tsx`
+  (client), posé par chaque page avec `title`. Il ne porte **que le nom de la
+  page** — l'étiquette « eyebrow » qui le répétait a été retirée. L'accroche de
+  `/aide` est descendue sous le titre de la page, dans le volet.
+- Le titre s'écrit lettre à lettre dans un dégradé qui défile sans fin (vague de
+  couleur). Les lettres sont groupées **par mot** : un titre long se replie entre
+  les mots, jamais au milieu d'un mot. `aria-label` porte le nom entier ; les
+  lettres sont décoratives. `prefers-reduced-motion` fige le titre.
+- L'accueil garde son propre héros (`hero-shell home-panel-hero`) : il n'utilise
+  pas `PageHero`. La page 404 l'utilise, sous le nom « Page introuvable ».
 - Menu principal (`components/SiteHeader.tsx`, `navItems`) et pied de page : la
   même suite, `Accueil → Actualités → À propos → Université → Équipe → Recherche
   → Publications → S’engager → Alumni` (puis « Légal et confiance » au pied de

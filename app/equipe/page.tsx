@@ -1,5 +1,6 @@
 import { getTeamMembers, getTaxonomy } from '@/lib/backend';
 import PeopleCatalog from '@/components/PeopleCatalog';
+import PageHero from '@/components/PageHero';
 
 /*
  * L'équipe : recherche et onglets par catégorie.
@@ -22,12 +23,7 @@ export default async function TeamPage({
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Équipe</span>
-          <h1>Responsables et acteurs scientifiques</h1>
-        </div>
-      </section>
+      <PageHero title="Équipe" />
 
       <section className="section">
         <div className="container">

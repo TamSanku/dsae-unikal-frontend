@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getResearchAreaBySlug } from '@/lib/backend';
+import PageHero from '@/components/PageHero';
 
 /* Le titre de l'onglet porte le nom de l'axe : c'est ce nom que la mesure
  * d'audience retient comme libellé de la fiche. */
@@ -19,12 +20,7 @@ export default async function ResearchDetailPage({ params }: { params: { slug: s
 
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Axe de recherche</span>
-          <h1>{area.title}</h1>
-        </div>
-      </section>
+      <PageHero title={area.title} />
 
       <section className="section">
         <div className="container detail-layout small-gap">

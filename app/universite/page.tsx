@@ -1,14 +1,10 @@
 import Image from 'next/image';
+import PageHero from '@/components/PageHero';
 
 export default function UniversityPage() {
   return (
     <div className="page-shell">
-      <section className="page-hero small-hero">
-        <div className="container page-hero-inner">
-          <span className="eyebrow">Université</span>
-          <h1>Université de Kalemie (UNIKAL)</h1>
-        </div>
-      </section>
+      <PageHero title="Université" />
 
       <section className="section">
         <div className="container detail-layout">
