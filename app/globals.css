@@ -769,18 +769,19 @@ main {
 }
 
 .site-footer {
-  background: #0e172a;
-  color: #dce6f8;
+  background: #f6f1e7;
+  color: #2f2a20;
   padding-top: 48px;
+  border-top: 1px solid rgba(63, 58, 48, 0.14);
 }
 
-/* « Gérer les cookies » : même allure qu'un lien légal, mais c'est un bouton
+/* « Gérer les cookies » : même allure qu'un lien, mais c'est un bouton
  * (il rouvre le bandeau sans changer de page). */
 .legal-link-button {
   padding: 0;
   border: 0;
   background: none;
-  color: #dfe7f7;
+  color: inherit;
   font: inherit;
   cursor: pointer;
 }
@@ -2607,20 +2608,20 @@ main {
 
 /* ---------------------------------------------------------------------------
    Pied de page.
-   Identité, puis les rubriques en colonnes, puis la barre légale et la
-   signature. Les liens gardent une cible tactile confortable et rien ne
-   déborde horizontalement.
+   Un fond blanc beige, l'identité, puis les rubriques en accordéon. Chaque
+   rubrique s'ouvre et se ferme sur tous les écrans — téléphone comme bureau ;
+   une rubrique sans sous-page reste un simple intitulé.
 --------------------------------------------------------------------------- */
 
 .footer-inner {
-  display: grid;
-  grid-template-columns: minmax(280px, 1.6fr) repeat(3, minmax(0, 1fr));
-  gap: 40px 32px;
-  padding-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-bottom: 32px;
 }
 
 .footer-brand-column {
-  max-width: 360px;
+  max-width: 460px;
 }
 
 .footer-brand-column .footer-brand {
@@ -2629,109 +2630,143 @@ main {
 
 .footer-brand-description {
   margin: 0;
-  color: #c4d2ee;
+  color: #6b6455;
   line-height: 1.65;
 }
 
-/* Colonnes de rubriques : titres lisibles, listes sans puces. */
-.footer-col-title {
-  margin: 0 0 14px;
-  color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+.footer-accordion {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(63, 58, 48, 0.16);
 }
 
-.footer-links {
+.footer-accordion-item {
+  border-bottom: 1px solid rgba(63, 58, 48, 0.16);
+}
+
+.footer-accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 0;
+  border: 0;
+  background: none;
+  color: #2f2a20;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Une rubrique sans sous-page est un lien direct : même allure que les autres
+   intitulés, mais sans repère à déplier. */
+.footer-accordion-trigger.is-flat {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-accordion-trigger.is-flat:hover {
+  color: #7a5c2e;
+}
+
+/* Le repère « + » : une barre, plus une seconde qui s'efface à l'ouverture. */
+.footer-accordion-chevron {
+  position: relative;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  transition: transform 0.25s ease;
+}
+
+.footer-accordion-chevron::before,
+.footer-accordion-chevron::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: #7a5c2e;
+  transform: translateY(-50%);
+}
+
+.footer-accordion-chevron::after {
+  transform: translateY(-50%) rotate(90deg);
+  transition: opacity 0.25s ease;
+}
+
+.footer-accordion-item.is-open .footer-accordion-chevron {
+  transform: rotate(180deg);
+}
+
+.footer-accordion-item.is-open .footer-accordion-chevron::after {
+  opacity: 0;
+}
+
+.footer-accordion-panel {
   display: grid;
-  gap: 4px;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+/* Fermé, le panneau reste dans le flux pour que l'ouverture s'anime, mais il
+   devient invisible — donc introuvable au clavier — une fois replié. */
+.footer-accordion-item:not(.is-open) .footer-accordion-panel {
+  visibility: hidden;
+  transition: grid-template-rows 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.footer-accordion-item.is-open .footer-accordion-panel {
+  grid-template-rows: 1fr;
+}
+
+.footer-accordion-links {
+  overflow: hidden;
+  min-height: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.footer-links a {
+.footer-accordion-links a,
+.footer-accordion-links .legal-link-button {
   display: inline-block;
-  padding: 6px 0;
-  color: #d3def5;
-  font-size: 0.9rem;
+  padding: 7px 0;
+  color: #5a5240;
+  font-size: 0.92rem;
   line-height: 1.35;
+  text-decoration: none;
 }
 
-.footer-links a:hover {
-  color: #ffffff;
+.footer-accordion-links a:hover,
+.footer-accordion-links .legal-link-button:hover {
+  color: #2f2a20;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-/* Barre légale : les liens à gauche, la signature à droite. */
+.footer-accordion-item.is-open .footer-accordion-links {
+  padding-bottom: 12px;
+}
+
 .footer-bottom {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 28px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(63, 58, 48, 0.16);
   padding: 20px 0;
-}
-
-.footer-legal-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-}
-
-.footer-legal-group a,
-.footer-legal-group .legal-link-button {
-  color: #d3def5;
-  font-size: 0.84rem;
-}
-
-.footer-legal-group a:hover,
-.footer-legal-group .legal-link-button:hover {
-  color: #ffffff;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .footer-copyright {
   margin: 0;
-  color: rgba(200, 214, 240, 0.72);
+  color: #6b6455;
   font-size: 0.8rem;
-  text-align: right;
-}
-
-@media (max-width: 980px) {
-  .footer-inner {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 34px 28px;
-  }
-
-  .footer-brand-column {
-    grid-column: 1 / -1;
-    max-width: 620px;
-  }
 }
 
 @media (max-width: 560px) {
   .site-footer {
     padding-top: 36px;
-  }
-
-  .footer-inner {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 18px 0 26px;
-  }
-
-  .footer-copyright {
-    text-align: left;
   }
 }
 

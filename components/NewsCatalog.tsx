@@ -15,10 +15,12 @@ import CatalogExplorer from '@/components/CatalogExplorer';
 export default function NewsCatalog({
   news,
   taxonomy,
+  initialTab = '',
   emptyLabel = 'Aucune actualité ne correspond à cette recherche.',
 }: {
   news: NewsItem[];
   taxonomy: Taxonomy;
+  initialTab?: string;
   emptyLabel?: string;
 }) {
   return (
@@ -28,6 +30,7 @@ export default function NewsCatalog({
       searchText={(item: NewsItem) => [item.title, item.excerpt, item.category, item.content].filter(Boolean).join(' ')}
       tabs={taxonomy.newsCategories.map((category) => ({ key: category, label: category }))}
       tabOf={(item: NewsItem) => item.category}
+      initialTab={initialTab}
       resultNoun="actualité"
       emptyLabel={emptyLabel}
       renderItem={(item: NewsItem) => (

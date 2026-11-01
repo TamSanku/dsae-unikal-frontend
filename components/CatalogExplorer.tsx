@@ -40,6 +40,7 @@ export default function CatalogExplorer({
   renderItem,
   emptyLabel,
   resultNoun = 'résultat',
+  initialTab = '',
 }: {
   items: any[];
   searchText: (item: any) => string;
@@ -50,9 +51,11 @@ export default function CatalogExplorer({
   renderItem: (item: any) => ReactNode;
   emptyLabel: string;
   resultNoun?: string;
+  /** L'onglet ouvert d'emblée (par exemple depuis un lien du pied de page). */
+  initialTab?: string;
 }) {
   const [query, setQuery] = useState('');
-  const [tab, setTab] = useState('');
+  const [tab, setTab] = useState(initialTab);
   const [chosen, setChosen] = useState<Record<string, string>>({});
 
   const visible = useMemo(() => {

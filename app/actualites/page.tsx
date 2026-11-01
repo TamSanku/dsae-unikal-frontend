@@ -7,9 +7,20 @@ import NewsCatalog from '@/components/NewsCatalog';
  * La barre de recherche et les onglets restent visibles même quand rien n'est
  * encore publié : la page montre la rubrique telle qu'elle est, et son message
  * vide le dit franchement. Rien n'est inventé.
+ *
+ * Le paramètre `type` ouvre d'emblée l'onglet correspondant : le pied de page
+ * s'en sert pour ses liens « À la une », « Événements »… Un type inconnu est
+ * ignoré — on retombe sur « Tout ».
  */
-export default async function NewsPage() {
+type NewsPageProps = {
+  searchParams?: { type?: string | string[] };
+};
+
+export default async function NewsPage({ searchParams }: NewsPageProps) {
   const [news, taxonomy] = await Promise.all([getNewsItems(), getTaxonomy()]);
+  const requested = Array.isArray(searchParams?.type) ? searchParams?.type[0] : searchParams?.type;
+  const initialTab =
+    requested && taxonomy.newsCategories.includes(requested) ? requested : '';
 
   return (
     <div className="page-shell">
@@ -25,6 +36,7 @@ export default async function NewsPage() {
           <NewsCatalog
             news={news}
             taxonomy={taxonomy}
+            initialTab={initialTab}
             emptyLabel={
               news.length === 0
                 ? 'Les actualités seront publiées depuis l’espace d’administration.'
