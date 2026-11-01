@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import type { SiteLogo } from '@/lib/backend';
+import BrandMark from './BrandMark';
 
 const navItems = [
   { href: '/', label: 'Accueil' },
@@ -15,7 +17,7 @@ const navItems = [
   { href: '/alumni', label: 'Alumni' },
 ];
 
-export default function SiteHeader() {
+export default function SiteHeader({ logo = null }: { logo?: SiteLogo | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
@@ -44,7 +46,7 @@ export default function SiteHeader() {
     <header className={`site-header ${open ? 'menu-open' : ''}`}>
       <div className="container header-inner">
         <Link href="/" className="brand" aria-label="Accueil">
-          <span className="brand-mark">DSAE</span>
+          <BrandMark logo={logo} />
           <span className="brand-text">
             <strong>DSAE UNIKAL</strong>
             <small>Université de Kalemie</small>

@@ -294,6 +294,26 @@ export async function getAlumni(): Promise<TeamMember[]> {
 }
 
 /*
+ * Les réglages du portail, publiés depuis l'espace de gestion.
+ *
+ * Aujourd'hui : le logo du site. Il s'affiche en tête et en pied de page à la
+ * place du repère écrit « DSAE ». Sans logo publié, `url` est vide et le
+ * portail garde son repère — il n'invente jamais une image.
+ */
+export type SiteLogo = {
+  url: string;
+  alt: string;
+};
+
+export async function getSiteLogo(): Promise<SiteLogo> {
+  const empty: SiteLogo = { url: '', alt: '' };
+  const result = await fetchFromApi<{ logo?: SiteLogo }>('/public/site');
+  const logo = result.data?.logo;
+  if (!logo) return empty;
+  return { url: mediaUrl(logo.url), alt: logo.alt ?? '' };
+}
+
+/*
  * Les partenaires : les institutions liées au domaine. La page « S'engager »
  * les liste ; sans contenu publié, elle le dit franchement.
  */

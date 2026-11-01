@@ -1,18 +1,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getTeamMembers, getPublications, getResearchAreas, getNewsItems } from '@/lib/backend';
+import { getTeamMembers, getPublications, getResearchAreas, getNewsItems, getPartners } from '@/lib/backend';
 import { withFallback } from '@/lib/fallback';
 import EmptyState from '@/components/EmptyState';
 import AuthorList from '@/components/AuthorList';
 import PublicationCover from '@/components/PublicationCover';
 import StarRating from '@/components/StarRating';
+import PartnersCarousel from '@/components/PartnersCarousel';
 
 export default async function HomePage() {
-  const [team, publications, research, news] = await Promise.all([
+  const [team, publications, research, news, partners] = await Promise.all([
     getTeamMembers(),
     getPublications(),
     getResearchAreas(),
     getNewsItems(),
+    getPartners(),
   ]);
 
   const featuredTeam = team.slice(0, 3);
@@ -56,6 +58,16 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <PartnersCarousel
+        partners={partners.map((partner) => ({
+          id: partner.id,
+          name: partner.name,
+          nature: partner.role,
+          location: partner.department,
+          logo: partner.image,
+        }))}
+      />
 
       <section className="section home-panel home-panel-intro">
         <div className="container home-panel-container">

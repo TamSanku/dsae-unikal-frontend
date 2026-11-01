@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import type { SiteLogo } from '@/lib/backend';
+import BrandMark from './BrandMark';
 import CookieSettingsButton from './CookieSettingsButton';
 
 type FooterLink = { label: string; href: string };
@@ -43,13 +45,13 @@ const columns: FooterColumn[] = [
   },
 ];
 
-export default function SiteFooter() {
+export default function SiteFooter({ logo = null }: { logo?: SiteLogo | null }) {
   return (
     <footer className="site-footer">
       <div className="container footer-inner">
         <div className="footer-brand-column">
           <div className="brand footer-brand">
-            <span className="brand-mark">DSAE</span>
+            <BrandMark logo={logo} />
             <span className="brand-text">
               <strong>DSAE UNIKAL</strong>
               <small>Université de Kalemie</small>

@@ -43,3 +43,39 @@ curl -s https://dsae-unikal-frontend.vercel.app/<page> | grep -c "Une erreur est
 `0` = pas d'erreur. Les pages dynamiques sont servies côté serveur : le HTML
 renvoyé contient déjà le contenu réel (les pages statiques, elles, montrent le
 squelette « Chargement du contenu scientifique... »).
+
+## Réglages du portail : le logo du site
+
+Le logo s'affiche en tête et en pied de page à la place du repère écrit
+« DSAE ». Il se publie depuis l'espace de gestion (`dsae-admin`, écran
+« Paramètres ») et le portail le relit à chaque chargement.
+
+- Lecture publique : `GET /api/public/site` → `{ logo: { url, alt } }`.
+- Écriture (session requise) : `GET /api/settings`, `PUT /api/settings/logo`.
+- Sans logo publié, `url` est vide : `BrandMark` garde le repère écrit. Le
+  portail n'affiche jamais une image inventée.
+- Les logos de partenaires du carrousel viennent de la rubrique « Partenaires »
+  (collection `dsae-partners`) ; seuls les contenus **publiés** sont visibles.
+
+## Vérifier en local (bout en bout)
+
+```bash
+# Postgres + backend
+docker run -d --name dsae-pg -p 5433:5432 -e POSTGRES_USER=dsae \
+  -e POSTGRES_PASSWORD=dsae -e POSTGRES_DB=dsae postgres:16-alpine
+cd dsae-backend && DATABASE_URL=postgres://dsae:dsae@127.0.0.1:5433/dsae \
+  DSAE_DB_SCHEMA=dsae JWT_SECRET=test-secret-for-local-verification \
+  PORT=3001 node dist/main.js
+
+# Portail et back-office, pointés sur le backend local
+cd dsae-unikal-frontend && NEXT_PUBLIC_API_URL=http://127.0.0.1:3001/api npx next build && npx next start -p 3100
+cd dsae-admin          && NEXT_PUBLIC_API_URL=http://127.0.0.1:3001/api npx next build && npx next start -p 3101
+```
+
+Piège : `NEXT_PUBLIC_API_URL` est **figé au build**. Rebuilder après tout
+changement, sinon l'ancienne adresse reste dans les chunks.
+
+```bash
+# Contrôle rapide du rendu
+curl -s http://127.0.0.1:3100/ | grep -o 'brand-logo\|brand-mark\|partners-band' | sort | uniq -c
+```
