@@ -782,6 +782,21 @@ main {
   color: #dfe7f7;
 }
 
+/* « Gérer les cookies » : même allure qu'un lien légal, mais c'est un bouton
+ * (il rouvre le bandeau sans changer de page). */
+.legal-link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #dfe7f7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.legal-link-button:hover {
+  text-decoration: underline;
+}
+
 .footer-bottom {
   display: flex;
   justify-content: space-between;

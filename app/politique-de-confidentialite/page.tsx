@@ -29,7 +29,7 @@ export default function PolitiqueDeConfidentialitePage() {
         {
           heading: 'Cookies et mesure d’audience',
           paragraphs: [
-            'Lors de votre première visite, un bandeau vous demande si vous acceptez la mesure d’audience. Vous pouvez accepter ou refuser : le portail reste entièrement accessible dans les deux cas, et aucun contenu n’est conditionné à votre réponse.',
+            'Lors de votre première visite, un bandeau vous demande si vous acceptez la mesure d’audience. Vous pouvez accepter ou refuser : le portail reste entièrement accessible dans les deux cas, et aucun contenu n’est conditionné à votre réponse. Votre choix n’est pas définitif : le lien « Gérer les cookies », en bas de chaque page, permet de le modifier à tout moment.',
             'Si vous acceptez, un identifiant aléatoire est conservé dans votre navigateur et nous enregistrons, pour chaque page consultée : la page, la durée de lecture, la provenance (site ou moteur de recherche d’où vous venez), le pays, la région, la ville, le type d’appareil (ordinateur, téléphone, tablette), le navigateur et le système. Ces faits sont agrégés pour établir les statistiques de fréquentation.',
             'Nous ne conservons pas votre adresse IP : elle est seulement utilisée pour déterminer le pays d’où vous venez, puis elle est oubliée. Aucune donnée n’est vendue ni transmise à des fins publicitaires. Si vous refusez, aucune mesure n’est enregistrée vous concernant.',
           ],

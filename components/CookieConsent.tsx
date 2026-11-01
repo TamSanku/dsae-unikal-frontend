@@ -11,7 +11,14 @@ import { getConsent, setConsent } from '@/lib/consent';
  * claires : accepter la mesure d'audience, ou la refuser. Refuser n'enlève
  * rien au portail — aucun contenu n'est conditionné au consentement. Le choix
  * est gardé dans le navigateur et transmis au serveur.
+ *
+ * Le choix n'est pas définitif : le pied de page peut rouvrir le bandeau (voir
+ * CookieSettingsButton), pour changer d'avis plus tard.
  */
+
+/** L'évènement qui rouvre le bandeau depuis n'importe où dans la page. */
+export const OPEN_CONSENT_EVENT = 'dsae:open-cookie-consent';
+
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -20,6 +27,10 @@ export default function CookieConsent() {
     /* Rien n'est affiché tant que le choix enregistré n'a pas été relu, pour
      * éviter que le bandeau clignote à chaque page. */
     if (getConsent() === null) setVisible(true);
+
+    const reopen = () => setVisible(true);
+    window.addEventListener(OPEN_CONSENT_EVENT, reopen);
+    return () => window.removeEventListener(OPEN_CONSENT_EVENT, reopen);
   }, []);
 
   const decide = async (analytics: boolean) => {
