@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { downloadUrl, getPublicationById, getPublicationReviews } from '@/lib/backend';
 import { documentKind } from '@/lib/document-kind';
 import PublicationCover from '@/components/PublicationCover';
@@ -7,6 +8,13 @@ import PublicationReviews from '@/components/PublicationReviews';
 import StarRating from '@/components/StarRating';
 import ContentBlocks from '@/components/ContentBlocks';
 import DocumentActions from '@/components/DocumentActions';
+
+/* Le titre de l'onglet porte le titre de la publication : c'est ce titre que la
+ * mesure d'audience retient comme libellé de la fiche. */
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const publication = await getPublicationById(params.id);
+  return { title: publication?.title ?? 'Publication' };
+}
 
 export default async function PublicationDetailPage({ params }: { params: { id: string } }) {
   const publication = await getPublicationById(params.id);

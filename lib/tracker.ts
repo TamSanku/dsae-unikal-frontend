@@ -96,3 +96,40 @@ if (typeof window !== 'undefined') {
     else state.startedAt = Date.now();
   });
 }
+
+/*
+ * Les gestes qui comptent pour le DSAE : télécharger un document, ouvrir le
+ * lecteur, visiter une fiche (actualité, publication, alumni, membre, axe),
+ * suivre un lien.
+ *
+ * Même règle que la vue de page : rien ne part sans consentement, et le
+ * serveur le vérifie à nouveau. Le geste part tout de suite — un clic n'attend
+ * pas la fin de la visite.
+ */
+export type InteractionKind = 'click' | 'download' | 'read' | 'entity';
+
+export type InteractionInput = {
+  kind: InteractionKind;
+  target?: string;
+  label?: string;
+  entityType?: string;
+  entityId?: string;
+  /** La page d'où part le geste ; celle de l'adresse si elle n'est pas dite. */
+  path?: string;
+};
+
+export function trackInteraction(input: InteractionInput): void {
+  if (!hasAnalyticsConsent()) return;
+  const path =
+    input.path ?? (typeof window !== 'undefined' ? window.location.pathname : '');
+  post('/analytics/interaction', {
+    visitorId: getVisitorId(),
+    sessionId: getSessionId(),
+    kind: input.kind,
+    target: input.target ?? '',
+    label: input.label ?? '',
+    path,
+    entityType: input.entityType ?? '',
+    entityId: input.entityId ?? '',
+  });
+}

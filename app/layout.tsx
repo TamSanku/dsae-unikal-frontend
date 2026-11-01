@@ -6,7 +6,10 @@ import CookieConsent from '@/components/CookieConsent';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 
 export const metadata: Metadata = {
-  title: 'DSAE UNIKAL | Sciences agronomiques et environnement',
+  title: {
+    default: 'DSAE UNIKAL | Sciences agronomiques et environnement',
+    template: '%s | DSAE UNIKAL',
+  },
   description:
     'Portail du Domaine des Sciences Agronomiques et de l’Environnement (DSAE) de l’Université de Kalemie (UNIKAL) : formation, recherche, publications et actualités.',
   keywords: [

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { DownloadIcon, ReadIcon } from '@/components/icons';
+import { trackInteraction } from '@/lib/tracker';
 import type { DocumentKind } from '@/lib/document-kind';
 
 /*
@@ -15,6 +16,10 @@ import type { DocumentKind } from '@/lib/document-kind';
  *
  * Le nom du fichier n'est jamais montré. Le serveur a déjà deviné le format
  * (`kind`) : le lecteur ne reçoit donc aucune trace du nom d'origine.
+ *
+ * Les deux gestes sont mesurés : « lire » et « télécharger » sont deux choses
+ * différentes, et le back-office doit pouvoir les distinguer. La règle du
+ * consentement, elle, vit dans `lib/tracker.ts` et sur le serveur.
  */
 export default function DocumentActions({
   url,
@@ -36,13 +41,22 @@ export default function DocumentActions({
       ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`
       : url;
 
+  /* On mesure le geste, puis on laisse le lien suivre son cours : la mesure ne
+   * doit jamais retarder le téléchargement. */
+  const trackDownload = () => trackInteraction({ kind: 'download', target: url });
+
+  const openReader = () => {
+    setOpen(true);
+    trackInteraction({ kind: 'read', target: url });
+  };
+
   return (
     <>
       <div className="publication-actions">
-        <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
+        <button type="button" className="btn btn-primary" onClick={openReader}>
           <ReadIcon /> Lire
         </button>
-        <a href={download} className="btn btn-secondary">
+        <a href={download} className="btn btn-secondary" onClick={trackDownload} data-track-skip>
           <DownloadIcon /> Télécharger
         </a>
       </div>
@@ -53,7 +67,7 @@ export default function DocumentActions({
             <div className="reader-bar">
               <span className="reader-title">Lecture du document</span>
               <div className="reader-tools">
-                <a href={download} className="btn btn-secondary reader-download">
+                <a href={download} className="btn btn-secondary reader-download" onClick={trackDownload} data-track-skip>
                   <DownloadIcon /> Télécharger
                 </a>
                 <button type="button" className="reader-close" aria-label="Fermer le lecteur" onClick={() => setOpen(false)}>

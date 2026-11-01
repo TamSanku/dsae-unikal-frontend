@@ -1,9 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { getNewsBySlug } from '@/lib/backend';
 import { withFallback } from '@/lib/fallback';
 import ContentBlocks from '@/components/ContentBlocks';
+
+/* Le titre de l'onglet porte le titre de l'actualité : c'est ce titre que la
+ * mesure d'audience retient comme libellé de la fiche. */
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const item = await getNewsBySlug(params.slug);
+  return { title: item?.title ?? 'Actualité' };
+}
 
 export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
   const item = await getNewsBySlug(params.slug);

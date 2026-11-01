@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { getResearchAreaBySlug } from '@/lib/backend';
+
+/* Le titre de l'onglet porte le nom de l'axe : c'est ce nom que la mesure
+ * d'audience retient comme libellé de la fiche. */
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const area = await getResearchAreaBySlug(params.slug);
+  return { title: area?.title ?? 'Axe de recherche' };
+}
 
 export default async function ResearchDetailPage({ params }: { params: { slug: string } }) {
   const area = await getResearchAreaBySlug(params.slug);

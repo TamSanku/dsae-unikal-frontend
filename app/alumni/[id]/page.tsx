@@ -1,8 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { getAlumniById } from '@/lib/backend';
 import { withFallback } from '@/lib/fallback';
+
+/* Le titre de l'onglet porte le nom de l'alumni : c'est ce nom que la mesure
+ * d'audience retient comme libellé de la fiche. */
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const member = await getAlumniById(params.id);
+  return { title: member?.name ?? 'Alumni' };
+}
 
 /*
  * La fiche d'un alumni : son portrait, son parcours, son domaine et son niveau.
