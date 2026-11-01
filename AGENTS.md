@@ -66,6 +66,12 @@ Le logo s'affiche en tête et en pied de page à la place du repère écrit
 - Le logo du site se pose de la même façon, sans vignette ni cadre.
 - Page Université : le bouton « En savoir plus sur l'université de Kalemie »
   mène au site officiel https://unikal.ac.cd.
+- Pied de page : fond blanc beige (`#f6f1e7`). Les rubriques sont en accordéon
+  sur **tous** les écrans (`components/SiteFooter.tsx`, `'use client'`). Une
+  rubrique sans sous-page est un lien direct. Les entrées d'« Actualités »
+  passent `?type=<catégorie>` ; `app/actualites/page.tsx` ouvre l'onglet
+  correspondant via la prop `initialTab` de `CatalogExplorer` (type inconnu
+  ignoré).
 
 ## Piège connu (backend)
 
