@@ -110,6 +110,25 @@ renouvelables ; le semis n'a lieu que si la rubrique est vide, donc une filière
 corrigée depuis l'admin n'est jamais réécrite. Sans filière publiée, la section
 affiche `EmptyState`.
 
+## Ordre d'affichage des contenus (équipe, etc.)
+
+Chaque rubrique de l'admin se réordonne depuis la liste : deux flèches « Monter »
+/ « Descendre » sur chaque fiche (`components/content/ContentView.jsx`, fonction
+`move`). Le rang est porté par `sortOrder` (colonne `sort_order`, entier) ; le
+backend liste déjà par `sort_order ASC, COALESCE(published_at, created_at) DESC`
+(`content.service.ts`), donc l'ordre se retrouve tel quel sur le portail.
+Déplacer une fiche réécrit la position de chaque ligne d'après sa place et
+n'enregistre que les rangs qui changent — les contenus créés à la suite
+partagent souvent le rang 0.
+
+## Onglets des catalogues : « tout voir »
+
+`CatalogExplorer` accepte `allTabKey` (la clé qui montre toute la liste),
+`allTabLabel` et `showAllTab`. Par défaut, un bouton « Tout » (clé vide) est
+ajouté en tête — équipe, publications, alumni s'en servent. Les actualités
+passent `allTabKey="À la une"` et `showAllTab={false}` : « À la une » est un vrai
+type du serveur et joue le rôle de vue d'ensemble, sans second bouton « Tout ».
+
 ## Piège connu (backend)
 
 Un contenu **publié** exige un résumé, un contenu ou un bloc, sinon `POST
