@@ -10,7 +10,11 @@ export default function ContactPage({ searchParams }: ContactPageProps) {
   const subject = Array.isArray(searchParams?.subject)
     ? searchParams.subject[0]
     : searchParams?.subject;
-  const defaultSubject = subject === 'report' ? 'Signaler un problème sur le site' : '';
+  const defaultSubject = subject === 'report'
+    ? 'Signaler un problème sur le site'
+    : subject === 'newsletter'
+      ? 'Demande d’inscription à la newsletter'
+      : '';
 
   return (
     <div className="page-shell">

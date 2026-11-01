@@ -31,6 +31,16 @@ const questions = [
     ),
   },
   {
+    question: 'Comment demander une inscription à la newsletter ?',
+    answer: (
+      <>
+        Envoyez une demande d’inscription à l’équipe du DSAE depuis le{' '}
+        <Link href="/contact?subject=newsletter">formulaire de contact</Link>. L’équipe pourra vous
+        confirmer la prise en compte de votre demande.
+      </>
+    ),
+  },
+  {
     question: 'Comment signaler un problème sur le site ?',
     answer: (
       <>
