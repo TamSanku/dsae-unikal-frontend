@@ -7,6 +7,9 @@
  * fini de sortir, la seconde occupe exactement la même place, et la boucle
  * repart sans à-coup. La seconde copie est masquée aux lecteurs d'écran.
  *
+ * Les deux copies doivent avoir la même largeur, sinon la boucle saute : la
+ * largeur d'une copie dépend donc des logos seuls, jamais de leur nombre.
+ *
  * Les logos viennent de la rubrique « Partenaires » de l'espace de gestion ;
  * un partenaire sans logo publié ne paraît pas — la bande ne montre que ce qui
  * existe, jamais une image de remplacement.
@@ -21,14 +24,14 @@ function LogoRow({ partners, hidden }: { partners: PartnerLogo[]; hidden?: boole
   return (
     <div className="partners-group" aria-hidden={hidden || undefined}>
       {partners.map((partner) => (
+        /* Chargement immédiat, sans `loading="lazy"` : les logos défilent par
+         * transformation, or le navigateur calcule le chargement paresseux sur
+         * la position de départ. Une fois la bande en mouvement, un logo encore
+         * vierge reste vide à l'écran — il n'est jamais « proche du champ » au
+         * sens du navigateur. La bande fait quelques dizaines de kilo-octets :
+         * la charger d'un coup coûte moins qu'un logo manquant. */
         /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          className="partner-logo"
-          key={partner.id}
-          src={partner.logo}
-          alt={hidden ? '' : partner.name}
-          loading="lazy"
-        />
+        <img className="partner-logo" key={partner.id} src={partner.logo} alt={hidden ? '' : partner.name} />
       ))}
     </div>
   );

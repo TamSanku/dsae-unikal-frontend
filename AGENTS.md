@@ -363,3 +363,10 @@ changement, sinon l'ancienne adresse reste dans les chunks.
 # Contrôle rapide du rendu
 curl -s http://127.0.0.1:3100/ | grep -o 'brand-logo\|brand-mark\|partners-band' | sort | uniq -c
 ```
+- **Les logos de la bande ne portent pas `loading="lazy"`** : le navigateur
+  calcule le chargement paresseux sur la position de départ, or les logos
+  défilent par transformation. Une fois la bande en mouvement, un logo encore
+  vierge reste **vide à l'écran** — mesuré : 5 logos sur les 7 visibles
+  restaient blancs. La bande ne pèse que quelques dizaines de kilo-octets : la
+  charger d'un coup coûte moins qu'un logo manquant. (Les images d'un bloc de
+  contenu, elles, restent en `lazy` : elles ne bougent pas.)
