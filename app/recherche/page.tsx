@@ -1,5 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { getResearchAreas } from '@/lib/backend';
+import { withFallback } from '@/lib/fallback';
 import EmptyState from '@/components/EmptyState';
 import PageHero from '@/components/PageHero';
 
@@ -33,10 +35,15 @@ export default async function ResearchPage() {
             <div className="card-grid two-grid">
               {research.map((area) => (
                 <Link key={area.slug} href={`/recherche/${area.slug}`} className="research-detail-card">
-                  {area.category && <span className="mini-tag">{area.category}</span>}
-                  <h3>{area.title}</h3>
-                  <p>{area.summary}</p>
-                  <span className="text-link">Voir le détail →</span>
+                  <div className="research-card-image">
+                    <Image src={withFallback(area.image)} alt={area.title} width={800} height={500} />
+                  </div>
+                  <div className="research-card-body">
+                    {area.category && <span className="mini-tag">{area.category}</span>}
+                    <h3>{area.title}</h3>
+                    <p>{area.summary}</p>
+                    <span className="text-link">Voir le détail →</span>
+                  </div>
                 </Link>
               ))}
             </div>

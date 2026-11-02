@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -23,30 +24,39 @@ export default async function ResearchDetailPage({ params }: { params: { slug: s
       <PageHero title={area.title} />
 
       <section className="section page-enter">
-        <div className="container detail-layout small-gap">
-          <div>
-            {area.description && <p>{area.description}</p>}
-            {area.goals.length > 0 && (
-              <div className="info-list-block">
-                <h3>Objectifs</h3>
+        <div className="container">
+          {/* La bannière n'apparaît que si l'axe porte une image : un grand
+              « Image à venir » en tête de fiche ferait désordre. */}
+          {area.image && (
+            <div className="research-banner">
+              <Image src={area.image} alt={area.title} width={1600} height={900} />
+            </div>
+          )}
+          <div className="detail-layout small-gap">
+            <div>
+              {area.description && <p>{area.description}</p>}
+              {area.goals.length > 0 && (
+                <div className="info-list-block">
+                  <h3>Objectifs</h3>
+                  <ul>
+                    {area.goals.map((goal) => (
+                      <li key={goal}>{goal}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            {area.projects.length > 0 && (
+              <div className="info-card">
+                <h3>Projets</h3>
                 <ul>
-                  {area.goals.map((goal) => (
-                    <li key={goal}>{goal}</li>
+                  {area.projects.map((project) => (
+                    <li key={project}>{project}</li>
                   ))}
                 </ul>
               </div>
             )}
           </div>
-          {area.projects.length > 0 && (
-            <div className="info-card">
-              <h3>Projets</h3>
-              <ul>
-                {area.projects.map((project) => (
-                  <li key={project}>{project}</li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </section>
 

@@ -160,9 +160,14 @@ export default async function HomePage() {
             <div className="card-grid four-grid mobile-horizontal-carousel">
               {research.slice(0, 4).map((area) => (
                 <Link key={area.slug} href={`/recherche/${area.slug}`} className="research-card">
-                  <span className="mini-tag">{area.category}</span>
-                  <h4>{area.title}</h4>
-                  <p>{area.summary}</p>
+                  <div className="research-card-image">
+                    <Image src={withFallback(area.image)} alt={area.title} width={800} height={500} />
+                  </div>
+                  <div className="research-card-body">
+                    {area.category && <span className="mini-tag">{area.category}</span>}
+                    <h4>{area.title}</h4>
+                    <p>{area.summary}</p>
+                  </div>
                 </Link>
               ))}
             </div>

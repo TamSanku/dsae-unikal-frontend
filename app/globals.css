@@ -605,9 +605,41 @@ main {
 .profile-body,
 .news-body,
 .publication-card,
-.research-card,
-.research-detail-card {
+.research-card-body {
   padding: 1.2rem 1.2rem 1.5rem;
+}
+
+/* Le corps d'une carte d'axe : la vignette au-dessus, le texte en dessous.
+   Le padding est porté par le corps, pas par la carte, pour que l'image
+   touche les bords. */
+.research-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.research-card-image {
+  overflow: hidden;
+}
+
+.research-card-image img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+/* La bannière d'un axe, sur sa fiche : une image large sous le titre. */
+.research-banner {
+  overflow: hidden;
+  border-radius: 24px;
+  margin-bottom: 2rem;
+}
+
+.research-banner img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
 }
 
 .profile-body h4,

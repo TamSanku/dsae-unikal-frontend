@@ -340,6 +340,21 @@ renouvelables ; le semis n'a lieu que si la rubrique est vide, donc une filière
 corrigée depuis l'admin n'est jamais réécrite. Sans filière publiée, la section
 affiche `EmptyState`.
 
+## Image d'un axe de recherche
+
+L'image de l'axe se choisit depuis `dsae-admin` (rubrique « Recherche », champ
+« Image de l'axe »), et le backend la range dans `cover_url` — le même champ que
+la couverture des autres rubriques. Le piège : `normalizePublishedResearch()` de
+`lib/backend.ts` recopiait les champs un à un et **omettait l'image** ; le
+portail jetait donc une donnée pourtant présente dans l'API. Un axe porte
+désormais `image` (rendue absolue par `contentImage()`), affichée en vignette
+dans les listes (`/recherche`, accueil) et en bannière sur la fiche. Les axes
+sans image gardent la vignette de repli dans les listes, mais **pas** de
+bannière : un grand « Image à venir » en tête de fiche ferait désordre. Quand on
+ajoute un champ image à une rubrique, vérifier les deux normaliseurs
+(`normalizePublished*` pour la rubrique publiée, `normalize*` pour l'ancien
+endpoint `/site/...`).
+
 ## Ordre d'affichage des contenus (équipe, etc.)
 
 Chaque rubrique de l'admin se réordonne depuis la liste : deux flèches « Monter »

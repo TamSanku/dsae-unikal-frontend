@@ -79,6 +79,8 @@ export type ResearchArea = {
   category: string;
   summary: string;
   description: string;
+  /** L'image de l'axe, rendue absolue. Vide si l'espace de gestion n'en porte pas. */
+  image: string;
   goals: string[];
   projects: string[];
   publications: string[];
@@ -220,6 +222,7 @@ function normalizeResearchArea(raw: any, index: number): ResearchArea {
     category: raw.category ?? '',
     summary: raw.summary ?? '',
     description: raw.description ?? '',
+    image: mediaUrl(raw.image ?? raw.coverUrl ?? ''),
     goals: Array.isArray(raw.goals) ? raw.goals : [],
     projects: Array.isArray(raw.projects) ? raw.projects : [],
     publications: Array.isArray(raw.publications) ? raw.publications : [],
@@ -783,6 +786,7 @@ function normalizePublishedResearch(entry: ContentEntry): ResearchArea {
     category: entry.category,
     summary: entry.summary,
     description: contentParagraphs(entry).join('\n\n'),
+    image: contentImage(entry),
     goals: [],
     projects: [],
     publications: [],
