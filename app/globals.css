@@ -2605,15 +2605,18 @@ html.reader-open .cookie-consent {
   flex: 1 1 auto;
   min-width: 0;
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.94rem;
+  line-height: 1.28;
   font-weight: 700;
   color: #0b1c3d;
-  /* Un titre long se coupe sur une ligne, avec des points de suspension : la
-   * barre garde sa hauteur, le document garde sa place. Le titre entier reste
-   * lisible dans l'attribut `title`, et sur la fiche, juste en dessous. */
-  white-space: nowrap;
+  /* Le titre s'affiche en entier : il tient sur deux lignes, et se replie
+   * au-delà. Un article se reconnaît à son titre, pas à ses trois premiers
+   * mots — le couper obligeait à rouvrir la fiche pour savoir ce qu'on lit. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 
 .reader-full-download {
@@ -2691,6 +2694,16 @@ html.reader-open .cookie-consent {
   border-bottom: 2px solid rgba(220, 38, 38, 0.85);
 }
 
+.reader-tool-mark.is-strike {
+  background: linear-gradient(
+    to bottom,
+    transparent calc(50% - 1px),
+    rgba(220, 38, 38, 0.85) calc(50% - 1px),
+    rgba(220, 38, 38, 0.85) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+
 .reader-tool-mark.is-erase {
   background: repeating-linear-gradient(
     45deg,
@@ -2707,7 +2720,17 @@ html.reader-open .cookie-consent {
   border-bottom-color: #ffb3b3;
 }
 
-.reader-tool.is-active .reader-tool-mark.is-erase {
+.reader-tool.is-active .reader-tool-mark.is-strike {
+  background: linear-gradient(
+    to bottom,
+    transparent calc(50% - 1px),
+    rgba(220, 38, 38, 0.85) calc(50% - 1px),
+    rgba(220, 38, 38, 0.85) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+
+.reader-tool-mark.is-erase {
   background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.75) 0 3px, transparent 3px 6px);
 }
 
@@ -2726,6 +2749,289 @@ html.reader-open .cookie-consent {
   font-size: 0.84rem;
   font-weight: 600;
   text-align: center;
+}
+
+/* La barre haute peut recevoir beaucoup de monde : retour, titre, recherche,
+ * outils d'annotation, citer, partager, télécharger. Les actions sont groupées
+ * à droite, et se replient ensemble sur écran étroit. */
+.reader-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+}
+
+/* Les actions de la barre : recherche, citer, partager. Même forme que les
+ * outils, pour que la barre se lise d'un seul tenant. */
+.reader-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.7rem;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 999px;
+  background: #f6f8fc;
+  color: #0b1c3d;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.reader-action:hover {
+  background: #e6ecf7;
+}
+
+.reader-action.is-active {
+  background: #0d4cc8;
+  border-color: #0d4cc8;
+  color: #fff;
+}
+
+/* Un menu (Citer, Partager) : le bouton, et son panneau ancré dessous. */
+.reader-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.reader-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 20;
+  width: min(30rem, calc(100vw - 2rem));
+  padding: 0.9rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(11, 28, 61, 0.22);
+  text-align: left;
+}
+
+.reader-menu-heading {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.reader-cite-text {
+  margin: 0;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  background: #f6f8fc;
+  color: #16233d;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  /* La référence se lit d'un bloc, sans être coupée : elle doit pouvoir être
+   * recopiée telle quelle. */
+  overflow-wrap: anywhere;
+}
+
+.reader-share-url {
+  margin: 0;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  background: #f6f8fc;
+  color: #0b3ea3;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.reader-menu-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.reader-menu-primary,
+.reader-menu-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reader-menu-primary {
+  border: 1px solid #0d4cc8;
+  background: #0d4cc8;
+  color: #fff;
+}
+
+.reader-menu-primary:hover {
+  background: #0b3ea3;
+}
+
+.reader-menu-secondary {
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  background: #f6f8fc;
+  color: #0b1c3d;
+}
+
+.reader-menu-secondary:hover {
+  background: #e6ecf7;
+}
+
+/* Le panneau de recherche : une ligne, sous la barre. */
+.reader-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
+  background: #0b1c3d;
+  color: #fff;
+}
+
+.reader-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.42rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.reader-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.reader-search-input:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 1px;
+}
+
+.reader-search-count {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.reader-search-page {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+
+.reader-search-step,
+.reader-search-close {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reader-search-step:hover:not(:disabled),
+.reader-search-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.reader-search-step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Le bouton qui ouvre le menu d'annotation, et son caret. */
+.reader-tool-trigger {
+  gap: 0.4rem;
+}
+
+.reader-tool-caret {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.reader-tools-panel {
+  width: min(20rem, calc(100vw - 2rem));
+  padding: 0.6rem;
+}
+
+/* Une ligne du menu : la pastille, le nom, et ce que le geste fait. */
+.reader-menu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.reader-menu-item:hover {
+  background: #f1f5fb;
+}
+
+.reader-menu-item.is-active {
+  background: #e6ecf7;
+}
+
+.reader-menu-item .reader-tool-mark {
+  margin-top: 0.15rem;
+}
+
+.reader-menu-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.reader-menu-item-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0b1c3d;
+}
+
+.reader-menu-item-hint {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #5a6b85;
+}
+
+.reader-menu-item-clear .reader-menu-item-name {
+  color: #9a3412;
+}
+
+/* Les correspondances trouvées, marquées par l'API « Custom Highlight ».
+ * Le document n'est jamais modifié : c'est le navigateur qui peint ces plages,
+ * par-dessus le texte et sous la sélection. */
+::highlight(reader-find) {
+  background-color: rgba(255, 214, 0, 0.55);
+}
+
+::highlight(reader-find-current) {
+  background-color: rgba(255, 145, 0, 0.75);
+  color: #1a1200;
+}
+
+/* La barre haute ne défile pas avec le document. */
+.reader-full-bar {
+  flex: 0 0 auto;
 }
 
 /* L'avis de reprise : une ligne discrète, posée au-dessus du document. */
@@ -3027,6 +3333,19 @@ html.reader-open .cookie-consent {
   border-bottom: 2px solid rgba(220, 38, 38, 0.78);
 }
 
+.pdf-note-strike {
+  /* Un trait au milieu de la ligne. La hauteur d'un rectangle est celle de la
+   * ligne entière : le trait se pose donc à la moitié, par un dégradé qui ne
+   * peint que cette bande. */
+  background: linear-gradient(
+    to bottom,
+    transparent calc(50% - 1px),
+    rgba(220, 38, 38, 0.78) calc(50% - 1px),
+    rgba(220, 38, 38, 0.78) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
+
 .pdf-notes.is-erasing .pdf-note {
   pointer-events: auto;
   cursor: pointer;
@@ -3035,6 +3354,28 @@ html.reader-open .cookie-consent {
 .pdf-notes.is-erasing .pdf-note:hover {
   outline: 2px solid rgba(220, 38, 38, 0.85);
   outline-offset: 1px;
+}
+
+/* Les liens du document (URL, DOI, renvois) forment une couche à part, posée
+ * **au-dessus** du texte. Sans cette règle, glisser sur une adresse ne
+ * sélectionne rien : c'est le lien qui prend le geste, et l'annotation ne se
+ * pose jamais. Le défaut ne se voyait que sur les passages portant un lien, ce
+ * qui le rendait imprévisible.
+ *
+ * Pendant l'annotation, les liens sont donc neutralisés. Le texte passe
+ * devant, et la sélection redevient un geste ordinaire. Hors annotation, la
+ * couche garde son `pointer-events` normal : les liens restent cliquables.
+ *
+ * Le z-index des annotations (4) les place aussi au-dessus des liens : les
+ * traits ne peuvent plus être masqués par une adresse. */
+.pdf-stage.is-annotating .annotationLayer,
+.pdf-notes.is-erasing {
+  z-index: 5;
+}
+
+.pdf-stage.is-annotating .annotationLayer .linkAnnotation,
+.pdf-stage.is-annotating .annotationLayer .buttonWidgetAnnotation {
+  pointer-events: none;
 }
 
 /* La sélection reste visible par-dessus les annotations : le navigateur la
@@ -3224,23 +3565,77 @@ html.reader-open .cookie-consent {
     display: none;
   }
 
-  /* Sur un écran étroit, les outils se réduisent à leurs pastilles : les
-   * libellés disparaîtraient de toute façon, et la barre doit rester sur une
-   * ligne — retour, titre, outils, téléchargement. */
+  /* Sur un écran étroit, la barre se replie sur deux lignes : le retour et le
+   * titre d'abord, les actions ensuite. Tout aligner sur une seule ligne
+   * poussait « Partager » et « Télécharger » hors de l'écran — un bouton qu'on
+   * ne voit pas n'existe pas. */
+  .reader-full-bar {
+    flex-wrap: wrap;
+    row-gap: 0.4rem;
+  }
+
+  /* Le titre reprend la place laissée par le retour, sur sa ligne. */
+  .reader-full-title {
+    flex: 1 1 4rem;
+    font-size: 0.86rem;
+    -webkit-line-clamp: 1;
+  }
+
+  .reader-actions {
+    /* Seconde ligne : toute la largeur, et défilable si le compte n'y tient
+     * toujours pas. Le défilement reste dans la barre, la page ne bouge pas. */
+    order: 3;
+    flex: 1 0 100%;
+    gap: 0.2rem;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .reader-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Le mot « Télécharger » cède la place : l'icône dit le geste, et le bouton
+   * reste visible sans déborder. Le document se télécharge aussi depuis la
+   * fiche, juste en dessous. */
+  .reader-full-download-label {
+    display: none;
+  }
+
   .reader-tools {
     gap: 0.25rem;
   }
 
-  .reader-tool {
-    padding: 0.42rem 0.5rem;
+  /* Les cinq actions doivent tenir dans la largeur d'un téléphone : on resserre
+   * les marges et on réduit d'un cran la taille du texte. Mesuré à 390 px, cela
+   * laisse une marge confortable — aucun bouton ne sort de l'écran. */
+  .reader-tool,
+  .reader-action {
+    padding: 0.4rem 0.45rem;
+    font-size: 0.74rem;
   }
 
-  .reader-tool-label {
+  .reader-action-label {
+    font-size: 0.74rem;
+  }
+
+  .reader-menu-panel {
+    /* Le panneau se pose sur la largeur disponible, et non sur sa droite : sur
+     * téléphone, un panneau ancré à droite sortirait de l'écran. */
+    position: fixed;
+    left: 0.5rem;
+    right: 0.5rem;
+    width: auto;
+  }
+
+  .reader-search {
+    gap: 0.35rem;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .reader-search-page {
     display: none;
-  }
-
-  .reader-tool-clear {
-    font-size: 0.76rem;
   }
 
   .reader-hint {

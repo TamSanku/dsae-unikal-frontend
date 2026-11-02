@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { DownloadIcon, ReadIcon } from '@/components/icons';
 import { trackInteraction } from '@/lib/tracker';
 import type { DocumentKind } from '@/lib/document-kind';
+import type { CitationData } from '@/lib/reader-citation';
 
 /*
  * Les deux gestes d'un document : lire sur place, télécharger.
@@ -47,11 +48,14 @@ export default function DocumentActions({
   kind,
   title,
   download,
+  citation,
 }: {
   url: string;
   kind: DocumentKind;
   title: string;
   download: string;
+  /** De quoi composer la référence de l'article, dans le lecteur. */
+  citation: CitationData;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -102,6 +106,7 @@ export default function DocumentActions({
           kind={kind}
           title={title}
           download={download}
+          citation={citation}
           onDownload={trackDownload}
           onClose={() => setOpen(false)}
         />

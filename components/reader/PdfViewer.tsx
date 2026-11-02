@@ -6,6 +6,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { ReaderError, ReaderSpinner } from '@/components/reader/ReaderStates';
 import AnnotationLayer from '@/components/reader/AnnotationLayer';
+import { NOTE_TOOLS } from '@/lib/reader-notes';
 import type { Note, NoteRect, NoteTool, ReaderTool, ReadingProgress } from '@/lib/reader-notes';
 
 /*
@@ -220,8 +221,10 @@ export default function PdfViewer({
   /* La sélection devient un trait, dès que le doigt ou le bouton se relève. Le
    * court délai laisse le navigateur finir de composer la sélection. */
   useEffect(() => {
-    if (tool !== 'highlight' && tool !== 'underline') return;
-    const kind = tool;
+    /* La garde porte sur la valeur elle-même : TypeScript sait alors que `kind`
+     * est un vrai outil d'annotation, et non un outil de lecteur quelconque. */
+    if (tool !== 'highlight' && tool !== 'underline' && tool !== 'strike') return;
+    const kind: NoteTool = tool;
     const stage = stageRef.current;
     if (!stage) return;
 
@@ -269,7 +272,7 @@ export default function PdfViewer({
   }
 
   const pageWidth = Math.max(120, Math.round(width * ZOOM_LEVELS[zoomIndex]));
-  const annotating = tool === 'highlight' || tool === 'underline';
+  const annotating = !!tool && NOTE_TOOLS.includes(tool as NoteTool);
 
   return (
     <div className="pdf-viewer">

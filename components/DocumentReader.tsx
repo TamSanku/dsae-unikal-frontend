@@ -8,14 +8,24 @@ import WordViewer from '@/components/reader/WordViewer';
 import SheetViewer from '@/components/reader/SheetViewer';
 import TextViewer from '@/components/reader/TextViewer';
 import ResumeNotice from '@/components/reader/ResumeNotice';
+import CiteButton from '@/components/reader/CiteButton';
+import ShareButton from '@/components/reader/ShareButton';
+import SearchPanel from '@/components/reader/SearchPanel';
+import AnnotationMenu, { TOOL_HINTS } from '@/components/reader/AnnotationMenu';
+import { useDocumentSearch } from '@/components/reader/useDocumentSearch';
 import { ReaderUnsupported } from '@/components/reader/ReaderStates';
 import {
   documentKey,
   useReaderNotes,
   useReadingProgress,
+  NOTE_TOOLS,
+  readSearch,
+  writeSearch,
+  clearSearch,
   type NoteTool,
   type ReaderTool,
 } from '@/lib/reader-notes';
+import type { CitationData } from '@/lib/reader-citation';
 
 /*
  * Le lecteur plein écran.
@@ -74,17 +84,12 @@ const KIND_LABELS: Record<DocumentKind, string> = {
 /* Les formats dont le texte est sélectionnable, donc annotables. */
 const ANNOTABLE: DocumentKind[] = ['pdf'];
 
-const TOOL_LABELS: Record<ReaderTool, string> = {
-  highlight: 'Surligner',
-  underline: 'Souligner',
-  erase: 'Gommer',
-};
-
 export default function DocumentReader({
   url,
   kind,
   title,
   download,
+  citation,
   onDownload,
   onClose,
 }: {
@@ -92,6 +97,8 @@ export default function DocumentReader({
   kind: DocumentKind;
   title: string;
   download: string;
+  /** Ce qu'il faut pour composer la référence de l'article. */
+  citation: CitationData;
   onDownload: () => void;
   onClose: () => void;
 }) {
@@ -107,6 +114,13 @@ export default function DocumentReader({
   /* Un compteur qui change quand le visiteur demande à repartir du début : les
    * visionneuses s'y accrochent pour remonter en haut. */
   const [resetTick, setResetTick] = useState(0);
+
+  /* Le cadre du document, observé par la recherche. */
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
+
+  const { hits, active, pending, step } = useDocumentSearch(bodyRef, searchOpen ? query : '');
 
   /* La hauteur de l'en-tête : le lecteur s'y adosse au lieu de le recouvrir.
    *
@@ -150,6 +164,14 @@ export default function DocumentReader({
    * document. */
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      /* Ctrl+F ouvre la recherche du document, comme partout ailleurs. On
+       * remplace celle du navigateur, qui ne verrait que les pages affichées
+       * et pas le texte du PDF. */
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        setSearchOpen(true);
+        return;
+      }
       if (event.key !== 'Escape') return;
       setTool((current) => {
         if (current) return null;
@@ -205,19 +227,37 @@ export default function DocumentReader({
 
   const annotable = ANNOTABLE.includes(kind);
 
-  /* Ce que fait un outil actif, dit en une ligne : on ne laisse pas deviner. */
-  const hint =
-    tool === 'highlight'
-      ? 'Sélectionnez du texte pour le surligner.'
-      : tool === 'underline'
-        ? 'Sélectionnez du texte pour le souligner.'
-        : tool === 'erase'
-          ? 'Cliquez une annotation pour la retirer.'
-          : null;
+  /* Ce que fait l'outil actif, dit en une phrase : on ne laisse pas deviner.
+   * Les mots sont ceux du menu d'annotation — une seule formulation. */
+  const hint = tool ? TOOL_HINTS[tool] : null;
+
+  /* La recherche est un mode à part, qui n'écrit pas dans le document. On
+   * garde le mot et la position le temps de l'onglet : rouvrir la recherche
+   * après avoir fermé le lecteur ne doit pas coûter une nouvelle frappe. */
+  useEffect(() => {
+    if (query.trim()) writeSearch(key, { query, page: 0, index: active });
+    else clearSearch(key);
+  }, [key, query, active]);
+
+  useEffect(() => {
+    const saved = readSearch(key);
+    if (saved) {
+      setQuery(saved.query);
+      setSearchOpen(true);
+    }
+  }, [key]);
+
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false);
+    /* On retire la mise en évidence en vidant le mot : le document redevient
+     * net, sans trace de la recherche. */
+    setQuery('');
+    clearSearch(key);
+  }, [key]);
 
   return (
     <div className="reader-full" role="dialog" aria-modal="true" aria-label={`Lecture : ${title}`}>
-      <header className="reader-full-bar">
+      <header className="reader-full-bar" data-search-skip>
         <button type="button" className="reader-back" onClick={onClose} ref={backRef}>
           <span aria-hidden="true">←</span> Retour
         </button>
@@ -225,55 +265,54 @@ export default function DocumentReader({
           {title}
         </h1>
 
-        {annotable && (
-          <div className="reader-tools" role="group" aria-label="Outils de lecture">
-            {(['highlight', 'underline'] as NoteTool[]).map((name) => (
-              <button
-                key={name}
-                type="button"
-                className={`reader-tool${tool === name ? ' is-active' : ''}`}
-                aria-pressed={tool === name}
-                onClick={() => setTool((current) => (current === name ? null : name))}
-                title={TOOL_LABELS[name]}
-              >
-                <span className={`reader-tool-mark is-${name}`} aria-hidden="true" />
-                <span className="reader-tool-label">{TOOL_LABELS[name]}</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              className={`reader-tool${tool === 'erase' ? ' is-active' : ''}`}
-              aria-pressed={tool === 'erase'}
-              onClick={() => setTool((current) => (current === 'erase' ? null : 'erase'))}
-              title={TOOL_LABELS.erase}
-            >
-              <span className="reader-tool-mark is-erase" aria-hidden="true" />
-              <span className="reader-tool-label">{TOOL_LABELS.erase}</span>
-            </button>
-            {notes.length > 0 && (
-              <button
-                type="button"
-                className="reader-tool reader-tool-clear"
-                onClick={() => {
-                  clearNotes();
-                  setTool(null);
-                }}
-                title="Effacer toutes mes annotations"
-              >
-                Tout effacer
-              </button>
-            )}
-          </div>
-        )}
+        <div className="reader-actions">
+          <button
+            type="button"
+            className={`reader-action${searchOpen ? ' is-active' : ''}`}
+            aria-pressed={searchOpen}
+            onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
+            title="Rechercher dans le document"
+          >
+            <span className="reader-action-label">Rechercher</span>
+          </button>
 
-        <a href={download} className="reader-full-download" onClick={onDownload} data-track-skip>
-          <DownloadIcon /> <span className="reader-full-download-label">Télécharger</span>
-        </a>
+          {annotable && (
+            <AnnotationMenu
+              tool={tool}
+              onSelect={setTool}
+              count={notes.length}
+              onClear={() => {
+                clearNotes();
+                setTool(null);
+              }}
+            />
+          )}
+
+          <CiteButton data={citation} />
+          <ShareButton title={title} />
+
+          <a href={download} className="reader-full-download" onClick={onDownload} data-track-skip>
+            <DownloadIcon /> <span className="reader-full-download-label">Télécharger</span>
+          </a>
+        </div>
       </header>
+
+      {searchOpen && (
+        <SearchPanel
+          query={query}
+          onQueryChange={setQuery}
+          hits={hits}
+          active={active}
+          onStep={step}
+          onClose={closeSearch}
+          paged={kind === 'pdf'}
+          pending={pending}
+        />
+      )}
 
       {hint && <p className="reader-hint">{hint}</p>}
 
-      <div className="reader-full-body">
+      <div className="reader-full-body" ref={bodyRef}>
         {showResume && restored && (
           <ResumeNotice
             label={

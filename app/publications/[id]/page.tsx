@@ -16,6 +16,9 @@ import DocumentActions from '@/components/DocumentActions';
 import RelatedCarousel from '@/components/RelatedCarousel';
 import AuthorList from '@/components/AuthorList';
 
+/* L'adresse publique du site, pour que le lien cité ramène bien à la fiche. */
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://dsae-unikal-frontend.vercel.app';
+
 /* Le titre de l'onglet porte le titre de la publication : c'est ce titre que la
  * mesure d'audience retient comme libellé de la fiche. */
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
@@ -93,6 +96,16 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
               kind={documentKind(publication.documentName, publication.documentUrl)}
               title={publication.title}
               download={downloadUrl(publication.documentUrl)}
+              /* La référence se compose avec les données de la fiche : le
+                 lecteur n'invente ni revue, ni volume, ni numéro de pages. */
+              citation={{
+                title: publication.title,
+                authors: publication.authorsList,
+                year: publication.year,
+                siteName: 'DSAE UNIKAL',
+                url: `${SITE_URL}/publications/${publication.id}`,
+                domain: publication.domain,
+              }}
             />
 
             {publication.summary && (

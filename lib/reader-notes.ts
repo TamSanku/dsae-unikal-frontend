@@ -22,11 +22,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
  * doit jamais empêcher de lire.
  */
 
-export type NoteTool = 'highlight' | 'underline';
+export type NoteTool = 'highlight' | 'underline' | 'strike';
 
 /* Les outils du lecteur. « erase » n'est pas un type d'annotation : c'est le
  * mode où un clic retire un trait, au lieu d'en poser un. */
 export type ReaderTool = NoteTool | 'erase';
+
+/* L'outil actif, quand il y en a un. La recherche est un mode à part, qui
+ * n'écrit pas dans le document : elle n'apparaît donc pas ici. */
+export const NOTE_TOOLS: NoteTool[] = ['highlight', 'underline', 'strike'];
 
 /** Un rectangle en fraction de la page : 0 = bord gauche/haut, 1 = bord droit/bas. */
 export type NoteRect = { x: number; y: number; w: number; h: number };
@@ -194,4 +198,98 @@ export function readScroll(key: string): number | null {
 
 export function writeScroll(key: string, ratio: number): void {
   write(SCROLL_PREFIX + key, Math.min(1, Math.max(0, ratio)));
+}
+
+/*
+ * La position de la recherche, gardée pendant la session seulement.
+ *
+ * C'est une commodité, pas une donnée de lecture : on la range dans
+ * `sessionStorage`, qui disparaît avec l'onglet. Un mot cherché pour un besoin
+ * précis n'a pas à être retrouvé des semaines plus tard, ni conservé à côté des
+ * annotations, qui sont des gestes volontaires.
+ */
+export type SearchState = {
+  /** Le mot cherché, tel que tapé. */
+  query: string;
+  /** La page du résultat courant, quand le format en a. */
+  page: number;
+  /** Le rang du résultat courant, à partir de 1. */
+  index: number;
+};
+
+const SEARCH_PREFIX = 'dsae:lecteur:recherche:';
+
+export function readSearch(key: string): SearchState | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.sessionStorage.getItem(SEARCH_PREFIX + key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as SearchState;
+    return typeof parsed?.query === 'string' && parsed.query ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeSearch(key: string, state: SearchState): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.sessionStorage.setItem(SEARCH_PREFIX + key, JSON.stringify(state));
+  } catch {
+    /* Sans mémoire de recherche, on cherche quand même. */
+  }
+}
+
+export function clearSearch(key: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.sessionStorage.removeItem(SEARCH_PREFIX + key);
+  } catch {
+    /* Rien à faire. */
+  }
+}
+
+/*
+ * Le texte d'un nœud, découpé par rapport au mot cherché.
+ *
+ * Une recherche naïve qui ne renvoie que « trouvé / pas trouvé » oblige à
+ * relire la page entière pour trouver le mot. On rend donc les morceaux : ce
+ * qui précède, ce qui correspond, ce qui suit. La mise en évidence devient un
+ * simple rendu, et le décompte se fait sur la même base que l'affichage — les
+ * deux ne peuvent pas diverger.
+ */
+export type TextChunk = { text: string; match: boolean };
+
+/*
+ * Un mot cherche est du texte, pas un motif : on neutralise donc ce qui aurait
+ * un sens dans une expression reguliere. Une recherche sur « (2026) » doit
+ * trouver la parenthese, pas creer un groupe.
+ */
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function splitByQuery(text: string, query: string): TextChunk[] {
+  if (!query) return [{ text, match: false }];
+  const pattern = new RegExp(escapeRegExp(query), 'gi');
+  const chunks: TextChunk[] = [];
+  let last = 0;
+  let found = pattern.exec(text);
+  while (found) {
+    const start = found.index;
+    if (start > last) chunks.push({ text: text.slice(last, start), match: false });
+    chunks.push({ text: found[0], match: true });
+    last = start + found[0].length;
+    /* Un mot vide ferait tourner la boucle sans avancer : on force le pas. */
+    if (found[0].length === 0) pattern.lastIndex += 1;
+    found = pattern.exec(text);
+  }
+  if (last < text.length) chunks.push({ text: text.slice(last), match: false });
+  return chunks.length ? chunks : [{ text, match: false }];
+}
+
+/** Combien de fois le mot apparait dans un texte. */
+export function countMatches(text: string, query: string): number {
+  if (!query) return 0;
+  return (text.match(new RegExp(escapeRegExp(query), 'gi')) ?? []).length;
 }

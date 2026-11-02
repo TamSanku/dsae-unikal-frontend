@@ -117,12 +117,24 @@ inventé : sans document joint, la fiche affiche un message au lieu des boutons.
 
 ### Annotations et reprise de lecture
 
-- **Annotations (surligner, souligner, gommer) : PDF seulement.** C'est le seul
-  format dont le texte est sélectionnable ; les autres gardent la barre nue
-  plutôt qu'un bouton inerte. La sélection est découpée en rectangles rapportés
-  à leur page **par géométrie** (comparaison aux cadres des pages), jamais par
-  `elementFromPoint` : celui-ci dépendrait de ce qui recouvre le point et
-  échouerait pour un texte hors écran.
+- **Annotations (surligner, souligner, barrer, gommer) : PDF seulement.** C'est
+  le seul format dont le texte est sélectionnable ; les autres gardent la barre
+  nue plutôt qu'un bouton inerte. La sélection est découpée en rectangles
+  rapportés à leur page **par géométrie** (comparaison aux cadres des pages),
+  jamais par `elementFromPoint` : celui-ci dépendrait de ce qui recouvre le
+  point et échouerait pour un texte hors écran.
+- **La couche des liens du PDF bloque la sélection : c'est un piège à retenir.**
+  `react-pdf` pose `.annotationLayer` (z-index 3) **au-dessus** de la couche de
+  texte (z-index 2). Glisser sur un passage qui porte une adresse, un DOI ou un
+  renvoi de bibliographie ne sélectionne donc rien : le navigateur démarre un
+  *glisser de lien*, et aucune annotation n'est créée. Reproduit au pilotage réel
+  de la souris : 7 spans sur 8 fonctionnaient, le seul en échec était exactement
+  celui couvert par un lien. Le correctif est une règle CSS qui coupe les
+  `pointer-events` de la couche de liens **tant qu'un outil d'annotation est
+  actif** (`.pdf-stage.is-annotating .annotationLayer .linkAnnotation`), et les
+  rétablit sinon : les liens restent cliquables quand on ne surligne pas.
+- **Le bouton d'outil reflète le mode** (« Annoter », puis « Barrer » quand on
+  l'a choisi) ; c'est le seul repère visible une fois le menu refermé.
 - **Les annotations vivent dans le navigateur du visiteur**, jamais au serveur
   (`lib/reader-notes.ts`, `localStorage`). Elles sont repérées en **fraction de
   la page** (0–1), donc stables au changement de zoom.
@@ -135,6 +147,46 @@ inventé : sans document joint, la fiche affiche un message au lieu des boutons.
   affichent d'abord un sablier, et leur cadre n'existe pas au premier rendu. Un
   avis propose « Recommencer au début », qui oublie la position sans recharger
   la page.
+
+### Barre du lecteur : recherche, citation, partage
+
+- **La barre groupe les gestes** : retour, titre, puis « Rechercher », « Annoter »
+  (menu), « Citer », « Partager », « Télécharger ». Les quatre outils
+  d'annotation sont réunis sous « Annoter » — étalés, ils encombraient la barre
+  et leurs libellés disparaissaient sur téléphone.
+- **Sur écran étroit, la barre se replie sur deux lignes** (retour + titre, puis
+  les actions), et le mot « Télécharger » cède la place à son icône. Tout aligner
+  sur une ligne poussait « Partager » et « Télécharger » hors de l'écran : un
+  bouton qu'on ne voit pas n'existe pas.
+- **La recherche lit le texte affiché, quel que soit le format** et marque les
+  correspondances avec l'**API « Custom Highlight »** (`CSS.highlights`). Le
+  document n'est donc **jamais modifié** : on ne découpe pas les nœuds de texte,
+  on ne réécrit pas le HTML — un document venu de l'extérieur n'est pas retouché.
+  L'API manque sur Firefox et Safari : là, la recherche compte et défile encore,
+  mais ne colore pas.
+- **Le crochet de recherche prend la *référence* du cadre, pas l'élément**
+  (`useDocumentSearch(rootRef, query)`) : au premier rendu le cadre n'existe pas
+  encore, et passer `bodyRef.current` fige un `null` définitif. C'est le même
+  piège que la reprise de lecture — lire `.current` **au moment du calcul**.
+- **`Ctrl+F` (et `Cmd+F`) ouvre la recherche du document**, en remplaçant celle
+  du navigateur, qui ne verrait que les pages déjà rendues et pas le texte du
+  PDF. `Entrée` avance, `Maj+Entrée` recule, `Échap` ferme.
+- **« Citer » écrit la référence dans le navigateur** (`lib/reader-citation.ts`) :
+  APA 7 et BibTeX, à partir des données déjà affichées sur la fiche. Aucun appel
+  réseau. Le portail publie en français : la conjonction des auteurs est donc
+  « et », et non le « & » de la version anglaise du format. Le type BibTeX est
+  `@misc` — le portail publie des documents de nature variée, `@misc` ne présume
+  rien. La revue n'est jamais inventée : une référence honnête et incomplète vaut
+  mieux qu'une référence complète et fausse.
+- **« Partager » privilégie le partage du système** quand il existe (`navigator.share`),
+  sinon propose le lien : le copier ou l'ouvrir dans un onglet. Aucun service
+  tiers, aucune icône de réseau social : on ne choisit pas à la place du visiteur
+  où il envoie ce lien.
+- **Les menus partagent un même crochet** (`components/reader/useMenu.ts`) :
+  clic à l'extérieur ferme, `Échap` ferme, et le panneau reste ancré au bouton.
+  `Échap` s'arrête au menu (`stopPropagation`) : sans cela la touche traverserait
+  jusqu'au lecteur et fermerait le document alors qu'on voulait seulement
+  refermer le menu.
 
 ## Réglages du portail : le logo du site
 
