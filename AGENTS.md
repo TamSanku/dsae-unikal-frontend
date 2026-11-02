@@ -48,6 +48,16 @@ jamais un moteur qui ne correspond pas à sa bibliothèque.
   « simplifier » en `npm i xlsx`. L'alternative serait `exceljs`, mais il ne lit
   pas le `.xls` ni l'`.ods`.
 
+- **La page d'atterrissage d'un visiteur nouveau se mesure après le « oui ».**
+  À l'arrivée, le bandeau de cookies s'affiche et rien n'est mesuré ; la vue de
+  la page part donc avant que le visiteur ait répondu, et le serveur la refuse.
+  Sans reprise, la première page — souvent la plus consultée — n'était jamais
+  comptée : les statistiques ne bougeaient pas alors que le trafic existait.
+  `setConsent` émet `ANALYTICS_CONSENT_EVENT` après l'envoi du choix ;
+  `AnalyticsTracker` réécoute cet évènement et rejoue l'annonce, mais seulement
+  si la vue n'a pas déjà été retenue (`isCurrentPageRecorded()`) — sinon
+  rouvrir le bandeau depuis le pied de page et réaccepter compterait double.
+
 ## Vérifier un déploiement Vercel sans le tableau de bord
 
 ```bash

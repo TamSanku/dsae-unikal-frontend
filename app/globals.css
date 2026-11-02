@@ -657,11 +657,23 @@ main {
   color: #fff;
 }
 
+/* Le bandeau d'appel : l'étiquette, le titre et le bouton sont centrés.
+ *
+ * La disposition précédente écartait le texte à gauche et le bouton à droite
+ * (`space-between`). Sur un titre long, la ligne partait de biais et le bouton
+ * flottait seul dans son coin. Ici tout se lit d'aplomb, au milieu. */
 .cta-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 20px;
+  text-align: center;
+}
+
+/* Le texte se borne : au-delà, une ligne trop longue se lit mal. */
+.cta-content > div {
+  max-width: 900px;
 }
 
 .cta-band h3 {
@@ -671,6 +683,7 @@ main {
 }
 
 .cta-band .eyebrow {
+  margin-inline: auto;
   background: rgba(255, 255, 255, 0.12);
   color: #dfeaff;
 }
@@ -747,6 +760,9 @@ main {
 .page-hero-title {
   display: flex;
   flex-wrap: wrap;
+  /* Un titre long se replie : sans ce centrage, la seconde ligne se collerait
+   * à gauche alors que la première est centrée. */
+  justify-content: center;
   column-gap: 0.3em;
   row-gap: 0.04em;
   margin: 0;
@@ -1189,7 +1205,8 @@ main {
     display: none;
   }
 
-  .cta-content,
+  /* Le bandeau d'appel reste centré : la règle globale s'en charge, on ne
+   * l'aligne donc pas à gauche comme les autres blocs. */
   .footer-bottom,
   .split-head {
     flex-direction: column;

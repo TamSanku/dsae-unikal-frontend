@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { trackInteraction, trackPageView } from '@/lib/tracker';
+import { onAnalyticsConsentGranted } from '@/lib/consent';
+import { isCurrentPageRecorded, trackInteraction, trackPageView } from '@/lib/tracker';
 
 /*
  * Le guetteur de navigation : à chaque changement de page, il annonce la vue
@@ -42,18 +43,29 @@ export default function AnalyticsTracker() {
 
   useEffect(() => {
     const path = pathname || '/';
-    trackPageView(path, document.title);
+    const announce = () => {
+      trackPageView(path, document.title);
 
-    const entity = entityOf(path);
-    if (entity) {
-      trackInteraction({
-        kind: 'entity',
-        entityType: entity.type,
-        entityId: entity.id,
-        label: pageTitle(),
-        path,
-      });
-    }
+      const entity = entityOf(path);
+      if (entity) {
+        trackInteraction({
+          kind: 'entity',
+          entityType: entity.type,
+          entityId: entity.id,
+          label: pageTitle(),
+          path,
+        });
+      }
+    };
+
+    announce();
+
+    /* Le visiteur nouveau répond « oui » après coup : la page qu'il consulte
+     * n'avait pas pu être mesurée. On la mesure alors — vue et fiche — mais une
+     * seule fois : si la vue est déjà retenue, l'annonce a déjà eu lieu. */
+    return onAnalyticsConsentGranted(() => {
+      if (!isCurrentPageRecorded()) announce();
+    });
   }, [pathname]);
 
   /* Les clics sur les liens : où ils mènent, et depuis quelle page. On ne

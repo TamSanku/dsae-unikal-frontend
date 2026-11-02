@@ -20,6 +20,11 @@ type TrackerState = {
 
 const state: TrackerState = { eventId: null, path: '', startedAt: 0, active: false };
 
+/* La page en cours a-t-elle été retenue par le serveur ? Tant que non, la
+ * mesure peut être reprise — c'est le cas d'un visiteur nouveau dont la page
+ * d'atterrissage a été laissée de côté faute de consentement. */
+let pageRecorded = false;
+
 function post(path: string, body: unknown, keepalive = false): void {
   const url = `${API_BASE_URL}${path}`;
   const payload = JSON.stringify(body);
@@ -63,6 +68,7 @@ export function trackPageView(path: string, title: string): void {
   state.eventId = null;
   state.path = path;
   state.startedAt = Date.now();
+  pageRecorded = false;
 
   fetch(`${API_BASE_URL}/analytics/pageview`, {
     method: 'POST',
@@ -80,12 +86,29 @@ export function trackPageView(path: string, title: string): void {
     .then((data) => {
       /* La réponse dit si la vue a été retenue : sans consentement, elle ne
        * l'est pas, et il n'y a alors rien à chronométrer. */
-      if (data?.tracked && data.eventId) state.eventId = data.eventId as string;
-      else state.active = false;
+      if (data?.tracked && data.eventId) {
+        state.eventId = data.eventId as string;
+        pageRecorded = true;
+      } else {
+        state.active = false;
+      }
     })
     .catch(() => {
       state.active = false;
     });
+}
+
+/*
+ * La page en cours a-t-elle déjà été retenue par le serveur ?
+ *
+ * Un visiteur nouveau arrive sans consentement : la vue de sa page
+ * d'atterrissage part avant qu'il ait pu répondre, et le serveur la refuse.
+ * Cette fonction dit si la mesure reste à faire — le guetteur la reprend alors
+ * après le « oui ». Sans ce garde-fou, rouvrir le bandeau depuis le pied de
+ * page et accepter une seconde fois compterait la page deux fois.
+ */
+export function isCurrentPageRecorded(): boolean {
+  return pageRecorded;
 }
 
 /* Les sorties de page : cacher l'onglet, le fermer, changer de page. */

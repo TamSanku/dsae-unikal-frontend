@@ -13,6 +13,21 @@ export const CONSENT_KEY = 'dsae.cookie-consent';
 export const VISITOR_KEY = 'dsae.visitor-id';
 export const SESSION_KEY = 'dsae.visit-session';
 
+/* Le signal d'un consentement qui vient d'être donné.
+ *
+ * À l'arrivée d'un visiteur nouveau, le bandeau s'affiche et rien n'est mesuré :
+ * la page d'atterrissage serait donc perdue si personne ne reprenait la mesure
+ * après le « oui ». Les guetteurs écoutent cet évènement pour annoncer la page
+ * qu'ils avaient dû laisser passer. */
+export const ANALYTICS_CONSENT_EVENT = 'dsae:analytics-consent';
+
+/** Écoute le prochain consentement accordé. Rend la fonction de retrait. */
+export function onAnalyticsConsentGranted(listener: () => void): () => void {
+  if (typeof window === 'undefined') return () => undefined;
+  window.addEventListener(ANALYTICS_CONSENT_EVENT, listener);
+  return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, listener);
+}
+
 export type ConsentChoice = 'accepted' | 'refused';
 
 /** L'identifiant aléatoire du visiteur, créé au besoin. Il ne porte aucune
@@ -82,6 +97,10 @@ export async function setConsent(analytics: boolean): Promise<void> {
   window.localStorage.setItem(CONSENT_KEY, analytics ? 'accepted' : 'refused');
   if (analytics) getVisitorId();
   await sendConsent(analytics);
+  /* Le choix est posé : les guetteurs peuvent annoncer la page d'atterrissage
+   * qu'ils n'avaient pas pu mesurer. On prévient après l'envoi du choix, pour
+   * que le serveur le connaisse déjà quand la page arrive. */
+  if (analytics) window.dispatchEvent(new Event(ANALYTICS_CONSENT_EVENT));
 }
 
 /** Le choix a-t-il été exprimé ? Sert au bandeau pour savoir s'il doit
