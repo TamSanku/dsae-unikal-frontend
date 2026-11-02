@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { DownloadIcon } from '@/components/icons';
 import type { DocumentKind } from '@/lib/document-kind';
 import PdfViewer from '@/components/reader/PdfViewer';
@@ -109,33 +109,33 @@ export default function DocumentReader({
   const [resetTick, setResetTick] = useState(0);
 
   /* La hauteur de l'en-tête : le lecteur s'y adosse au lieu de le recouvrir.
-   * On la mesure plutôt que de la fixer, car la barre n'a pas la même hauteur
-   * sur un téléphone, et elle peut se replier. */
-  useEffect(() => {
+   *
+   * Elle est mesurée plutôt que fixée — la barre n'a pas la même taille sur un
+   * téléphone, et elle peut se replier. Avec l'en-tête figé en haut
+   * (`html.reader-open .site-header`), le lecteur et la barre remplissent alors
+   * l'écran **exactement**, sans bande où la fiche resterait visible.
+   *
+   * L'état de lecture lui-même (classe `reader-open`, corps figé) est posé par
+   * `DocumentActions`, dès le clic : il est ainsi en place pendant que la
+   * visionneuse se charge, et non seulement une fois montée. */
+  useLayoutEffect(() => {
     const root = document.documentElement;
     const header = document.querySelector('.site-header');
+
     const apply = () => {
       const height = header ? Math.round(header.getBoundingClientRect().height) : 0;
       root.style.setProperty('--reader-top', `${height}px`);
     };
+
     apply();
     const observer = header ? new ResizeObserver(apply) : null;
     if (observer && header) observer.observe(header);
     window.addEventListener('resize', apply);
+
     return () => {
       observer?.disconnect();
       window.removeEventListener('resize', apply);
       root.style.removeProperty('--reader-top');
-    };
-  }, []);
-
-  /* Le défilement de la page est figé, et le fond est ramené au début : sans
-   * cela, fermer le lecteur rendrait la fiche à une position inattendue. */
-  useEffect(() => {
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = overflow;
     };
   }, []);
 

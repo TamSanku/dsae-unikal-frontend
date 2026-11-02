@@ -2518,6 +2518,41 @@ main {
  * qu'on peut quitter le document par le menu. La hauteur est mesurée en JS et
  * posée ici (`--reader-top`), car la barre change de taille selon l'écran.
  * Le repli `0px` couvre le cas où l'en-tête n'existe pas. */
+/* ------------------------------------------------------------------
+ * Pendant la lecture : l'en-tête et le document, rien d'autre.
+ *
+ * `reader-open` est posée sur `<html>` par le lecteur. C'est la feuille de
+ * style qui écarte le reste de la page, et non un jeu de `z-index` : la règle
+ * vaut pour tout ce qui existe, y compris ce qu'on ajouterait plus tard. Une
+ * nouvelle couche posée sur le site ne pourra donc pas réapparaître par-dessus
+ * un document en cours de lecture.
+ * ------------------------------------------------------------------ */
+
+/* L'en-tête quitte le défilement collant pour se fixer au bord de la fenêtre.
+ * Sans cela, une page déjà défilée au moment où l'on ouvre le lecteur
+ * emmènerait la barre hors de l'écran — et la fiche apparaîtrait dans la bande
+ * laissée libre, au-dessus du document. */
+html.reader-open .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  /* Au-dessus du lecteur (70) : avec le document, c'est la seule chose qui doit
+   * rester visible. Le menu mobile (80) est à égalité, et le suit dans l'ordre
+   * du document — sans conséquence, il ne peut pas être ouvert pendant qu'on
+   * lit. */
+  z-index: 90;
+}
+
+/* Le pied de page et le bandeau de cookies s'effacent : on ne lit pas un
+ * document par-dessus une fiche entrouverte. Le bandeau revient à la
+ * fermeture, tel quel — il n'a rien perdu, seulement attendu. */
+html.reader-open .site-footer,
+html.reader-open .cookie-consent {
+  display: none;
+}
+
 .reader-full {
   position: fixed;
   top: var(--reader-top, 0px);

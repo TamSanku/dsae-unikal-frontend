@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { DownloadIcon, ReadIcon } from '@/components/icons';
 import { trackInteraction } from '@/lib/tracker';
@@ -13,6 +13,12 @@ import type { DocumentKind } from '@/lib/document-kind';
  * site : la fiche s'efface derrière le lecteur, qui choisit sa visionneuse
  * selon le format (PDF, Word, classeur, diaporama, image, son, vidéo, texte).
  * Rien n'est inventé : sans document, le message le dit.
+ *
+ * Pendant la lecture, on ne voit que l'en-tête et le document. C'est posé ici,
+ * au clic, et non dans le lecteur : la visionneuse pèse lourd et arrive plus
+ * tard, mais la fiche doit disparaître dès l'instant où l'on clique. La classe
+ * `reader-open` sur `<html>` fait le travail — la feuille de style écarte alors
+ * tout le reste, en-tête mis à part.
  *
  * Le nom du fichier n'est jamais montré. Le serveur a déjà deviné le format
  * (`kind`) : le lecteur ne reçoit donc aucune trace du nom d'origine.
@@ -48,6 +54,23 @@ export default function DocumentActions({
   download: string;
 }) {
   const [open, setOpen] = useState(false);
+
+  /* L'état de lecture suit exactement la vie du lecteur : posé au clic, retiré
+   * à la fermeture. Le corps est figé au passage — la position est conservée,
+   * `overflow: hidden` ne remettant pas le défilement à zéro — et rendue telle
+   * quelle ensuite. */
+  useEffect(() => {
+    if (!open) return;
+    const root = document.documentElement;
+    const body = document.body;
+    const previousOverflow = body.style.overflow;
+    root.classList.add('reader-open');
+    body.style.overflow = 'hidden';
+    return () => {
+      root.classList.remove('reader-open');
+      body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   if (!url) {
     return <p className="publication-nodoc">Aucun document joint à cette publication pour le moment.</p>;

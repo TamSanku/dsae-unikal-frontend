@@ -92,14 +92,28 @@ inventé : sans document joint, la fiche affiche un message au lieu des boutons.
   Échap ferme aussi (l'outil actif d'abord, le lecteur ensuite), le focus entre
   sur le bouton « Retour », et le défilement du corps est figé pendant la
   lecture.
-- **L'en-tête du site reste visible pendant la lecture.** Le lecteur ne couvre
-  pas l'écran depuis le bord : il commence **sous** la barre de navigation, dont
-  la hauteur est mesurée et suivie (`--reader-top`, `ResizeObserver`) car elle
-  change entre bureau et téléphone. La zone de lecture garde ainsi ~91 % de
+- **Pendant la lecture, on ne voit que l'en-tête et le document.** C'est un état
+  de la page, pas seulement une couche posée dessus : une classe `reader-open`
+  sur `<html>` fait le travail, posée par `DocumentActions` **dès le clic** (et
+  non par le lecteur, qui arrive plus tard — la visionneuse pèse lourd). Le
+  lecteur ne couvre donc pas l'écran depuis le bord : il commence **sous** la
+  barre, dont la hauteur est mesurée et suivie (`--reader-top`, `ResizeObserver`)
+  car elle change entre bureau et téléphone. La zone de lecture garde ~91 % de
   l'écran, et le visiteur peut quitter le document par le menu à tout moment.
-- **Le lecteur monte à `z-index: 70`**, au-dessus de l'en-tête collant (30) et
-  du bandeau de cookies (60) — sinon ses commandes seraient recouvertes. Le menu
-  mobile (80) reste au-dessus de tout.
+- **L'en-tête est figé en haut pendant la lecture** (`html.reader-open
+  .site-header { position: fixed }`). Sans cela, `body { overflow: hidden }` —
+  le verrou qui empêche la fiche de défiler — **casse le `position: sticky`** de
+  l'en-tête : une page déjà défilée au moment du clic emmenait la barre hors de
+  l'écran, et la fiche (couverture, titre, auteurs) apparaissait dans la bande
+  laissée libre, au-dessus du document. `position: fixed` ne dépend pas du
+  défilement, le défaut ne peut donc pas revenir.
+- **Le pied de page et le bandeau de cookies sont masqués** pendant la lecture
+  (`display: none`), et reviennent à la fermeture. C'est la feuille de style qui
+  les écarte, pas un jeu de `z-index` : la règle vaut pour tout ce qui existe,
+  y compris ce qu'on ajouterait plus tard.
+- **Le lecteur monte à `z-index: 70`** et l'en-tête à `90` pendant la lecture.
+  Le menu mobile (80) reste au-dessus du lecteur, sinon on ne pourrait plus
+  quitter la page au téléphone.
 
 ### Annotations et reprise de lecture
 
