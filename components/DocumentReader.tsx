@@ -135,21 +135,32 @@ export default function DocumentReader({
   useLayoutEffect(() => {
     const root = document.documentElement;
     const header = document.querySelector('.site-header');
+    const bar = document.querySelector('.reader-full-bar');
 
     const apply = () => {
-      const height = header ? Math.round(header.getBoundingClientRect().height) : 0;
-      root.style.setProperty('--reader-top', `${height}px`);
+      const headerHeight = header ? Math.round(header.getBoundingClientRect().height) : 0;
+      root.style.setProperty('--reader-top', `${headerHeight}px`);
+      /* Le bas de la barre du lecteur : sur téléphone, les menus s'y adossent
+       * en `position: fixed`. Mesuré plutôt que déduit — la barre se replie sur
+       * deux lignes, une valeur en dur poserait le panneau par-dessus les
+       * boutons. */
+      const barHeight = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
+      root.style.setProperty('--reader-bar-bottom', `${headerHeight + barHeight}px`);
     };
 
     apply();
-    const observer = header ? new ResizeObserver(apply) : null;
-    if (observer && header) observer.observe(header);
+    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(apply) : null;
+    if (observer) {
+      if (header) observer.observe(header);
+      if (bar) observer.observe(bar);
+    }
     window.addEventListener('resize', apply);
 
     return () => {
       observer?.disconnect();
       window.removeEventListener('resize', apply);
       root.style.removeProperty('--reader-top');
+      root.style.removeProperty('--reader-bar-bottom');
     };
   }, []);
 

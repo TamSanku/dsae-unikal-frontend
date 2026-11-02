@@ -187,6 +187,22 @@ inventé : sans document joint, la fiche affiche un message au lieu des boutons.
   `Échap` s'arrête au menu (`stopPropagation`) : sans cela la touche traverserait
   jusqu'au lecteur et fermerait le document alors qu'on voulait seulement
   refermer le menu.
+- **Passer un panneau d'`absolute` à `fixed` oblige à reposer son `top`.** Le
+  panneau des menus porte `top: calc(100% + 0.5rem)` : en `absolute`, ce
+  pourcentage vise le bouton, mais en `fixed` il se calcule sur **la hauteur de
+  la fenêtre**. Le panneau se posait alors à `852px` sur un écran de `844px`,
+  donc **sous l'écran**. Symptôme trompeur : « le bouton ne fait rien » — le
+  menu s'ouvrait bien, mais hors de vue. Le `top` vient maintenant d'une mesure
+  (`--reader-bar-bottom`, posée par le lecteur et suivie par `ResizeObserver`) :
+  une valeur en dur se serait trompée dès que la barre se replie sur deux
+  lignes.
+- **Un `element.click()` en JavaScript ne prouve pas qu'un bouton marche.** Il
+  appelle le gestionnaire directement, sans passer par le calcul de ce qui
+  recouvre le point : un panneau ouvert **hors de l'écran** passe le test alors
+  que l'utilisateur, lui, ne voit rien. Pour éprouver un vrai geste, il faut
+  piloter la souris par coordonnées (`Input.dispatchMouseEvent` dans CDP) et
+  lire `getBoundingClientRect()` + `elementFromPoint()` — c'est ainsi que le
+  défaut a été trouvé, invisible à `element.click()`.
 
 ## Réglages du portail : le logo du site
 

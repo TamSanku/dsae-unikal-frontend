@@ -3624,9 +3624,20 @@ html.reader-open .cookie-consent {
     /* Le panneau se pose sur la largeur disponible, et non sur sa droite : sur
      * téléphone, un panneau ancré à droite sortirait de l'écran. */
     position: fixed;
+    /* `top` doit être reposé. Le `calc(100% + 0.5rem)` hérité visait le bouton
+     * quand le panneau était en `absolute` ; en `fixed`, ce pourcentage se
+     * calcule sur la hauteur de la fenêtre et posait le panneau **sous**
+     * l'écran. Le bouton semblait alors ne rien faire : le menu s'ouvrait bien,
+     * mais hors de vue. On l'adosse au bas de la barre, mesuré par le lecteur. */
+    top: var(--reader-bar-bottom, 6rem);
     left: 0.5rem;
     right: 0.5rem;
     width: auto;
+    /* Un panneau long (les cinq outils d'annotation) ne doit pas dépasser
+     * l'écran : il défile sur place. */
+    max-height: calc(100vh - var(--reader-bar-bottom, 6rem) - 1rem);
+    max-height: calc(100dvh - var(--reader-bar-bottom, 6rem) - 1rem);
+    overflow-y: auto;
   }
 
   .reader-search {
