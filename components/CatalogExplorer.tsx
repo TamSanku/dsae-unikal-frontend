@@ -43,6 +43,7 @@ export default function CatalogExplorer({
   emptyLabel,
   resultNoun = 'résultat',
   initialTab = '',
+  initialQuery = '',
   allTabKey = '',
   allTabLabel = 'Tout',
   showAllTab = true,
@@ -62,6 +63,8 @@ export default function CatalogExplorer({
   resultNoun?: string;
   /** L'onglet ouvert d'emblée (par exemple depuis un lien du pied de page). */
   initialTab?: string;
+  /** La recherche pré-remplie (par exemple depuis un mot-clé de fiche). */
+  initialQuery?: string;
   /** L'onglet qui vaut « tout voir » : le choisir n'applique aucun filtre. Par
    * défaut la clé vide, celle du bouton « Tout ». Les actualités s'en servent
    * pour que « À la une » montre tout. */
@@ -72,17 +75,22 @@ export default function CatalogExplorer({
    * réelle joue déjà ce rôle. */
   showAllTab?: boolean;
 }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery);
   const [tab, setTab] = useState(initialTab || allTabKey);
   const [chosen, setChosen] = useState<Record<string, string>>({});
   /* Les filtres restent repliés : l'icône d'entonnoir les ouvre et les referme. */
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  /* Un lien qui ne change que la requête (le pied de page, par exemple) réutilise
-   * le même composant : l'onglet doit suivre la nouvelle adresse. */
+  /* Un lien qui ne change que la requête (le pied de page, un mot-clé de fiche,
+   * par exemple) réutilise le même composant : l'onglet et la recherche doivent
+   * suivre la nouvelle adresse. */
   useEffect(() => {
     setTab(initialTab || allTabKey);
   }, [initialTab, allTabKey]);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();

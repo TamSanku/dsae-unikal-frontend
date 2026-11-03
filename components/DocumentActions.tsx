@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { DownloadIcon, ReadIcon } from '@/components/icons';
 import { trackInteraction } from '@/lib/tracker';
+import { countDocumentEvent } from '@/lib/backend';
+import { getSessionId, getVisitorId } from '@/lib/consent';
 import type { DocumentKind } from '@/lib/document-kind';
 import type { CitationData } from '@/lib/reader-citation';
 
@@ -49,6 +51,7 @@ export default function DocumentActions({
   title,
   download,
   citation,
+  entryId,
 }: {
   url: string;
   kind: DocumentKind;
@@ -56,6 +59,9 @@ export default function DocumentActions({
   download: string;
   /** De quoi composer la référence de l'article, dans le lecteur. */
   citation: CitationData;
+  /** L'identifiant de la fiche : sert au compteur d'ouvertures et de
+   * téléchargements, dédoublonné par visiteur et par session. */
+  entryId: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -80,13 +86,25 @@ export default function DocumentActions({
     return <p className="publication-nodoc">Aucun document joint à cette publication pour le moment.</p>;
   }
 
+  /* Le compteur public de la fiche : le serveur décide s'il compte, une seule
+   * fois par visiteur et par session. On ne l'attend pas — le document s'ouvre
+   * tout de suite, et le chiffre juste arrive ensuite. */
+  const countGesture = (gesture: 'view' | 'download') => {
+    if (!entryId) return;
+    void countDocumentEvent(entryId, gesture, getVisitorId(), getSessionId());
+  };
+
   /* On mesure le geste, puis on laisse le lien suivre son cours : la mesure ne
    * doit jamais retarder le téléchargement. */
-  const trackDownload = () => trackInteraction({ kind: 'download', target: url });
+  const trackDownload = () => {
+    trackInteraction({ kind: 'download', target: url });
+    countGesture('download');
+  };
 
   const openReader = () => {
     setOpen(true);
     trackInteraction({ kind: 'read', target: url });
+    countGesture('view');
   };
 
   return (

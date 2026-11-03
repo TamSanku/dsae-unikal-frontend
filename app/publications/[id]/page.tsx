@@ -13,6 +13,8 @@ import PublicationReviews from '@/components/PublicationReviews';
 import StarRating from '@/components/StarRating';
 import ContentBlocks from '@/components/ContentBlocks';
 import DocumentActions from '@/components/DocumentActions';
+import MetadataRail from '@/components/MetadataRail';
+import KeywordBadges from '@/components/KeywordBadges';
 import RelatedCarousel from '@/components/RelatedCarousel';
 import AuthorList from '@/components/AuthorList';
 
@@ -81,13 +83,9 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
               </div>
             )}
 
-            <div className="publication-meta">
-              {publication.publishedLabel && <span>{publication.publishedLabel}</span>}
-              {publication.category && <span>{publication.category}</span>}
-              {publication.domain && <span>{publication.domain}</span>}
-              {publication.level && <span>{publication.level}</span>}
-              {publication.department && <span>{publication.department}</span>}
-            </div>
+            <MetadataRail publication={publication} />
+
+            <KeywordBadges keywords={publication.keywords} />
 
             <StarRating value={summary.average} count={summary.count} size={20} />
 
@@ -95,6 +93,7 @@ export default async function PublicationDetailPage({ params }: { params: { id: 
               url={publication.documentUrl}
               kind={documentKind(publication.documentName, publication.documentUrl)}
               title={publication.title}
+              entryId={publication.entryId}
               download={downloadUrl(publication.documentUrl)}
               /* La référence se compose avec les données de la fiche : le
                  lecteur n'invente ni revue, ni volume, ni numéro de pages. */

@@ -376,6 +376,40 @@ gardent la clé vide mais donnent au bouton le libellé du serveur
 d'actualité, c'est la vue d'ensemble du fil. Une actualité paraît donc à la fois
 sous « À la une » et sous son type.
 
+## La fiche d'un document : bloc de métadonnées et mots-clés
+
+La ligne « date · type · domaine » de la fiche est devenue `MetadataRail`
+(`components/MetadataRail.tsx`) : une seule ligne de colonnes qui défile au
+doigt sur téléphone, entre la liste des auteurs et les étoiles. Chaque colonne
+n'affiche que ce qui existe — une donnée absente masque sa colonne, jamais de
+« N/A ». L'ordre est : Publié le, Type, Domaine, Langue, Pages, Format, Taille,
+Vues, Téléchargements, Accès, Licence, Revue, DOI, Faculté, Mise à jour.
+Les styles vivent dans `app/globals.css` (`.meta-rail`, `.meta-rail-track`,
+`.meta-col`). Le dégradé de droite (`has-more-right`) dit qu'il reste des
+colonnes à voir ; il disparaît au bout du rail. Sur grand écran, quand tout
+tient, il n'y a pas de défilement.
+
+Sous le rail, `KeywordBadges` (`components/KeywordBadges.tsx`) montre les
+mots-clés en badges ; un clic mène à `/publications?q=<mot-clé>`, que
+`app/publications/page.tsx` lit (`searchParams.q`) et passe à
+`CatalogExplorer` via `initialQuery`. La recherche du catalogue couvre aussi
+les mots-clés (`PublicationsCatalog`).
+
+Le rail est `min-width: 0` dans sa colonne de grille : sans cela, la largeur
+intrinsèque du rail étire `.detail-copy` et fait déborder la page à 360 px.
+
+Les compteurs « Vues » et « Téléchargements » sont publics mais dédoublonnés
+**par visiteur et par session** côté serveur (`document_marks`, clé primaire
+`entry_id, visitor_id, session_id, kind`). `DocumentActions` appelle
+`countDocumentEvent` sans l'attendre : le document s'ouvre tout de suite, le
+chiffre juste arrive ensuite. Ce n'est pas de la mesure d'audience — le geste
+part même sans consentement, mais reste anonyme et dédoublonné.
+
+Côté serveur, langue, pages, format et taille se déduisent du fichier à
+l'import (`document-metadata.ts`) et sont enregistrés : le portail les relit au
+lieu de les recalculer. Une saisie manuelle au back-office prime sur la
+déduction.
+
 ## Piège connu (backend)
 
 Un contenu **publié** exige un résumé, un contenu ou un bloc, sinon `POST

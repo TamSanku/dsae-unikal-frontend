@@ -129,6 +129,24 @@ export type Publication = {
   /** L'image de couverture, montrée au format A4. */
   coverUrl: string;
   pdfUrl: string;
+  /** Les métadonnées du document, montrées en colonnes sur la fiche. Toutes
+   * valent vide/0 quand elles n'ont pas été renseignées : la colonne concernée
+   * est alors simplement masquée. */
+  language: string;
+  pages: number;
+  fileFormat: string;
+  fileSize: number;
+  views: number;
+  downloads: number;
+  access: string;
+  license: string;
+  journal: string;
+  doi: string;
+  faculty: string;
+  /** La date de la dernière modification, en toutes lettres. */
+  updatedLabel: string;
+  /** La date de la dernière modification, brute : sert au format court. */
+  updatedAt: string;
   /** Le corps rédigé dans l'espace de gestion : ses blocs, dans l'ordre. */
   blocks: ContentBlock[];
   /** La note des avis : c'est ce que la carte affiche sous forme d'étoiles. */
@@ -147,6 +165,30 @@ export function formatDate(value: string | null | undefined): string {
   if (!value) return '';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : DATE_FORMAT.format(date);
+}
+
+/* La même date, en abrégé, pour les colonnes de la fiche : « 31 oct. 2026 ».
+ * Le mois garde son point, comme le veut l'usage français. */
+const SHORT_DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+export function formatShortDate(value: string | null | undefined): string {
+  if (!value) return '';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : SHORT_DATE_FORMAT.format(date);
+}
+
+/** Le poids d'un fichier, écrit court : « 2,4 Mo ». Vide si l'on n'en sait rien. */
+export function formatFileSize(bytes: number | null | undefined): string {
+  const value = Number(bytes);
+  if (!Number.isFinite(value) || value <= 0) return '';
+  if (value < 1024) return `${value} o`;
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)} Ko`;
+  return `${(value / (1024 * 1024)).toFixed(1).replace('.', ',')} Mo`;
 }
 
 export type NewsItem = {
@@ -256,6 +298,19 @@ function normalizePublication(raw: any, index: number): Publication {
     documentName: raw.documentName ?? '',
     coverUrl: mediaUrl(raw.coverUrl ?? ''),
     pdfUrl: mediaUrl(raw.pdfUrl ?? raw.url ?? ''),
+    language: raw.language ?? '',
+    pages: Number(raw.pages) || 0,
+    fileFormat: raw.fileFormat ?? raw.file_format ?? '',
+    fileSize: Number(raw.fileSize ?? raw.file_size) || 0,
+    views: Number(raw.views) || 0,
+    downloads: Number(raw.downloads) || 0,
+    access: raw.access ?? '',
+    license: raw.license ?? '',
+    journal: raw.journal ?? '',
+    doi: raw.doi ?? '',
+    faculty: raw.faculty ?? '',
+    updatedLabel: formatShortDate(raw.updatedAt ?? raw.updated_at ?? ''),
+    updatedAt: raw.updatedAt ?? raw.updated_at ?? '',
     blocks: Array.isArray(raw.blocks) ? raw.blocks : [],
     reviewSummary: raw.reviewSummary ?? { count: 0, average: 0 },
   };
@@ -542,6 +597,33 @@ export async function getPublicationById(id: string): Promise<Publication | null
 }
 
 /*
+ * Le compteur d'un document : une ouverture du lecteur ou un téléchargement.
+ *
+ * Le portail annonce le geste une seule fois ; c'est le serveur qui décide s'il
+ * compte — il retient la marque du visiteur et de sa session, et une seconde
+ * marque identique ne bouge pas le compteur. La réponse porte les compteurs à
+ * jour, pour que la fiche affiche le bon nombre sans rechargement.
+ *
+ * Ce décompte n'est pas de la mesure d'audience : c'est un fait public de la
+ * fiche, comme la note des avis. Il part donc même sans consentement, mais
+ * reste dédoublonné — un chiffre juste ne dit rien de la personne.
+ */
+export async function countDocumentEvent(
+  entryId: string,
+  kind: 'view' | 'download',
+  visitorId: string,
+  sessionId: string
+): Promise<{ counted: boolean; views: number; downloads: number }> {
+  const fallback = { counted: false, views: 0, downloads: 0 };
+  if (!entryId) return fallback;
+  const result = await fetchFromApi<{ counted: boolean; views: number; downloads: number }>(
+    `/public/content/dsae-publications/${encodeURIComponent(entryId)}/count`,
+    { method: 'POST', body: JSON.stringify({ kind, visitorId, sessionId }) }
+  );
+  return result.data ?? fallback;
+}
+
+/*
  * Les avis d'une publication.
  *
  * La lecture est publique ; l'écriture aussi — un lecteur donne son avis sans
@@ -682,6 +764,20 @@ type ContentEntry = {
   location: string;
   domain?: string;
   level?: string;
+  /** Les métadonnées du document, quand le serveur les expose. */
+  language?: string;
+  pages?: number;
+  fileFormat?: string;
+  fileSize?: number;
+  views?: number;
+  downloads?: number;
+  access?: string;
+  license?: string;
+  journal?: string;
+  doi?: string;
+  faculty?: string;
+  keywords?: string[];
+  updatedAt?: string;
   sortOrder: number;
   publishedAt: string | null;
   reviewSummary?: ReviewSummary;
@@ -814,12 +910,25 @@ function normalizePublishedPublication(entry: ContentEntry): Publication {
     domain: entry.domain ?? '',
     level: entry.level ?? '',
     summary: entry.summary || contentParagraphs(entry).join('\n\n'),
-    keywords: [],
+    keywords: Array.isArray(entry.keywords) ? entry.keywords.filter(Boolean) : [],
     references: '',
     documentUrl: document.url,
     documentName: document.name,
     coverUrl: contentImage(entry),
     pdfUrl: document.url,
+    language: entry.language ?? '',
+    pages: Number(entry.pages) || 0,
+    fileFormat: entry.fileFormat ?? '',
+    fileSize: Number(entry.fileSize) || 0,
+    views: Number(entry.views) || 0,
+    downloads: Number(entry.downloads) || 0,
+    access: entry.access ?? '',
+    license: entry.license ?? '',
+    journal: entry.journal ?? '',
+    doi: entry.doi ?? '',
+    faculty: entry.faculty ?? '',
+    updatedLabel: formatShortDate(entry.updatedAt ?? ''),
+    updatedAt: entry.updatedAt ?? '',
     blocks: entry.blocks ?? [],
     reviewSummary: entry.reviewSummary ?? { count: 0, average: 0 },
   };

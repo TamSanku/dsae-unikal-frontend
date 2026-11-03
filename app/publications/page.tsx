@@ -12,13 +12,15 @@ import PageHero from '@/components/PageHero';
 export default async function PublicationsPage({
   searchParams,
 }: {
-  searchParams?: { domain?: string | string[] };
+  searchParams?: { domain?: string | string[]; q?: string | string[] };
 }) {
   const [publications, taxonomy] = await Promise.all([getPublications(), getTaxonomy()]);
   const requested = Array.isArray(searchParams?.domain)
     ? searchParams?.domain[0]
     : searchParams?.domain;
   const initialTab = requested && taxonomy.domains.includes(requested) ? requested : '';
+  const wanted = Array.isArray(searchParams?.q) ? searchParams?.q[0] : searchParams?.q;
+  const initialQuery = (wanted ?? '').trim();
 
   return (
     <div className="page-shell">
@@ -30,6 +32,7 @@ export default async function PublicationsPage({
             publications={publications}
             taxonomy={taxonomy}
             initialTab={initialTab}
+            initialQuery={initialQuery}
           />
         </div>
       </section>

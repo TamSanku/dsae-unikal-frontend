@@ -32,11 +32,14 @@ export default function PublicationsCatalog({
   publications,
   taxonomy,
   initialTab = '',
+  initialQuery = '',
 }: {
   publications: Publication[];
   taxonomy: Taxonomy;
   /** Le domaine ouvert d'emblée, par exemple depuis un lien du pied de page. */
   initialTab?: string;
+  /** La recherche pré-remplie, par exemple depuis un mot-clé de fiche. */
+  initialQuery?: string;
 }) {
   const years = publicationYears(publications);
 
@@ -69,7 +72,7 @@ export default function PublicationsCatalog({
       items={publications}
       searchPlaceholder="Rechercher un document, un auteur, un mot-clé…"
       searchText={(item: Publication) =>
-        [item.title, item.subtitle, item.summary, item.authors, item.category, item.domain, item.level]
+        [item.title, item.subtitle, item.summary, item.authors, item.category, item.domain, item.level, ...(item.keywords ?? [])]
           .filter(Boolean)
           .join(' ')
       }
@@ -77,6 +80,7 @@ export default function PublicationsCatalog({
       tabOf={(item: Publication) => item.domain}
       filters={filters}
       initialTab={initialTab}
+      initialQuery={initialQuery}
       resultNoun="document"
       emptyLabel="Aucun document ne correspond à cette recherche. Modifiez les mots-clés ou les filtres."
       renderItem={(publication: Publication) => (
