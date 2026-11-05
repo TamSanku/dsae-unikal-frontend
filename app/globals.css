@@ -582,6 +582,13 @@ main {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Une carte de publication n'a pas de coins arrondis : un document se présente
+ * comme une page. La règle est distincte du groupe ci-dessus, qui arrondit les
+ * autres cartes (profil, axe, actualité). */
+.publication-card {
+  border-radius: 0;
+}
+
 .profile-card:hover,
 .research-card:hover,
 .publication-card:hover,
@@ -1782,7 +1789,7 @@ main {
   width: 100%;
   aspect-ratio: 1 / 1.414;
   overflow: hidden;
-  border-radius: 18px 18px 0 0;
+  border-radius: 0;
   background: linear-gradient(160deg, #eef3ff 0%, #dfe8fb 100%);
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
@@ -1812,9 +1819,10 @@ main {
   opacity: 0.75;
 }
 
-/* Dans la fiche, la page est plus grande et sa propre carte. */
+/* Dans la fiche, la page est plus grande et sa propre carte, elle aussi sans
+ * coins arrondis : la couverture montrée au clic reste carrée. */
 .publication-detail-cover .publication-cover {
-  border-radius: 18px;
+  border-radius: 0;
   border: 1px solid rgba(15, 23, 42, 0.07);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 }
@@ -2813,7 +2821,7 @@ main {
   flex-direction: column;
   background: #fff;
   border: 1px solid rgba(15, 23, 42, 0.06);
-  border-radius: 18px;
+  border-radius: 0;
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;

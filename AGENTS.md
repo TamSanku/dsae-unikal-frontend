@@ -476,6 +476,14 @@ si bien que les titres, auteurs, dates et notes **s'alignent d'une carte à
 l'autre**. Le lien couvre toute la carte (`.pub-card-link` porte la mise en
 page), pas seulement le titre.
 
+Une carte de publication **n'a pas de coins arrondis** (`border-radius: 0`) :
+un document se présente comme une page, la couverture qui la surmonte reste
+carrée. La règle est distincte du groupe `.profile-card, .research-card,
+.news-card, .research-detail-card` (rayon de 24 px) ; `.pub-card` est donc mis à
+0 à part, et `.publication-cover` aussi — y compris dans la fiche
+(`.publication-detail-cover .publication-cover`), l'image vue au clic. Les
+cartes des autres catalogues (actualité, profil, axe) gardent leurs arrondis.
+
 Deux conséquences, réglées dans `globals.css`, `AuthorList` et `StarRating` :
 
 - Le **titre** s'arrête à deux lignes, coupé d'un « … » (`-webkit-line-clamp`).
