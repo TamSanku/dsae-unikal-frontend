@@ -6,9 +6,13 @@ import PageHero from '@/components/PageHero';
 /*
  * Le catalogue des publications.
  *
- * La recherche, les onglets par domaine et les filtres vivent dans le
- * catalogue ; la page ne fait que charger la matière réelle et la lui confier.
- * La barre et les onglets restent visibles même sans document publié.
+ * La recherche, les onglets par nature de document et les filtres vivent dans
+ * le catalogue ; la page ne fait que charger la matière réelle et la lui
+ * confier. La barre et les onglets restent visibles même sans document publié.
+ *
+ * Un lien du pied de page vise un **domaine** (`/publications?domain=…`) : les
+ * onglets étant les natures de document, ce domaine devient un filtre choisi
+ * d'emblée, pas un onglet.
  *
  * Elle repère aussi les couvertures partagées (voir `lib/covers`) : les
  * documents dont l'image revient ailleurs s'afficheront avec un fond de
@@ -24,7 +28,7 @@ export default async function PublicationsPage({
   const requested = Array.isArray(searchParams?.domain)
     ? searchParams?.domain[0]
     : searchParams?.domain;
-  const initialTab = requested && taxonomy.domains.includes(requested) ? requested : '';
+  const initialDomain = requested && taxonomy.domains.includes(requested) ? requested : '';
   const wanted = Array.isArray(searchParams?.q) ? searchParams?.q[0] : searchParams?.q;
   const initialQuery = (wanted ?? '').trim();
 
@@ -38,7 +42,7 @@ export default async function PublicationsPage({
             publications={publications}
             taxonomy={taxonomy}
             sharedCovers={sharedCovers}
-            initialTab={initialTab}
+            initialDomain={initialDomain}
             initialQuery={initialQuery}
           />
         </div>

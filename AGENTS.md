@@ -376,24 +376,38 @@ gardent la clé vide mais donnent au bouton le libellé du serveur
 d'actualité, c'est la vue d'ensemble du fil. Une actualité paraît donc à la fois
 sous « À la une » et sous son type.
 
-## Étager les documents, et six blocs au bureau
+## Étager les documents par nature, et six blocs au bureau
 
-Le catalogue des publications range les documents **par étagère** : une section
-par **domaine scientifique** (« Agroéconomie », « Production végétale »…), sous
-son nom et son compte. `CatalogExplorer` reçoit pour cela `groupBy` (le domaine
-d'un élément), `groupOrder` (l'ordre des rayons) et `groupFallbackLabel` (le nom
-du rayon des éléments sans domaine). Seul `PublicationsCatalog` s'en sert ; les
-autres catalogues (équipe, actualités, alumni) passent une seule grille, sans
-rayon. L'ordre des rayons suit `taxonomy.domains` — la liste du serveur, donc
-l'ordre de l'administration ; un domaine absent de cette liste vient ensuite, et
-« Autres documents » ferme la marche. Un rayon vide ne paraît jamais : le
-regroupement porte sur les éléments **visibles**, après recherche, onglet et
-filtres.
+Le catalogue des publications range les documents **par étagère**, une section
+par **nature de document** : « Articles scientifiques », « Mémoires de graduats
+(PADEM) », « Mémoires de licence (PADEM) », « Mémoires de licence (LMD) »,
+« Mémoires de masters (LMD) », « Thèses », puis « Autres documents ». Chaque
+rayon porte son nom, son compte et un lien **« Voir plus »** qui ouvre l'onglet
+correspondant, en grille et sans filtre. Le rayon ne montre que les **six
+premiers** documents (une rangée au bureau) ; « Voir plus » révèle le reste.
 
-On range par **domaine**, pas par catégorie : la catégorie (« Article de
-recherche ») est le *type* de document et revient sur presque toutes les fiches
-d'un même fonds — elle ferait un seul rayon. Le domaine, lui, sépare vraiment
-les documents.
+On range par nature, pas par domaine : le domaine scientifique traverse toutes
+les étagères (un article d'agroéconomie et un mémoire d'agroéconomie ne se
+rangent pas ensemble), il sert donc de **filtre**, pas de rayon. Les onglets sont
+les mêmes natures que les rayons ; le domaine reste un filtre (`Domaine`), aux
+côtés de la date et du niveau d'études.
+
+Le rattachement se fait dans `lib/shelves.ts` (`publicationShelf`) : le diplôme
+et le système d'études (PADEM, LMD) se lisent dans la catégorie, le niveau ou la
+faculté. La catégorie du serveur « Mémoire et thèse » ne tranche pas — le mot
+« thèse » y figure — c'est le **niveau** qui décide : un doctorat fait une thèse,
+un graduat ou une licence un mémoire, un master un mémoire de master. Un mémoire
+sans repère de diplôme tombe dans « Autres documents » : on ne devine pas un
+diplôme.
+
+`CatalogExplorer` reçoit pour cela `groupBy` (la nature d'un élément),
+`groupOrder` (l'ordre des rayons) et `groupFallbackLabel` (le nom du rayon des
+éléments sans nature). Seul `PublicationsCatalog` s'en sert ; les autres
+catalogues (équipe, actualités, alumni) passent une seule grille, sans rayon.
+Un rayon vide ne paraît jamais : le regroupement porte sur les éléments
+**visibles**, après recherche, onglet et filtres. Les rayons ne paraissent qu'en
+vue d'ensemble (« Tout ») : un onglet déjà choisi montre une seule grille, sans
+répéter son nom.
 
 La largeur des colonnes vit dans la classe `pub-grid`, posée par
 `PublicationsCatalog` via la prop `gridClassName` : **six blocs au bureau**
@@ -403,16 +417,20 @@ règle est écrite `.catalog-grid.pub-grid` (double classe), donc elle l'emporte
 sur la règle « une colonne » des écrans étroits (`max-width: 980px`), qui
 autrement ramènerait tout à une seule colonne.
 
+Un lien du pied de page vise un **domaine** (`/publications?domain=…`) : la page
+le traduit en filtre choisi d'emblée (`initialFilters`), pas en onglet.
+
 ## La carte d'un document : même hauteur, une ligne par information
 
 Une carte de catalogue (`components/PublicationCard.tsx`) montre, dans l'ordre :
-la couverture, le **titre**, les **auteurs**, la **catégorie**, la **date** et
-la **note**. Tout le reste (résumé, métadonnées) vit sur la fiche. La carte est
-une colonne flexible dans une grille : la grille l'étire à la hauteur de ses
+la couverture, le **titre**, les **auteurs**, la **date** et la **note**. La
+**nature du document n'est pas écrite sur la carte** : le nom du rayon la porte
+déjà. Tout le reste (résumé, métadonnées) vit sur la fiche. La carte est une
+colonne flexible dans une grille : la grille l'étire à la hauteur de ses
 voisines d'une même ligne, et la note est poussée en bas (`margin-top: auto`),
-si bien que les titres, auteurs, badges, dates et notes **s'alignent d'une
-carte à l'autre**. Le lien couvre toute la carte (`.pub-card-link` porte la mise
-en page), pas seulement le titre.
+si bien que les titres, auteurs, dates et notes **s'alignent d'une carte à
+l'autre**. Le lien couvre toute la carte (`.pub-card-link` porte la mise en
+page), pas seulement le titre.
 
 Deux conséquences, réglées dans `globals.css`, `AuthorList` et `StarRating` :
 
@@ -422,8 +440,8 @@ Deux conséquences, réglées dans `globals.css`, `AuthorList` et `StarRating` :
   « … », suivi du badge « +N » **soudé à lui** (`AuthorList compact`). Le badge
   ne passe jamais à la ligne et ne rétrécit pas. La liste entière reste lisible
   au survol (`title`).
-- La **catégorie** est un badge unique ; la **date** est écrite en abrégé
-  (« 2 nov. 2026 », `Publication.publishedShortLabel`) pour tenir sur une ligne.
+- La **date** est écrite en abrégé (« 2 nov. 2026 »,
+  `Publication.publishedShortLabel`) pour tenir sur une ligne.
 - La **note** (`StarRating compact`) est réduite : petites étoiles (14 px), note
   écrite à côté, et « Pas d'avis » seul — sans cinq étoiles vides — quand
   personne n'a noté.

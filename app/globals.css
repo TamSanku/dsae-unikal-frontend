@@ -2684,11 +2684,39 @@ main {
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.catalog-shelf-head h3 {
+/* Le nom du rayon et son « Voir plus », groupés à gauche. */
+.catalog-shelf-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  min-width: 0;
+}
+
+.catalog-shelf-title h3 {
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.25;
   color: #101827;
+}
+
+/* « Voir plus » : ouvre l'onglet du rayon, qui le montre en grille complète. */
+.catalog-shelf-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #0d4cc8;
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.catalog-shelf-more:hover {
+  text-decoration: underline;
 }
 
 .catalog-shelf-count {
@@ -2815,21 +2843,6 @@ main {
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
-}
-
-/* La catégorie : un seul badge compact. */
-.pub-card-badge {
-  max-width: 100%;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: #edf3ff;
-  color: #0d4cc8;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* La date : une seule ligne, en gris discret. */

@@ -18,6 +18,10 @@ import { FilterIcon, SearchIcon } from '@/components/icons';
 
 export type CatalogTab = { key: string; label: string };
 
+/* Le nombre de documents montrés d'emblée dans un rayon : une seule rangée au
+ * bureau (six blocs). Le reste s'ouvre par « Voir plus ». */
+const SHELF_PREVIEW = 6;
+
 export type CatalogFilter = {
   key: string;
   label: string;
@@ -51,6 +55,7 @@ export default function CatalogExplorer({
   groupOrder,
   groupFallbackLabel = 'Autres',
   gridClassName = '',
+  initialFilters,
 }: {
   items: any[];
   searchText: (item: any) => string;
@@ -88,16 +93,19 @@ export default function CatalogExplorer({
   groupFallbackLabel?: string;
   /** Une classe posée sur la grille des cartes (largeur des colonnes). */
   gridClassName?: string;
+  /** Les filtres déjà choisis à l'ouverture (par exemple depuis une adresse
+   * partagée : `/publications?domain=…`). */
+  initialFilters?: Record<string, string>;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [tab, setTab] = useState(initialTab || allTabKey);
-  const [chosen, setChosen] = useState<Record<string, string>>({});
+  const [chosen, setChosen] = useState<Record<string, string>>(initialFilters ?? {});
   /* Les filtres restent repliés : l'icône d'entonnoir les ouvre et les referme. */
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   /* Un lien qui ne change que la requête (le pied de page, un mot-clé de fiche,
-   * par exemple) réutilise le même composant : l'onglet et la recherche doivent
-   * suivre la nouvelle adresse. */
+   * par exemple) réutilise le même composant : l'onglet, la recherche et les
+   * filtres doivent suivre la nouvelle adresse. */
   useEffect(() => {
     setTab(initialTab || allTabKey);
   }, [initialTab, allTabKey]);
@@ -105,6 +113,10 @@ export default function CatalogExplorer({
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
+
+  useEffect(() => {
+    setChosen(initialFilters ?? {});
+  }, [initialFilters]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -125,11 +137,13 @@ export default function CatalogExplorer({
 
   const activeFilters = filters.filter((filter) => chosen[filter.key]);
 
-  /* Les rayons : on range les éléments visibles sous leur catégorie, dans
-   * l'ordre demandé (celui du serveur), puis les catégories rencontrées en
-   * chemin. Un élément sans catégorie va dans « Autres », en dernier. */
+  /* Les rayons : on range les éléments visibles sous leur nature, dans l'ordre
+   * demandé (celui du catalogue), puis les natures rencontrées en chemin. Un
+   * élément sans nature va dans « Autres », en dernier. Les rayons ne
+   * paraissent qu'en vue d'ensemble : un onglet déjà choisi montre une seule
+   * grille, sans répéter son nom. */
   const shelves = useMemo(() => {
-    if (!groupBy) return null;
+    if (!groupBy || (tab && tab !== allTabKey)) return null;
     const buckets = new Map<string, any[]>();
     for (const item of visible) {
       const name = groupBy(item).trim() || groupFallbackLabel;
@@ -145,7 +159,7 @@ export default function CatalogExplorer({
       return 0;
     });
     return names.map((name) => ({ name, items: buckets.get(name) ?? [] }));
-  }, [visible, groupBy, groupOrder, groupFallbackLabel]);
+  }, [visible, groupBy, groupOrder, groupFallbackLabel, tab, allTabKey]);
 
   return (
     <div className="catalog">
@@ -245,20 +259,42 @@ export default function CatalogExplorer({
         <p className="catalog-empty">{emptyLabel}</p>
       ) : shelves ? (
         <div className="catalog-shelves">
-          {shelves.map((shelf) => (
-            <section key={shelf.name} className="catalog-shelf">
-              <div className="catalog-shelf-head">
-                <h3>{shelf.name}</h3>
-                <span className="catalog-shelf-count">
-                  {shelf.items.length} {resultNoun}
-                  {shelf.items.length > 1 ? 's' : ''}
-                </span>
-              </div>
-              <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
-                {shelf.items.map((item) => renderItem(item))}
-              </div>
-            </section>
-          ))}
+          {shelves.map((shelf) => {
+            /* Le rayon porte le nom de la nature du document ; « Voir plus »
+             * ouvre l'onglet correspondant, en grille et sans filtre : sinon
+             * il ne montrerait que ce qui est déjà à l'écran. */
+            const shelfTab = tabs.find((entry) => entry.label === shelf.name);
+            return (
+              <section key={shelf.name} className="catalog-shelf">
+                <div className="catalog-shelf-head">
+                  <div className="catalog-shelf-title">
+                    <h3>{shelf.name}</h3>
+                    {shelfTab && (
+                      <button
+                        type="button"
+                        className="catalog-shelf-more"
+                        onClick={() => {
+                          setQuery('');
+                          setChosen({});
+                          setTab(shelfTab.key);
+                        }}
+                      >
+                        Voir plus
+                        <span aria-hidden="true">→</span>
+                      </button>
+                    )}
+                  </div>
+                  <span className="catalog-shelf-count">
+                    {shelf.items.length} {resultNoun}
+                    {shelf.items.length > 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
+                  {shelf.items.slice(0, SHELF_PREVIEW).map((item) => renderItem(item))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       ) : (
         <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
