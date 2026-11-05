@@ -2662,11 +2662,16 @@ main {
   text-align: center;
 }
 
-/* Les rayons du catalogue : une section par catégorie, sous son nom. */
+/* ------------------------------------------------------------------
+ * Les rayons du catalogue des publications.
+ *
+ * La vue d'ensemble : un rayon par catégorie — le domaine scientifique du
+ * document —, les uns sous les autres, chacun sous son nom.
+ * ------------------------------------------------------------------ */
 .catalog-shelves {
   display: flex;
   flex-direction: column;
-  gap: 2.6rem;
+  gap: 2.4rem;
 }
 
 .catalog-shelf-head {
@@ -2674,7 +2679,7 @@ main {
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
   padding-bottom: 0.6rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
@@ -2693,32 +2698,198 @@ main {
   font-weight: 600;
 }
 
-/* Le catalogue des documents : six blocs au bureau, quatre puis trois sur
- * tablette, deux sur téléphone. Le socle `.catalog-grid` (deux colonnes) sert
- * aux autres catalogues ; la double classe l'emporte sur la règle « une
- * colonne » des écrans étroits. */
-.catalog-grid.documents-grid {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 18px;
+/* ------------------------------------------------------------------
+ * La grille du catalogue des documents : six blocs au bureau, quatre puis
+ * trois sur tablette, deux sur téléphone. Chaque carte garde la même hauteur
+ * que ses voisines d'une même ligne (`align-items: stretch` d'une grille ; la
+ * carte est une colonne flexible).
+ * ------------------------------------------------------------------ */
+.catalog-grid.pub-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
-@media (max-width: 1280px) {
-  .catalog-grid.documents-grid {
+@media (min-width: 700px) {
+  .catalog-grid.pub-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog-grid.pub-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 1024px) {
-  .catalog-grid.documents-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (min-width: 1280px) {
+  .catalog-grid.pub-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 700px) {
-  .catalog-grid.documents-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
+/* ------------------------------------------------------------------
+ * La carte d'un document : la couverture au-dessus, le texte dessous.
+ *
+ * L'ordre du texte ne change pas — titre, auteurs, catégorie, date, note — et
+ * la note est poussée en bas, pour que les notes d'une même ligne s'alignent.
+ * ------------------------------------------------------------------ */
+.pub-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pub-card:hover,
+.pub-card:active {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.09);
+}
+
+/* Le lien couvre toute la carte : on clique n'importe où, pas seulement sur
+ * le titre. Il porte lui-même la mise en page, pour que le rembourrage du
+ * texte ne laisse pas de zone morte. */
+.pub-card-link {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pub-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  flex: 1;
+  padding: 12px 14px 14px;
+}
+
+/* Le titre : deux lignes au plus, puis « … ». */
+.pub-card-title {
+  margin: 0;
+  color: #101827;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Les auteurs : une seule ligne, « Olivier Bo. +15 », le badge « +15 » soudé
+ * au nom et jamais coupé. */
+.pub-authors {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  color: #0d4cc8;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pub-authors-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.pub-authors-more {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #edf3ff;
+  color: #0d4cc8;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* La catégorie : un seul badge compact. */
+.pub-card-badge {
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #edf3ff;
+  color: #0d4cc8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* La date : une seule ligne, en gris discret. */
+.pub-card-date {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* La note est poussée en bas : les notes d'une même ligne s'alignent. */
+.pub-card-rating {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+/* Les étoiles des cartes : petites, la note à côté. Sans avis, seul « Pas
+ * d'avis » paraît — pas cinq étoiles vides. */
+.star-rating-compact {
+  gap: 0.35rem;
+}
+
+.star-rating-compact .star-count {
+  font-size: 12px;
+}
+
+.star-rating-empty {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Sans couverture propre : un fond uni de la couleur de la catégorie, et une
+ * icône de document. Une teinte par domaine, un gris neutre sinon. */
+.publication-cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.publication-cover-placeholder.tone-green {
+  background: linear-gradient(150deg, #2f8f5b, #1f6b43);
+}
+
+.publication-cover-placeholder.tone-amber {
+  background: linear-gradient(150deg, #d99524, #b06f14);
+}
+
+.publication-cover-placeholder.tone-blue {
+  background: linear-gradient(150deg, #2f6fd0, #1c4a9c);
+}
+
+.publication-cover-placeholder.tone-teal {
+  background: linear-gradient(150deg, #1f8f92, #136a6d);
+}
+
+.publication-cover-placeholder.tone-slate {
+  background: linear-gradient(150deg, #64748b, #46566d);
 }
 
 /* Les onglets de la page S'engager : même dessin, un volet sous eux. */

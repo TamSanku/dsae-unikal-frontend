@@ -1,4 +1,5 @@
 import { getPublications, getTaxonomy } from '@/lib/backend';
+import { sharedCoverUrls } from '@/lib/covers';
 import PublicationsCatalog from '@/components/PublicationsCatalog';
 import PageHero from '@/components/PageHero';
 
@@ -8,6 +9,10 @@ import PageHero from '@/components/PageHero';
  * La recherche, les onglets par domaine et les filtres vivent dans le
  * catalogue ; la page ne fait que charger la matière réelle et la lui confier.
  * La barre et les onglets restent visibles même sans document publié.
+ *
+ * Elle repère aussi les couvertures partagées (voir `lib/covers`) : les
+ * documents dont l'image revient ailleurs s'afficheront avec un fond de
+ * catégorie plutôt qu'une image répétée.
  */
 export default async function PublicationsPage({
   searchParams,
@@ -15,6 +20,7 @@ export default async function PublicationsPage({
   searchParams?: { domain?: string | string[]; q?: string | string[] };
 }) {
   const [publications, taxonomy] = await Promise.all([getPublications(), getTaxonomy()]);
+  const sharedCovers = await sharedCoverUrls(publications.map((item) => item.coverUrl));
   const requested = Array.isArray(searchParams?.domain)
     ? searchParams?.domain[0]
     : searchParams?.domain;
@@ -31,6 +37,7 @@ export default async function PublicationsPage({
           <PublicationsCatalog
             publications={publications}
             taxonomy={taxonomy}
+            sharedCovers={sharedCovers}
             initialTab={initialTab}
             initialQuery={initialQuery}
           />

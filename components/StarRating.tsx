@@ -47,18 +47,31 @@ export default function StarRating({
   value,
   count,
   size = 16,
+  compact = false,
 }: {
   value: number;
   count?: number;
   size?: number;
+  /** Le format des cartes : de petites étoiles (14 px), la note écrite à côté,
+   * et « Pas d'avis » seul — sans cinq étoiles vides — quand personne n'a noté. */
+  compact?: boolean;
 }) {
   const safe = Number.isFinite(value) ? value : 0;
   /* Les étoiles se dessinent au demi-point près, mais la note écrite dit la
    * vérité : 4,67 s'affiche « 4,7 », jamais « 4,5 ». */
   const rounded = Math.round(safe * 2) / 2;
   const label = safe.toFixed(1).replace('.', ',');
+  const hasReviews = typeof count === 'number' && count > 0;
+
+  if (compact && !hasReviews) {
+    return <span className="star-rating star-rating-compact star-rating-empty">Pas d’avis</span>;
+  }
+
   return (
-    <span className="star-rating" aria-label={`Note : ${label} sur 5`}>
+    <span
+      className={`star-rating${compact ? ' star-rating-compact' : ''}`}
+      aria-label={`Note : ${label} sur 5`}
+    >
       <span className="star-row" aria-hidden="true">
         {[1, 2, 3, 4, 5].map((position) => (
           <Star key={position} fill={rounded - position + 1} size={size} />
@@ -66,7 +79,7 @@ export default function StarRating({
       </span>
       {typeof count === 'number' && (
         <span className="star-count">
-          {count > 0 ? `${label} · ${count} avis` : 'Aucun avis'}
+          {hasReviews ? `${label} · ${count} avis` : 'Aucun avis'}
         </span>
       )}
     </span>

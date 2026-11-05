@@ -261,11 +261,9 @@ export default function CatalogExplorer({
           ))}
         </div>
       ) : (
-        renderItem && (
-          <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
-            {visible.map((item) => renderItem(item))}
-          </div>
-        )
+        <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
+          {visible.map((item) => renderItem(item))}
+        </div>
       )}
     </div>
   );

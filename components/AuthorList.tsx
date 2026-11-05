@@ -15,11 +15,29 @@ import { useState } from 'react';
  * (`title`). Le bouton « +N autres » passe à la ligne suivante : à côté du nom,
  * il ne lui laissait que quelques caractères.
  */
-export default function AuthorList({ authors }: { authors: string[] }) {
+export default function AuthorList({
+  authors,
+  compact = false,
+}: {
+  authors: string[];
+  /** Le format des cartes : une seule ligne, le premier nom puis un badge
+   * « +N », sans bouton ni dépliage. La liste entière reste lisible au survol. */
+  compact?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const names = authors.filter((name) => name.trim());
 
   if (names.length === 0) return null;
+
+  if (compact) {
+    const others = names.length - 1;
+    return (
+      <span className="pub-authors" title={names.join(', ')}>
+        <span className="pub-authors-name">{names[0]}</span>
+        {others > 0 && <span className="pub-authors-more">+{others}</span>}
+      </span>
+    );
+  }
 
   if (names.length === 1) {
     return (

@@ -114,6 +114,9 @@ export type Publication = {
   publishedAt: string;
   /** La même date, écrite en toutes lettres. Vide si le backend n'en donne pas. */
   publishedLabel: string;
+  /** La même date, en abrégé : « 2 nov. 2026 ». La carte d'une rangée n'a pas
+   * la place d'écrire « 2 novembre 2026 » sur une seule ligne. */
+  publishedShortLabel: string;
   category: string;
   discipline: string;
   department: string;
@@ -286,6 +289,7 @@ function normalizePublication(raw: any, index: number): Publication {
     year: Number(raw.year) || 0,
     publishedAt,
     publishedLabel: formatDate(publishedAt),
+    publishedShortLabel: formatShortDate(publishedAt),
     category: raw.category ?? '',
     discipline: raw.discipline ?? '',
     department: raw.department ?? '',
@@ -904,6 +908,7 @@ function normalizePublishedPublication(entry: ContentEntry): Publication {
     year: Number.isFinite(year) ? year : 0,
     publishedAt: entry.publishedAt ?? '',
     publishedLabel: formatDate(entry.publishedAt),
+    publishedShortLabel: formatShortDate(entry.publishedAt),
     category: entry.category,
     discipline: '',
     department: entry.location,

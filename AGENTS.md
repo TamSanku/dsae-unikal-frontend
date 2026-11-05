@@ -379,47 +379,73 @@ sous « À la une » et sous son type.
 ## Étager les documents, et six blocs au bureau
 
 Le catalogue des publications range les documents **par étagère** : une section
-par **catégorie** (le type de document, « Article de recherche », « Mémoire et
-thèse »…), sous son nom et son compte. `CatalogExplorer` reçoit pour cela
-`groupBy` (la catégorie d'un élément), `groupOrder` (l'ordre des rayons) et
-`groupFallbackLabel` (le nom du rayon des éléments sans catégorie). Seul
-`PublicationsCatalog` s'en sert ; les autres catalogues (équipe, actualités,
-alumni) passent une seule grille, sans rayon. L'ordre des rayons suit
-`taxonomy.publicationCategories` — la liste du serveur, donc l'ordre de
-l'administration ; une catégorie absente de cette liste vient ensuite, et
+par **domaine scientifique** (« Agroéconomie », « Production végétale »…), sous
+son nom et son compte. `CatalogExplorer` reçoit pour cela `groupBy` (le domaine
+d'un élément), `groupOrder` (l'ordre des rayons) et `groupFallbackLabel` (le nom
+du rayon des éléments sans domaine). Seul `PublicationsCatalog` s'en sert ; les
+autres catalogues (équipe, actualités, alumni) passent une seule grille, sans
+rayon. L'ordre des rayons suit `taxonomy.domains` — la liste du serveur, donc
+l'ordre de l'administration ; un domaine absent de cette liste vient ensuite, et
 « Autres documents » ferme la marche. Un rayon vide ne paraît jamais : le
 regroupement porte sur les éléments **visibles**, après recherche, onglet et
 filtres.
 
-La largeur des colonnes vit dans la classe `documents-grid`, posée par
-`PublicationsCatalog` via la prop `gridClassName` : **six blocs au bureau**,
-quatre sur un écran plus étroit, trois sur tablette, deux sur téléphone. Le
+On range par **domaine**, pas par catégorie : la catégorie (« Article de
+recherche ») est le *type* de document et revient sur presque toutes les fiches
+d'un même fonds — elle ferait un seul rayon. Le domaine, lui, sépare vraiment
+les documents.
+
+La largeur des colonnes vit dans la classe `pub-grid`, posée par
+`PublicationsCatalog` via la prop `gridClassName` : **six blocs au bureau**
+(dès 1280 px), quatre dès 1024 px, trois dès 700 px, deux sur téléphone. Le
 socle `.catalog-grid` reste à deux colonnes pour les autres catalogues ; la
-règle est écrite `.catalog-grid.documents-grid` (double classe), donc elle
-l'emporte sur la règle « une colonne » des écrans étroits (`max-width: 980px`),
-qui autrement ramènerait tout à une seule colonne.
+règle est écrite `.catalog-grid.pub-grid` (double classe), donc elle l'emporte
+sur la règle « une colonne » des écrans étroits (`max-width: 980px`), qui
+autrement ramènerait tout à une seule colonne.
 
-## La carte d'un document : titre et auteur sur une ligne, pas de résumé
+## La carte d'un document : même hauteur, une ligne par information
 
-Dans le catalogue, une carte ne fait que **185 px au bureau** (six colonnes).
-Deux conséquences, réglées dans `globals.css` et `AuthorList` :
+Une carte de catalogue (`components/PublicationCard.tsx`) montre, dans l'ordre :
+la couverture, le **titre**, les **auteurs**, la **catégorie**, la **date** et
+la **note**. Tout le reste (résumé, métadonnées) vit sur la fiche. La carte est
+une colonne flexible dans une grille : la grille l'étire à la hauteur de ses
+voisines d'une même ligne, et la note est poussée en bas (`margin-top: auto`),
+si bien que les titres, auteurs, badges, dates et notes **s'alignent d'une
+carte à l'autre**. Le lien couvre toute la carte (`.pub-card-link` porte la mise
+en page), pas seulement le titre.
 
-- Le **titre** tient sur une seule ligne, coupé d'un « … » (`overflow: hidden`,
-  `text-overflow: ellipsis`, `white-space: nowrap`) et passe à `0.98rem`.
-  Sans cela, un titre long occupait quatre ou cinq lignes et cassait
-  l'alignement des rayons.
-- Le **nom du premier signataire** tient aussi sur une ligne, coupé de même, et
-  passe à `0.85rem`. Le bouton « +N autres » se place **sous** le nom, pas à
-  côté : à côté, il ne laissait que quelques caractères au nom (le bouton
-  « +15 autres » fait à lui seul ~93 px). Le nom entier reste lisible au survol
-  (`title`). Une fois dépliée, la liste des autres signataires reprend le fil
-  normal et s'étale sur plusieurs lignes.
-- Le **résumé** ne paraît plus sur les cartes (ni au catalogue, ni à l'accueil) :
-  il se lit sur la fiche du document. La carte montre le titre, les signataires,
-  la date et les étoiles.
+Deux conséquences, réglées dans `globals.css`, `AuthorList` et `StarRating` :
 
-La fiche d'un document, elle, n'est pas concernée : elle garde son titre, ses
-signataires et son résumé en pleine largeur.
+- Le **titre** s'arrête à deux lignes, coupé d'un « … » (`-webkit-line-clamp`).
+  Un titre plus long cassait l'alignement ; une seule ligne coupait trop tôt.
+- Les **auteurs** tiennent sur une seule ligne : le premier nom, coupé d'un
+  « … », suivi du badge « +N » **soudé à lui** (`AuthorList compact`). Le badge
+  ne passe jamais à la ligne et ne rétrécit pas. La liste entière reste lisible
+  au survol (`title`).
+- La **catégorie** est un badge unique ; la **date** est écrite en abrégé
+  (« 2 nov. 2026 », `Publication.publishedShortLabel`) pour tenir sur une ligne.
+- La **note** (`StarRating compact`) est réduite : petites étoiles (14 px), note
+  écrite à côté, et « Pas d'avis » seul — sans cinq étoiles vides — quand
+  personne n'a noté.
+
+La fiche d'un document n'est pas concernée : elle garde son titre, ses
+signataires et son résumé en pleine largeur (`AuthorList` et `StarRating` y sont
+appelés sans `compact`).
+
+## Les couvertures répétées
+
+Le backend range chaque image sous une adresse par média : deux documents
+importés d'un même lot reçoivent donc **deux adresses pour la même image**.
+Comparer les adresses ne suffit pas à repérer le doublon ; `lib/covers.ts`
+(`sharedCoverUrls`) lit les premiers kilo-octets de chaque couverture, en prend
+l'empreinte, et désigne celles qui reviennent sur plus d'un document. La carte
+les remplace alors par un **fond uni de la couleur du domaine**
+(`PublicationCover` avec `placeholder` et `categoryTone`), plutôt que de montrer
+dix fois la même image sombre.
+
+`sharedCoverUrls` est **async** et n'est appelé que côté serveur, dans
+`app/publications/page.tsx` : il importe `node:crypto`, donc il ne doit jamais
+entrer dans un composant client.
 
 ## La fiche d'un document : bloc de métadonnées et mots-clés
 
