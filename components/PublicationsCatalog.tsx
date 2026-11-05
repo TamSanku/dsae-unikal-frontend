@@ -15,6 +15,12 @@ import CatalogExplorer, { type CatalogFilter } from '@/components/CatalogExplore
  * la date et les étoiles. Tout le reste vit dans la fiche. Les onglets sont les
  * domaines scientifiques du serveur ; les filtres reprennent la date et, sous
  * chaque domaine, le niveau d'études.
+ *
+ * Les documents se rangent par étagère : une section par catégorie (le type de
+ * document, « Article de recherche », « Mémoire et thèse »…), dans l'ordre du
+ * serveur. Chaque rayon porte son nom et son compte, et ses cartes se
+ * disposent sur six colonnes au bureau, trois à quatre sur tablette et deux
+ * sur téléphone (voir `.catalog-grid` et sa classe `documents-grid`).
  */
 
 /** Les années réellement présentes, de la plus récente à la plus ancienne. */
@@ -83,6 +89,10 @@ export default function PublicationsCatalog({
       initialQuery={initialQuery}
       resultNoun="document"
       emptyLabel="Aucun document ne correspond à cette recherche. Modifiez les mots-clés ou les filtres."
+      groupBy={(item: Publication) => item.category}
+      groupOrder={taxonomy.publicationCategories}
+      groupFallbackLabel="Autres documents"
+      gridClassName="documents-grid"
       renderItem={(publication: Publication) => (
         <article key={publication.id} className="publication-card large publication-card-cover">
           <Link

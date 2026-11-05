@@ -2641,6 +2641,65 @@ main {
   text-align: center;
 }
 
+/* Les rayons du catalogue : une section par catégorie, sous son nom. */
+.catalog-shelves {
+  display: flex;
+  flex-direction: column;
+  gap: 2.6rem;
+}
+
+.catalog-shelf-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.catalog-shelf-head h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.25;
+  color: #101827;
+}
+
+.catalog-shelf-count {
+  flex: none;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* Le catalogue des documents : six blocs au bureau, quatre puis trois sur
+ * tablette, deux sur téléphone. Le socle `.catalog-grid` (deux colonnes) sert
+ * aux autres catalogues ; la double classe l'emporte sur la règle « une
+ * colonne » des écrans étroits. */
+.catalog-grid.documents-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 1280px) {
+  .catalog-grid.documents-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .catalog-grid.documents-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .catalog-grid.documents-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
 /* Les onglets de la page S'engager : même dessin, un volet sous eux. */
 .engager-tabs {
   display: flex;
