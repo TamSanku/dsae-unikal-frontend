@@ -2704,7 +2704,7 @@ main {
   color: #101827;
 }
 
-/* « Voir plus » : ouvre l'onglet du rayon, qui le montre en grille complète. */
+/* « Voir plus » : mène à la page du rayon, qui le montre en grille complète. */
 .catalog-shelf-more {
   flex: none;
   display: inline-flex;
@@ -2717,6 +2717,7 @@ main {
   font-size: 0.86rem;
   font-weight: 700;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -2920,34 +2921,21 @@ main {
   font-weight: 600;
 }
 
-/* Sans couverture propre : un fond uni de la couleur de la catégorie, et une
- * icône de document. Une teinte par domaine, un gris neutre sinon. */
-.publication-cover-placeholder {
+/* La vue complète d'un rayon : le lien de retour et le compte, sur une ligne. */
+.shelf-page-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: rgba(255, 255, 255, 0.9);
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.4rem;
 }
 
-.publication-cover-placeholder.tone-green {
-  background: linear-gradient(150deg, #2f8f5b, #1f6b43);
-}
-
-.publication-cover-placeholder.tone-amber {
-  background: linear-gradient(150deg, #d99524, #b06f14);
-}
-
-.publication-cover-placeholder.tone-blue {
-  background: linear-gradient(150deg, #2f6fd0, #1c4a9c);
-}
-
-.publication-cover-placeholder.tone-teal {
-  background: linear-gradient(150deg, #1f8f92, #136a6d);
-}
-
-.publication-cover-placeholder.tone-slate {
-  background: linear-gradient(150deg, #64748b, #46566d);
+.shelf-page-lead {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 /* Les onglets de la page S'engager : même dessin, un volet sous eux. */

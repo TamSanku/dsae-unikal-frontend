@@ -30,6 +30,28 @@ export const SHELVES: string[] = [
 
 export const OTHER_SHELF_LABEL = 'Autres documents';
 
+const KEY_BY_LABEL = new Map(SHELVES.map((shelf) => [shelf, shelfKeyOf(shelf)]));
+const LABEL_BY_KEY = new Map(SHELVES.map((shelf) => [shelfKeyOf(shelf), shelf]));
+
+/* Le nom d'une étagère devient son adresse : « Mémoires de licence (LMD) »
+ * se lit `/publications/rayon/memoires-de-licence-lmd`. Les accents et la
+ * ponctuation tombent, les mots restent. */
+function shelfKeyOf(label: string): string {
+  return normalize(label)
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/** L'adresse d'une étagère, à partir de son nom (l'inverse de `shelfLabel`). */
+export function shelfKey(label: string): string {
+  return KEY_BY_LABEL.get(label) ?? '';
+}
+
+/** Le nom d'une étagère, à partir de son adresse. */
+export function shelfLabel(key: string): string {
+  return LABEL_BY_KEY.get(key) ?? '';
+}
+
 function normalize(value: string | null | undefined): string {
   return (value ?? '')
     .normalize('NFD')

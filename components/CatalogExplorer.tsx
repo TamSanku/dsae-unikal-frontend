@@ -1,19 +1,23 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { FilterIcon, SearchIcon } from '@/components/icons';
 
 /*
- * Le catalogue : une barre de recherche, des filtres à côté, des onglets
- * horizontaux en dessous, puis les cartes.
+ * Le catalogue : une barre de recherche, des filtres à côté, puis les cartes.
  *
  * Le composant ne connaît ni les publications ni l'équipe : il reçoit les
  * éléments, la façon d'en tirer le texte de recherche et l'onglet, les filtres,
  * et un rendu de carte. Chaque page garde ainsi sa carte, et la mécanique de
  * recherche et de filtrage reste écrite une seule fois.
  *
+ * Les onglets sont facultatifs : le catalogue des publications n'en veut plus
+ * (les rayons tiennent lieu de classement), l'équipe et les actualités les
+ * gardent. Sans onglet, `tabOf` devient inutile.
+ *
  * Rien n'est inventé : sans élément correspondant, le catalogue affiche son
- * message vide ; les onglets et les filtres viennent des listes du serveur.
+ * message vide ; les filtres viennent des listes du serveur.
  */
 
 export type CatalogTab = { key: string; label: string };
@@ -39,7 +43,7 @@ export default function CatalogExplorer({
   items,
   searchText,
   searchPlaceholder = 'Rechercher…',
-  tabs,
+  tabs = [],
   tabOf,
   tabMatch,
   filters = [],
@@ -56,12 +60,16 @@ export default function CatalogExplorer({
   groupFallbackLabel = 'Autres',
   gridClassName = '',
   initialFilters,
+  shelfHref,
 }: {
   items: any[];
   searchText: (item: any) => string;
   searchPlaceholder?: string;
-  tabs: CatalogTab[];
-  tabOf: (item: any) => string;
+  /** Les onglets de classement. Vides, la rangée d'onglets disparaît : les
+   * rayons suffisent alors à classer. */
+  tabs?: CatalogTab[];
+  /** La nature d'un élément, pour l'onglet. Inutile sans onglet. */
+  tabOf?: (item: any) => string;
   /** Vrai si l'élément relève de l'onglet donné. Par défaut, on compare
    * `tabOf(item)` à l'onglet. Une personne peut relever de plusieurs
    * catégories : la page Équipe s'en sert. */
@@ -96,6 +104,9 @@ export default function CatalogExplorer({
   /** Les filtres déjà choisis à l'ouverture (par exemple depuis une adresse
    * partagée : `/publications?domain=…`). */
   initialFilters?: Record<string, string>;
+  /** L'adresse de la vue complète d'un rayon. Donnée, « Voir plus » devient un
+   * lien vers cette page ; sans elle, le bouton ouvre l'onglet du rayon. */
+  shelfHref?: (shelfName: string) => string;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [tab, setTab] = useState(initialTab || allTabKey);
@@ -123,7 +134,10 @@ export default function CatalogExplorer({
     return items.filter((item) => {
       /* L'onglet « tout voir » (la clé vide, celle de « Tout » et « À la une »)
        * n'écarte rien : il montre la liste entière. */
-      if (tab && tab !== allTabKey && !(tabMatch ? tabMatch(item, tab) : tabOf(item) === tab)) return false;
+      if (tab && tab !== allTabKey) {
+        const inTab = tabMatch ? tabMatch(item, tab) : tabOf ? tabOf(item) === tab : true;
+        if (!inTab) return false;
+      }
       if (needle && !searchText(item).toLowerCase().includes(needle)) return false;
       for (const filter of filters) {
         const selected = chosen[filter.key] ?? '';
@@ -241,46 +255,58 @@ export default function CatalogExplorer({
         </div>
       )}
 
-      <p className="catalog-count">
-        {visible.length} {resultNoun}
-        {visible.length > 1 ? 's' : ''}
-        {activeFilters.length > 0 && (
-          <button
-            type="button"
-            className="catalog-reset"
-            onClick={() => setChosen({})}
-          >
-            Réinitialiser les filtres
-          </button>
-        )}
-      </p>
+      {/* Le compte ne sert que si l'on resserre la liste : en vue d'ensemble,
+          chaque rayon porte déjà son nom. */}
+      {(query.trim() !== '' || activeFilters.length > 0) && (
+        <p className="catalog-count">
+          {visible.length} {resultNoun}
+          {visible.length > 1 ? 's' : ''}
+          {activeFilters.length > 0 && (
+            <button
+              type="button"
+              className="catalog-reset"
+              onClick={() => setChosen({})}
+            >
+              Réinitialiser les filtres
+            </button>
+          )}
+        </p>
+      )}
 
       {visible.length === 0 ? (
         <p className="catalog-empty">{emptyLabel}</p>
       ) : shelves ? (
         <div className="catalog-shelves">
           {shelves.map((shelf) => {
-            /* Le rayon porte le nom de la nature du document ; « Voir plus »
-             * ouvre l'onglet correspondant, en grille et sans filtre : sinon
-             * il ne montrerait que ce qui est déjà à l'écran. */
+            /* « Voir plus » mène à la vue complète du rayon. Sans adresse
+             * fournie, le bouton ouvre l'onglet du rayon — c'est le repli des
+             * catalogues qui n'ont pas de page par rayon. */
+            const href = shelfHref?.(shelf.name);
             const shelfTab = tabs.find((entry) => entry.label === shelf.name);
             return (
               <section key={shelf.name} className="catalog-shelf">
                 <div className="catalog-shelf-head">
                   <h3>{shelf.name}</h3>
-                  {shelfTab && (
-                    <button
-                      type="button"
-                      className="catalog-shelf-more"
-                      onClick={() => {
-                        setQuery('');
-                        setChosen({});
-                        setTab(shelfTab.key);
-                      }}
-                    >
+                  {href ? (
+                    <Link href={href} className="catalog-shelf-more">
                       Voir plus
                       <span aria-hidden="true">→</span>
-                    </button>
+                    </Link>
+                  ) : (
+                    shelfTab && (
+                      <button
+                        type="button"
+                        className="catalog-shelf-more"
+                        onClick={() => {
+                          setQuery('');
+                          setChosen({});
+                          setTab(shelfTab.key);
+                        }}
+                      >
+                        Voir plus
+                        <span aria-hidden="true">→</span>
+                      </button>
+                    )
                   )}
                 </div>
                 {/* Une étagère tient sur une seule ligne : au-delà de la

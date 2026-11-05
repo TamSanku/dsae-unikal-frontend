@@ -383,10 +383,16 @@ par **nature de document** : « Articles scientifiques », « Mémoires de gradu
 (PADEM) », « Mémoires de licence (PADEM) », « Mémoires de licence (LMD) »,
 « Mémoires de masters (LMD) », « Thèses », puis « Autres documents ». Chaque
 rayon porte son nom à gauche et, à droite, un lien **« Voir plus »** qui ouvre
-l'onglet correspondant, en grille et sans filtre. Le rayon ne montre que les
-**six premiers** documents (une rangée) ; « Voir plus » révèle le reste. Le
-compte de documents n'est pas affiché : c'est « Voir plus » qui occupe la droite
-de l'en-tête.
+la **page du rayon**. Le rayon ne montre que les **six premiers** documents (une
+rangée) ; « Voir plus » mène à la vue complète.
+
+Il n'y a **plus d'onglets** dans le catalogue des publications : le rayon est le
+seul classement. La rangée d'onglets n'apparaît que dans les catalogues qui en
+veulent encore (équipe, alumni, actualités) ; `CatalogExplorer` ne l'affiche que
+si `tabs` n'est pas vide ou si `showAllTab` est vrai. `PublicationsCatalog`
+passe `showAllTab={false}` et ne passe aucun onglet. Le **compte** de documents
+n'apparaît, lui, que pendant une recherche ou avec un filtre actif : en vue
+d'ensemble, chaque rayon porte déjà son nom et son « Voir plus ».
 
 Une étagère tient sur **une seule ligne** (`.catalog-shelf-row`, un flex sans
 retour à la ligne) : au-delà de la largeur, la rangée défile au doigt plutôt que
@@ -397,9 +403,8 @@ une grille : la hauteur d'une rangée ne dépend pas du nombre de documents.
 
 On range par nature, pas par domaine : le domaine scientifique traverse toutes
 les étagères (un article d'agroéconomie et un mémoire d'agroéconomie ne se
-rangent pas ensemble), il sert donc de **filtre**, pas de rayon. Les onglets sont
-les mêmes natures que les rayons ; le domaine reste un filtre (`Domaine`), aux
-côtés de la date et du niveau d'études.
+rangent pas ensemble), il sert donc de **filtre**, pas de rayon. Le domaine reste
+un filtre (`Domaine`), aux côtés de la date et du niveau d'études.
 
 Le rattachement se fait dans `lib/shelves.ts` (`publicationShelf`) : le diplôme
 et le système d'études (PADEM, LMD) se lisent dans la catégorie, le niveau ou la
@@ -410,13 +415,14 @@ sans repère de diplôme tombe dans « Autres documents » : on ne devine pas un
 diplôme.
 
 `CatalogExplorer` reçoit pour cela `groupBy` (la nature d'un élément),
-`groupOrder` (l'ordre des rayons) et `groupFallbackLabel` (le nom du rayon des
-éléments sans nature). Seul `PublicationsCatalog` s'en sert ; les autres
-catalogues (équipe, actualités, alumni) passent une seule grille, sans rayon.
-Un rayon vide ne paraît jamais : le regroupement porte sur les éléments
-**visibles**, après recherche, onglet et filtres. Les rayons ne paraissent qu'en
-vue d'ensemble (« Tout ») : un onglet déjà choisi montre une seule grille, sans
-répéter son nom.
+`groupOrder` (l'ordre des rayons), `groupFallbackLabel` (le nom du rayon des
+éléments sans nature) et `shelfHref` (l'adresse de la vue complète d'un rayon).
+Quand `shelfHref` est fourni, « Voir plus » est un lien ; sans lui, c'est un
+bouton qui ouvre l'onglet du rayon — le repli des catalogues sans page par
+rayon. Seul `PublicationsCatalog` s'en sert ; les autres catalogues (équipe,
+actualités, alumni) passent une seule grille, sans rayon. Un rayon vide ne
+paraît jamais : le regroupement porte sur les éléments **visibles**, après
+recherche et filtres.
 
 La largeur des colonnes vit dans la classe `pub-grid`, posée par
 `PublicationsCatalog` via la prop `gridClassName` : **six blocs au bureau**
@@ -427,7 +433,36 @@ sur la règle « une colonne » des écrans étroits (`max-width: 980px`), qui
 autrement ramènerait tout à une seule colonne.
 
 Un lien du pied de page vise un **domaine** (`/publications?domain=…`) : la page
-le traduit en filtre choisi d'emblée (`initialFilters`), pas en onglet.
+le traduit en filtre choisi d'emblée (`initialFilters`).
+
+## La page d'un rayon : « Voir plus » y mène
+
+`app/publications/rayon/[shelf]/page.tsx` montre un rayon en entier : le
+bandeau (`PageHero`, portant le nom du rayon), un lien « ← Retour au catalogue »
+et le compte de documents, puis la **grille complète** du rayon (`catalog-grid
+pub-grid`, mêmes largeurs que le catalogue), et enfin le pied de page global,
+posé par la mise en page du site.
+
+L'adresse d'un rayon se dérive de son nom (`shelfKey`) : « Mémoires de licence
+(LMD) » devient `memoires-de-licence-lmd`. `shelfLabel` fait l'inverse et
+reconstruit le nom ; une adresse inconnue renvoie une **vraie page introuvable**
+(`notFound`, avec `dynamicParams = false` : seuls les sept rayons connus
+existent). Le classement se refait sur place, à partir de la **même règle** que
+le catalogue (`publicationShelf`) : aucun document n'est dupliqué côté serveur.
+
+## La couverture vient de l'espace de gestion
+
+La couverture d'une carte (`PublicationCover`) est **l'image publiée dans
+l'espace de gestion** (`Publication.coverUrl`, rendue absolue par `mediaUrl`),
+montrée telle quelle : le portail ne remplace plus aucune image. Quand
+`coverUrl` est vide, ou si l'image ne se charge pas, la page ne porte qu'une
+icône sobre (`publication-cover-blank`) — le titre n'est jamais écrit sur la
+couverture.
+
+Le catalogue lit `coverUrl` sans la modifier ; c'est à l'administration de
+publier la bonne image. `lib/covers.ts` (détection des images partagées) et le
+repli « fond de catégorie » (`placeholder`, `categoryTone`, `.tone-*`) ont été
+retirés : ils masquaient l'image choisie dans l'espace de gestion.
 
 ## La carte d'un document : même hauteur, une ligne par information
 

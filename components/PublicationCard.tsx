@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { Publication } from '@/lib/backend';
 import AuthorList from '@/components/AuthorList';
-import PublicationCover, { categoryTone } from '@/components/PublicationCover';
+import PublicationCover from '@/components/PublicationCover';
 import StarRating from '@/components/StarRating';
 
 /*
@@ -15,34 +15,19 @@ import StarRating from '@/components/StarRating';
  * une colonne flexible, et la note est poussée en bas.
  *
  * La catégorie du document (« Article de recherche »…) n'est **pas** écrite sur
- * la carte : c'est le nom de l'étagère qui la porte déjà. Rien n'est écrit sur
- * la couverture, et rien n'est inventé : un document sans image propre reçoit
- * un fond de la couleur de sa catégorie, avec une icône. Toute la carte est
- * cliquable ; le titre reste un lien pour le clavier.
+ * la carte : c'est le nom de l'étagère qui la porte déjà. La couverture est
+ * celle publiée dans l'espace de gestion, montrée telle quelle. Toute la carte
+ * est cliquable ; le titre reste un lien pour le clavier.
  */
 
-export default function PublicationCard({
-  publication,
-  placeholder = false,
-}: {
-  publication: Publication;
-  /** Vrai quand la couverture du backend n'est pas propre au document (même
-   * image pour plusieurs) : la carte montre alors le fond de catégorie. */
-  placeholder?: boolean;
-}) {
+export default function PublicationCard({ publication }: { publication: Publication }) {
   const href = `/publications/${publication.id}`;
-  const tone = categoryTone(publication.domain || publication.category);
   const date = publication.publishedShortLabel || publication.publishedLabel;
 
   return (
     <article className="pub-card">
       <Link href={href} className="pub-card-link" aria-label={`Ouvrir « ${publication.title} »`}>
-        <PublicationCover
-          title={publication.title}
-          image={publication.coverUrl}
-          placeholder={placeholder}
-          tone={tone}
-        />
+        <PublicationCover title={publication.title} image={publication.coverUrl} />
 
         <div className="pub-card-body">
           <h3 className="pub-card-title">{publication.title}</h3>
