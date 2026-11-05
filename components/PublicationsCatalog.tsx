@@ -108,7 +108,6 @@ export default function PublicationsCatalog({
               <Link href={`/publications/${publication.id}`}>{publication.title}</Link>
             </h3>
             <AuthorList authors={publication.authorsList} />
-            {publication.summary && <p className="publication-card-summary">{publication.summary}</p>}
             {(publication.domain || publication.level) && (
               <p className="publication-tags">
                 {publication.domain && <span className="mini-tag">{publication.domain}</span>}

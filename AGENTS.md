@@ -399,6 +399,27 @@ règle est écrite `.catalog-grid.documents-grid` (double classe), donc elle
 l'emporte sur la règle « une colonne » des écrans étroits (`max-width: 980px`),
 qui autrement ramènerait tout à une seule colonne.
 
+## La carte d'un document : titre et auteur sur une ligne, pas de résumé
+
+Dans le catalogue, une carte ne fait que **185 px au bureau** (six colonnes).
+Deux conséquences, réglées dans `globals.css` et `AuthorList` :
+
+- Le **titre** tient sur une seule ligne, coupé d'un « … » (`overflow: hidden`,
+  `text-overflow: ellipsis`, `white-space: nowrap`) et passe à `0.98rem`.
+  Sans cela, un titre long occupait quatre ou cinq lignes et cassait
+  l'alignement des rayons.
+- Le **nom du premier signataire** tient aussi sur une ligne, coupé de même, et
+  passe à `0.85rem`. Le bouton « +N autres » se place **sous** le nom, pas à
+  côté : à côté, il ne laissait que quelques caractères au nom (le bouton
+  « +15 autres » fait à lui seul ~93 px). Le nom entier reste lisible au survol
+  (`title`). Une fois dépliée, la liste des autres signataires reprend le fil
+  normal et s'étale sur plusieurs lignes.
+- Le **résumé** ne paraît plus sur les cartes (ni au catalogue, ni à l'accueil) :
+  il se lit sur la fiche du document. La carte montre le titre, les signataires,
+  la date et les étoiles.
+
+La fiche d'un document, elle, n'est pas concernée : elle garde son titre, ses
+signataires et son résumé en pleine largeur.
 
 ## La fiche d'un document : bloc de métadonnées et mots-clés
 

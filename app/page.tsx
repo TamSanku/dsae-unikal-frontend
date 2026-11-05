@@ -201,9 +201,6 @@ export default async function HomePage() {
                       <Link href={`/publications/${publication.id}`}>{publication.title}</Link>
                     </h4>
                     <AuthorList authors={publication.authorsList} />
-                    {publication.summary && (
-                      <p className="publication-card-summary">{publication.summary}</p>
-                    )}
                     {publication.publishedLabel && (
                       <p className="publication-date">{publication.publishedLabel}</p>
                     )}

@@ -1915,6 +1915,15 @@ main {
 .publication-card-body h3,
 .publication-card-body h4 {
   margin: 0;
+  /* Le titre d'une carte tient sur une seule ligne : la carte est étroite (six
+   * blocs au bureau), un titre long — et ils le sont souvent — passait sur
+   * quatre ou cinq lignes et cassait l'alignement des rayons. Il est donc coupé
+   * d'un « … » à la fin de la ligne. */
+  font-size: 0.98rem;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .publication-card-body h3 a,
@@ -1928,29 +1937,41 @@ main {
   color: #0d4cc8;
 }
 
-/* Le résumé d'une carte : quelques lignes, le reste se lit dans la fiche. */
-.publication-card-summary {
-  margin: 0;
-  color: #55647a;
-  font-size: 0.92rem;
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+/* Le résumé ne paraît plus sur les cartes : le visiteur ouvre la fiche pour le
+ * lire. Le titre, les signataires, la date et les étoiles suffisent à choisir. */
 
 /* Les signataires : un seul nom, les autres derrière un clic. */
 .publication-authors {
   margin: 0;
   color: #0d4cc8;
+  font-size: 0.85rem;
   font-weight: 700;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.45rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
 }
 
+/* Le nom occupe sa propre ligne : il est coupé d'un « … » s'il est trop long
+ * (la carte ne fait que 185 px au bureau). Le bouton « +N autres » se place
+ * dessous plutôt que de lui voler la place — sinon le nom était réduit à
+ * quelques caractères. */
+.publication-authors-line {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.publication-authors-primary {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* La liste dépliée, elle, se lit sur plusieurs lignes : le visiteur l'a
+ * demandée, rien n'est plus coupé. */
 .publication-authors-rest {
   color: #46566d;
   font-weight: 500;
