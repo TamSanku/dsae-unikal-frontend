@@ -47,6 +47,10 @@ export default function CatalogExplorer({
   allTabKey = '',
   allTabLabel = 'Tout',
   showAllTab = true,
+  groupBy,
+  groupOrder,
+  groupFallbackLabel = 'Autres',
+  gridClassName = '',
 }: {
   items: any[];
   searchText: (item: any) => string;
@@ -74,6 +78,16 @@ export default function CatalogExplorer({
   /** Afficher le bouton « tout voir » ajouté en tête. Faux quand une catégorie
    * réelle joue déjà ce rôle. */
   showAllTab?: boolean;
+  /** La catégorie d'un élément : le catalogue le range alors sous son nom,
+   * comme un rayon d'étagère. Absent, les cartes restent dans une seule grille. */
+  groupBy?: (item: any) => string;
+  /** L'ordre des rayons ; un rayon inconnu vient ensuite, dans l'ordre
+   * d'apparition. */
+  groupOrder?: string[];
+  /** Le nom du rayon des éléments sans catégorie. */
+  groupFallbackLabel?: string;
+  /** Une classe posée sur la grille des cartes (largeur des colonnes). */
+  gridClassName?: string;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [tab, setTab] = useState(initialTab || allTabKey);
@@ -110,6 +124,28 @@ export default function CatalogExplorer({
   }, [items, query, tab, chosen, filters, tabOf, tabMatch, searchText, allTabKey]);
 
   const activeFilters = filters.filter((filter) => chosen[filter.key]);
+
+  /* Les rayons : on range les éléments visibles sous leur catégorie, dans
+   * l'ordre demandé (celui du serveur), puis les catégories rencontrées en
+   * chemin. Un élément sans catégorie va dans « Autres », en dernier. */
+  const shelves = useMemo(() => {
+    if (!groupBy) return null;
+    const buckets = new Map<string, any[]>();
+    for (const item of visible) {
+      const name = groupBy(item).trim() || groupFallbackLabel;
+      const bucket = buckets.get(name);
+      if (bucket) bucket.push(item);
+      else buckets.set(name, [item]);
+    }
+    const ordered = groupOrder ?? [];
+    const names = Array.from(buckets.keys()).sort((a, b) => {
+      const ai = ordered.indexOf(a);
+      const bi = ordered.indexOf(b);
+      if (ai !== -1 || bi !== -1) return (ai === -1 ? ordered.length : ai) - (bi === -1 ? ordered.length : bi);
+      return 0;
+    });
+    return names.map((name) => ({ name, items: buckets.get(name) ?? [] }));
+  }, [visible, groupBy, groupOrder, groupFallbackLabel]);
 
   return (
     <div className="catalog">
@@ -207,8 +243,29 @@ export default function CatalogExplorer({
 
       {visible.length === 0 ? (
         <p className="catalog-empty">{emptyLabel}</p>
+      ) : shelves ? (
+        <div className="catalog-shelves">
+          {shelves.map((shelf) => (
+            <section key={shelf.name} className="catalog-shelf">
+              <div className="catalog-shelf-head">
+                <h3>{shelf.name}</h3>
+                <span className="catalog-shelf-count">
+                  {shelf.items.length} {resultNoun}
+                  {shelf.items.length > 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
+                {shelf.items.map((item) => renderItem(item))}
+              </div>
+            </section>
+          ))}
+        </div>
       ) : (
-        renderItem && <div className="catalog-grid">{visible.map((item) => renderItem(item))}</div>
+        renderItem && (
+          <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
+            {visible.map((item) => renderItem(item))}
+          </div>
+        )
       )}
     </div>
   );

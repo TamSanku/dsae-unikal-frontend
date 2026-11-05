@@ -376,6 +376,30 @@ gardent la clé vide mais donnent au bouton le libellé du serveur
 d'actualité, c'est la vue d'ensemble du fil. Une actualité paraît donc à la fois
 sous « À la une » et sous son type.
 
+## Étager les documents, et six blocs au bureau
+
+Le catalogue des publications range les documents **par étagère** : une section
+par **catégorie** (le type de document, « Article de recherche », « Mémoire et
+thèse »…), sous son nom et son compte. `CatalogExplorer` reçoit pour cela
+`groupBy` (la catégorie d'un élément), `groupOrder` (l'ordre des rayons) et
+`groupFallbackLabel` (le nom du rayon des éléments sans catégorie). Seul
+`PublicationsCatalog` s'en sert ; les autres catalogues (équipe, actualités,
+alumni) passent une seule grille, sans rayon. L'ordre des rayons suit
+`taxonomy.publicationCategories` — la liste du serveur, donc l'ordre de
+l'administration ; une catégorie absente de cette liste vient ensuite, et
+« Autres documents » ferme la marche. Un rayon vide ne paraît jamais : le
+regroupement porte sur les éléments **visibles**, après recherche, onglet et
+filtres.
+
+La largeur des colonnes vit dans la classe `documents-grid`, posée par
+`PublicationsCatalog` via la prop `gridClassName` : **six blocs au bureau**,
+quatre sur un écran plus étroit, trois sur tablette, deux sur téléphone. Le
+socle `.catalog-grid` reste à deux colonnes pour les autres catalogues ; la
+règle est écrite `.catalog-grid.documents-grid` (double classe), donc elle
+l'emporte sur la règle « une colonne » des écrans étroits (`max-width: 980px`),
+qui autrement ramènerait tout à une seule colonne.
+
+
 ## La fiche d'un document : bloc de métadonnées et mots-clés
 
 La ligne « date · type · domaine » de la fiche est devenue `MetadataRail`
