@@ -382,9 +382,18 @@ Le catalogue des publications range les documents **par étagère**, une section
 par **nature de document** : « Articles scientifiques », « Mémoires de graduats
 (PADEM) », « Mémoires de licence (PADEM) », « Mémoires de licence (LMD) »,
 « Mémoires de masters (LMD) », « Thèses », puis « Autres documents ». Chaque
-rayon porte son nom, son compte et un lien **« Voir plus »** qui ouvre l'onglet
-correspondant, en grille et sans filtre. Le rayon ne montre que les **six
-premiers** documents (une rangée au bureau) ; « Voir plus » révèle le reste.
+rayon porte son nom à gauche et, à droite, un lien **« Voir plus »** qui ouvre
+l'onglet correspondant, en grille et sans filtre. Le rayon ne montre que les
+**six premiers** documents (une rangée) ; « Voir plus » révèle le reste. Le
+compte de documents n'est pas affiché : c'est « Voir plus » qui occupe la droite
+de l'en-tête.
+
+Une étagère tient sur **une seule ligne** (`.catalog-shelf-row`, un flex sans
+retour à la ligne) : au-delà de la largeur, la rangée défile au doigt plutôt que
+de passer à la ligne suivante. La largeur d'une carte suit l'écran — deux sur
+téléphone, trois dès 700 px, quatre dès 1024 px, six dès 1280 px — et le dernier
+emplacement reste vide quand il y a moins de documents. C'est un défilement, pas
+une grille : la hauteur d'une rangée ne dépend pas du nombre de documents.
 
 On range par nature, pas par domaine : le domaine scientifique traverse toutes
 les étagères (un article d'agroéconomie et un mémoire d'agroéconomie ne se

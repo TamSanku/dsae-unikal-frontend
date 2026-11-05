@@ -2684,17 +2684,21 @@ main {
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-/* Le nom du rayon et son « Voir plus », groupés à gauche. */
-.catalog-shelf-title {
+/* Le nom du rayon à gauche, « Voir plus » à droite — à la place du compte de
+ * documents, qui n'est plus affiché. */
+.catalog-shelf-head {
   display: flex;
   align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.75rem;
-  min-width: 0;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.catalog-shelf-title h3 {
+.catalog-shelf-head h3 {
   margin: 0;
+  min-width: 0;
   font-size: 1.25rem;
   line-height: 1.25;
   color: #101827;
@@ -2702,6 +2706,7 @@ main {
 
 /* « Voir plus » : ouvre l'onglet du rayon, qui le montre en grille complète. */
 .catalog-shelf-more {
+  flex: none;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -2719,11 +2724,51 @@ main {
   text-decoration: underline;
 }
 
-.catalog-shelf-count {
-  flex: none;
-  color: #64748b;
-  font-size: 0.82rem;
-  font-weight: 600;
+/* ------------------------------------------------------------------
+ * Une étagère : ses documents sur **une seule ligne**. Au-delà de la largeur,
+ * la rangée défile au doigt — une étagère, pas un mur. La largeur d'une carte
+ * suit l'écran : deux sur téléphone, trois puis quatre, six au bureau. Le
+ * dernier emplacement d'une même ligne reste vide quand il y a moins de
+ * documents ; rien ne passe à la ligne suivante.
+ * ------------------------------------------------------------------ */
+.catalog-shelf-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.catalog-shelf-row::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-shelf-row > * {
+  flex: 0 0 calc((100% - 16px) / 2);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+@media (min-width: 700px) {
+  .catalog-shelf-row > * {
+    flex-basis: calc((100% - 32px) / 3);
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog-shelf-row > * {
+    flex-basis: calc((100% - 48px) / 4);
+  }
+}
+
+@media (min-width: 1280px) {
+  .catalog-shelf-row > * {
+    flex-basis: calc((100% - 80px) / 6);
+  }
 }
 
 /* ------------------------------------------------------------------

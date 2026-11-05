@@ -267,29 +267,26 @@ export default function CatalogExplorer({
             return (
               <section key={shelf.name} className="catalog-shelf">
                 <div className="catalog-shelf-head">
-                  <div className="catalog-shelf-title">
-                    <h3>{shelf.name}</h3>
-                    {shelfTab && (
-                      <button
-                        type="button"
-                        className="catalog-shelf-more"
-                        onClick={() => {
-                          setQuery('');
-                          setChosen({});
-                          setTab(shelfTab.key);
-                        }}
-                      >
-                        Voir plus
-                        <span aria-hidden="true">→</span>
-                      </button>
-                    )}
-                  </div>
-                  <span className="catalog-shelf-count">
-                    {shelf.items.length} {resultNoun}
-                    {shelf.items.length > 1 ? 's' : ''}
-                  </span>
+                  <h3>{shelf.name}</h3>
+                  {shelfTab && (
+                    <button
+                      type="button"
+                      className="catalog-shelf-more"
+                      onClick={() => {
+                        setQuery('');
+                        setChosen({});
+                        setTab(shelfTab.key);
+                      }}
+                    >
+                      Voir plus
+                      <span aria-hidden="true">→</span>
+                    </button>
+                  )}
                 </div>
-                <div className={`catalog-grid${gridClassName ? ` ${gridClassName}` : ''}`}>
+                {/* Une étagère tient sur une seule ligne : au-delà de la
+                 * largeur, la rangée défile au doigt plutôt que de passer à
+                 * la ligne suivante. */}
+                <div className="catalog-shelf-row">
                   {shelf.items.slice(0, SHELF_PREVIEW).map((item) => renderItem(item))}
                 </div>
               </section>
